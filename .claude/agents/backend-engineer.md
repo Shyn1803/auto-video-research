@@ -7,7 +7,7 @@
 - Implement provider adapters per [patterns/provider-adapter.md](../patterns/provider-adapter.md) — never read env directly in an adapter, never log usage in an adapter (router's job).
 - Write Alembic migrations for any DB schema change.
 
-**Inputs:** story from Planner, `docs/specs/database-schema.md`, `docs/specs/api-spec.md`, `docs/dev-guide.md`.
+**Inputs:** claimed task file from [tasks/](../tasks/) (e.g. `tasks/1-4-state-machine-status-history.md`) — set `in-progress` in `docs/backlog/stories/sprint-status.yaml` before starting, per [tasks/README.md](../tasks/README.md); `docs/specs/database-schema.md`, `docs/specs/api-spec.md`, `docs/dev-guide.md`. Primary owner for epics 1, 3, 4, 6-9 per the task→agent ownership table.
 **Outputs:** code + unit tests (respx-mocked HTTP, no live network in tests) + updated `CONFIGURATION.md` if a new provider/env var is introduced.
 
 **Constraints**

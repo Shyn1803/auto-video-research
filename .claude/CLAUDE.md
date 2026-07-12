@@ -19,12 +19,13 @@ When you start a task, load in this order — stop as soon as you have enough:
 
 1. This file (`CLAUDE.md`) — orchestration + priority rules.
 2. [memory/project-memory.md](memory/project-memory.md) — current state, known issues, open questions. **Always check this — it changes between sessions.**
-3. [context/](context/) — the specific context doc(s) matching your task (architecture, tech-stack, business-domain, glossary...).
-4. [rules/](rules/) — the specific rule file(s) that govern the code/doc you're about to touch.
-5. The matching [workflows/](workflows/) file if your task fits a known workflow (feature, bug fix, migration, release...).
-6. The real source doc in `docs/` (SRS.md, ARCHITECTURE.md, backlog/*, specs/*) — `.claude/context/` summarizes and points at these; `docs/` is authoritative for detail.
-7. [patterns/](patterns/) and [anti-patterns/](anti-patterns/) relevant to the component you're building.
-8. [templates/](templates/) and [checklists/](checklists/) at the point you produce an artifact (PR, ADR, postmortem, story).
+3. [tasks/](tasks/) + [docs/backlog/stories/sprint-status.yaml](../docs/backlog/stories/sprint-status.yaml) — **the actual work queue for an agent team**: 65 self-contained, dev-ready task files across 10 epics, dependency graph, task→agent ownership. Claim a task by setting it `in-progress` in `sprint-status.yaml` before starting — see [tasks/README.md](tasks/README.md). This is where a multi-agent run should start after reading this file and memory.
+4. [context/](context/) — the specific context doc(s) matching your task (architecture, tech-stack, business-domain, glossary...).
+5. [rules/](rules/) — the specific rule file(s) that govern the code/doc you're about to touch.
+6. The matching [workflows/](workflows/) file if your task fits a known workflow (feature, bug fix, migration, release...).
+7. The real source doc in `docs/` (SRS.md, ARCHITECTURE.md, backlog/*, specs/*) — `.claude/context/` summarizes and points at these; `docs/` is authoritative for detail. `.claude/tasks/` is a derived execution view of `docs/backlog/` — if they disagree, `docs/backlog/` wins, fix the task file.
+8. [patterns/](patterns/) and [anti-patterns/](anti-patterns/) relevant to the component you're building.
+9. [templates/](templates/) and [checklists/](checklists/) at the point you produce an artifact (PR, ADR, postmortem, story).
 
 ## 3. Priority Rules (conflict resolution)
 
@@ -33,6 +34,8 @@ When you start a task, load in this order — stop as soon as you have enough:
 3. **`.claude/rules/`** — engineering conventions not yet codified in `docs/` (naming, git, PR hygiene).
 4. **`.claude/patterns/`** — how, not what; adapt to context.
 5. Never invent a fact `docs/` doesn't state. If unknown, say `Unknown — TODO` rather than guessing.
+
+**Don't stop the workflow to ask unless you have to.** Every "Escalation" line in `.claude/agents/*.md` is governed by [rules/autonomy-policy.md](rules/autonomy-policy.md) — default is decide-and-continue for anything reversible and locally-scoped; only genuinely irreversible, contract-novel, scope-ambiguous, product-owned, or conflicting-instruction situations warrant stopping to ask, and even then prefer flagging + continuing other work over a hard block. `.claude/settings.json` pre-authorizes the routine, reversible tool calls (build/test/lint/git-read/git-commit/edit) so the harness itself doesn't interrupt for those.
 
 ## 4. Reasoning Strategy
 

@@ -7,7 +7,7 @@
 - Wire `<Player>` from `@remotion/player` against `packages/remotion-templates` — the `Scene` composition for per-scene preview (Phân cảnh screen + render-worker parity), the `Video` composition only for the Hoàn thiện screen's "preview all" (never rendered server-side).
 - Generate scene edit forms from the Zod schema (schema-driven UI) — never hand-maintain a form that drifts from `schema.ts`.
 
-**Inputs:** matching story in `docs/backlog/epic-05-editor-ui.md`, `docs/design/design-system.md` component specs, `docs/specs/remotion-integration.md` §4.
+**Inputs:** claimed task file from [tasks/](../tasks/) (e.g. `tasks/5-1-project-workspace-topbar-stepper.md`) — set `in-progress` in `docs/backlog/stories/sprint-status.yaml` before starting, per [tasks/README.md](../tasks/README.md); `docs/design/design-system.md` component specs, `docs/specs/remotion-integration.md` §4. Primary owner for epic 5, and the UI half of epics 2, 6, 7, 8 per the task→agent ownership table.
 
 **Constraints**
 - Never hand-write a TypeScript interface that duplicates a backend Pydantic schema — use `make gen-api-client`.

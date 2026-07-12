@@ -1,0 +1,158 @@
+# generated: 2026-07-12
+# last_updated: 2026-07-12
+# project: AI Content Research & Video Automation Platform
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: docs/backlog/stories
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Source: docs/backlog/epics.md + epic-01..epic-10 (hand-written, story-template.md format).
+#   This file adds tracking only — it does not replace or duplicate epic/story content.
+# - 5-6-man-nghien-cuu is pre-upgraded to ready-for-dev: its full detailed story file already
+#   exists at docs/backlog/stories/story-5.6-research-review.md (the template exemplar).
+# - Sequencing per docs/plan.md: 1-1 and 2-1 are the two parallel starting points (week 1).
+# - AGENT TEAM: the actual execution manifest for a multi-agent run is .claude/tasks/ — one
+#   self-contained task file per key below (same filename stem), with dependency graph and
+#   task→agent ownership at .claude/tasks/README.md. This file is the shared status board:
+#   claim a task by setting it in-progress here before starting, mark done when merged.
+#   Never let a task's status here go backwards (see workflow notes above).
+
+generated: 2026-07-12
+last_updated: 2026-07-12
+project: AI Content Research & Video Automation Platform
+project_key: NOKEY
+tracking_system: file-system
+story_location: docs/backlog/stories
+
+development_status:
+  # Epic 1 — Nền tảng: repo, auth, project, state machine, versioning, người dùng (25đ, tuần 1-3)
+  epic-1: backlog
+  1-1-khoi-tao-monorepo-moi-truong-dev: backlog
+  1-2-auth-jwt-rbac: backlog
+  1-3-project-crud-dashboard-nhom-vong-doi: backlog
+  1-4-state-machine-status-history: backlog
+  1-5-versioning-engine: backlog
+  1-6-event-bus-noi-bo-sse: backlog
+  1-7-quan-ly-nguoi-dung-admin: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2 — Scene JSON + Remotion + TTS + 11 layout (26đ, tuần 1-3, 2.6: tuần 4-6)
+  epic-2: backlog
+  2-1-scene-json-schema-v1: backlog
+  2-2-remotion-base-layer: backlog
+  2-3-remotion-player-preview: backlog
+  2-4-tts-adapter-edge-tts: backlog
+  2-5-subtitle-tu-timestamps: backlog
+  2-6-layout-class-du-lieu-cau-truc: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3 — Provider framework (18đ, tuần 3-5)
+  epic-3: backlog
+  3-1-adapter-base-registry-config-layer: backlog
+  3-2-chain-router-failover-allow-paid: backlog
+  3-3-llm-adapters: backlog
+  3-4-api-key-management: backlog
+  3-5-cost-tracking-daily-cap-man-providers: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4 — Pipeline AI + Layout Engine core + entry script (33đ, tuần 5-8)
+  epic-4: backlog
+  4-1-langgraph-skeleton-checkpoint-human-gate: backlog
+  4-2-prompt-management-seed: backlog
+  4-3-node-research: backlog
+  4-4-node-ranking-factcheck: backlog
+  4-5-node-write-outline-script: backlog
+  4-6-semantic-storyboard-layout-engine-core: backlog
+  4-7-dieu-khien-run-huy-ngam-resume: backlog
+  4-8-diem-vao-co-san-kich-ban: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5 — Workspace UI (editor/review/running/version/drawer) (28đ, tuần 4-8)
+  epic-5: backlog
+  5-1-project-workspace-topbar-stepper: backlog
+  5-2-edit-controls: backlog
+  5-3-assetpicker: backlog
+  5-4-scene-ops: backlog
+  5-5-man-hoan-thien: backlog
+  5-6-man-nghien-cuu: ready-for-dev
+  5-7-man-noi-dung: backlog
+  5-8-runningstate-component: backlog
+  5-9-versionswitcher-so-sanh-history: backlog
+  5-10-projectdrawer: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6 — Produce, Render & Download (18đ, tuần 9-10)
+  epic-6: backlog
+  6-1-node-produce: backlog
+  6-2-render-orchestrator: backlog
+  6-3-man-xuat-ban-video-download: backlog
+  6-4-benchmark-chot-nfr: backlog
+  6-5-thu-vien-nhac-nen: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7 — Mode 1 + Scheduler + hàng đợi duyệt (19đ, tuần 11-13)
+  epic-7: backlog
+  7-1-scheduler-service: backlog
+  7-2-mode-1-pipeline-tu-hanh: backlog
+  7-3-gate-config-thong-ke: backlog
+  7-4-notification-telegram-email: backlog
+  7-5-dashboard-cho-duyet-hom-nay: backlog
+  epic-7-retrospective: optional
+
+  # Epic 8 — Publish & Analytics + Insights (24đ, tuần 12-15)
+  epic-8: backlog
+  8-1-publish-adapter-interface: backlog
+  8-2-youtube-oauth-flow: backlog
+  8-3-youtube-upload-ai-disclosure: backlog
+  8-4-publish-theo-lich: backlog
+  8-5-analytics-collector: backlog
+  8-6-analytics-dashboard: backlog
+  8-7-analytics-insights: backlog
+  epic-8-retrospective: optional
+
+  # Epic 9 — NATS, Workers & Observability (21đ, tuần 14-16)
+  epic-9: backlog
+  9-1-nats-jetstream-event-library: backlog
+  9-2-render-worker-container-rieng: backlog
+  9-3-voice-asset-worker: backlog
+  9-4-dlq-quan-tri-hang-doi: backlog
+  9-5-prometheus-grafana-alerts: backlog
+  9-6-langfuse-sentry-self-host: backlog
+  epic-9-retrospective: optional
+
+  # Epic 10 — Multi-platform, Hardening & Release (18đ, tuần 15-18)
+  epic-10: backlog
+  10-1-multi-format-render-production: backlog
+  10-2-bo-template-2-3: backlog
+  10-3-tiktok-facebook-linkedin-adapters: backlog
+  10-4-security-hardening: backlog
+  10-5-load-test-backup-drill: backlog
+  10-6-release-docs-checklist-go-live: backlog
+  epic-10-retrospective: optional

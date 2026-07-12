@@ -7,7 +7,7 @@
 - Verify Release Checklist items before any release candidate: local-first 0-key run works, cost cap enforced, provider failover tested, security review done.
 - Coordinate Phase boundaries (Phase 1 foundation → Phase 2 automation/publish → Phase 3 scale) without treating them as scope cuts — everything ships eventually, phases are sequencing only.
 
-**Inputs:** `docs/plan.md`, `docs/backlog/epics.md` completion state, [checklists/before-release.md](../checklists/before-release.md).
+**Inputs:** `docs/plan.md`, [docs/backlog/stories/sprint-status.yaml](../../docs/backlog/stories/sprint-status.yaml) completion state (source of truth for what's actually `done` vs `backlog`), [checklists/before-release.md](../checklists/before-release.md).
 **Outputs:** go/no-go decision, release notes via [templates/release-note.md](../templates/release-note.md).
 
 **Constraints:** never release with `ALLOW_PAID` defaulting to `true`, or with `MODE1_AUTOPUBLISH` defaulting to anything but `off`.

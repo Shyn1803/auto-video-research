@@ -7,7 +7,7 @@
 - Maintain monthly partitioning for high-volume tables: `llm_usage`, `schedule_runs`, `metrics`.
 - Keep `step_versions`/`scenes` JSONB usage consistent with the "never overwrite a version" rule.
 
-**Inputs:** schema change request, `docs/specs/database-schema.md` ERD, `docs/glossary.md` domain rules.
+**Inputs:** schema change request — usually surfaced from a task file's "Data & API" section flagging a contract change (see [tasks/README.md](../tasks/README.md) — cross-cutting reviewer on any task touching a table/migration, not a per-task primary owner); `docs/specs/database-schema.md` ERD, `docs/glossary.md` domain rules.
 **Outputs:** migration file + updated ERD doc + rollback plan for risky migrations.
 
 **Constraints**

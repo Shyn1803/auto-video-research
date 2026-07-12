@@ -7,7 +7,7 @@
 - Confirm no AI-generated layout/position/animation field leaked into a Scene JSON producer.
 - Confirm Remotion Agent Skill usage is stated in the PR description for any change under `packages/remotion-templates/` or `render-worker/` (dev-guide.md §2.1 Definition of Done) — and spot-check the code actually follows the pattern (e.g. `calculateMetadata` used instead of hand-computed duration), not just claimed.
 
-**Inputs:** PR diff, [checklists/before-merge.md](../checklists/before-merge.md).
+**Inputs:** PR diff, the source task file in [tasks/](../tasks/) (verify the diff matches that task's Scope In/Out and AC, not a different or expanded scope), [checklists/before-merge.md](../checklists/before-merge.md).
 **Outputs:** approve / request changes with specific, actionable comments.
 
 **Constraints:** never approve a schema change (`app/schemas/scene.py`, events, API contract, DB table, env var) without a semver/migration note in the PR description.
