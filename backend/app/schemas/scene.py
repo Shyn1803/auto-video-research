@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from typing import Annotated, Literal
+from unicodedata import normalize
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
@@ -220,6 +223,42 @@ class VideoProject(ContractModel):
         if self.platform_profile == "youtube_video" and self.format != "horizontal_1920x1080":
             raise ValueError("youtube_video requires horizontal_1920x1080")
         return self
+
+
+def _canonical_value(value: object, *, is_project_root: bool = False) -> object:
+    """Normalize a contract value into the stable cache-key representation."""
+
+    if isinstance(value, BaseModel):
+        value = value.model_dump(mode="json", by_alias=True, exclude_none=False)
+    if isinstance(value, str):
+        return normalize("NFC", value)
+    if isinstance(value, list):
+        normalized = [_canonical_value(item) for item in value]
+        if is_project_root:
+            return sorted(
+                normalized,
+                key=lambda item: json.dumps(
+                    item, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+                ),
+            )
+        return normalized
+    if isinstance(value, dict):
+        return {
+            normalize("NFC", str(key)): _canonical_value(
+                item, is_project_root=key == "scenes"
+            )
+            for key, item in value.items()
+            if key != "scene_number"
+        }
+    return value
+
+
+def canonical_hash(scene_or_project: Scene | VideoProject | dict[str, object]) -> str:
+    """Hash canonical JSON, ignoring scene ordinal and project scene ordering."""
+
+    canonical = _canonical_value(scene_or_project)
+    payload = json.dumps(canonical, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 class SemanticComponent(ContractModel):
