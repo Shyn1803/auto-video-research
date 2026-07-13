@@ -15,7 +15,7 @@ services:
         condition: service_healthy
     ports:
       - "${API_PORT:-8000}:8000"
-    networks: [internal]
+    networks: [internal, edge]
 
   frontend:
     build:
@@ -30,7 +30,7 @@ services:
     working_dir: /workspace/frontend
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
-    networks: [internal]
+    networks: [internal, edge]
 
 volumes:
   frontend_node_modules:
