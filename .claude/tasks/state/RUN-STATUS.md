@@ -6,7 +6,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 
 | Task | Status | Current step | Branch | Blocked reason |
 |---|---|---|---|---|
-| 1-1 | 🔴 blocked | 4 | feat/1-1-khoi-tao-monorepo | Docker daemon unavailable |
+| 1-1 | ✅ done | 8 | feat/1-1-khoi-tao-monorepo | — |
 | 1-2 | ⬜ not-started | — | — | — |
 | 1-3 | ⬜ not-started | — | — | — |
 | 1-4 | ⬜ not-started | — | — | — |
