@@ -19,10 +19,20 @@ def example_keys() -> set[str]:
     }
 
 
+def missing_settings_keys(
+    settings_fields: set[str] | None = None, documented_keys: set[str] | None = None
+) -> list[str]:
+    """Return Settings fields that have no corresponding environment-template key."""
+
+    fields = settings_fields if settings_fields is not None else set(Settings.model_fields)
+    keys = documented_keys if documented_keys is not None else example_keys()
+    return sorted(name.upper() for name in fields if name.upper() not in keys)
+
+
 def main() -> int:
     """Exit non-zero when a Settings field lacks template documentation."""
 
-    missing = sorted(name.upper() for name in Settings.model_fields if name.upper() not in example_keys())
+    missing = missing_settings_keys()
     if missing:
         print(f"Missing Settings keys in .env.example: {', '.join(missing)}", file=sys.stderr)
         return 1
