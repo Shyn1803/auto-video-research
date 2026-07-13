@@ -1,0 +1,9 @@
+{
+  "name": "default",
+  "font_family": "Inter, Noto Sans, sans-serif",
+  "motion_intensity": 6,
+  "visual_density": 4,
+  "accent_saturation_max": 0.8,
+  "radius_scale": "soft-16px",
+  "colors": {"background": "#0F172A", "foreground": "#F8FAFC", "accent": "#38BDF8"}
+}
