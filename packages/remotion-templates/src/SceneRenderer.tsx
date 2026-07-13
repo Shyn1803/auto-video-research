@@ -1,9 +1,18 @@
-import {AbsoluteFill} from 'remotion';
+import {AbsoluteFill, Sequence} from 'remotion';
+
+import {Animated} from './motion/Animated';
 
 export type SceneProps = {
   duration_ms: number;
   format?: 'vertical_1080x1920' | 'horizontal_1920x1080';
   schema_version: string;
+  motion_plan?: {tracks: MotionTrack[]};
+};
+
+export type MotionTrack = {
+  component_id: string;
+  preset: string;
+  enter_at_ms: number;
 };
 
 export const SUPPORTED_SCHEMA_RANGE = '^1.0.0';
@@ -33,4 +42,23 @@ export const sceneMetadata = ({props}: {props: SceneProps}) => {
   };
 };
 
-export const SceneRenderer = (_props: SceneProps) => <AbsoluteFill />;
+export const msToFrames = (milliseconds: number, fps: number): number =>
+  Math.round((milliseconds / 1000) * fps);
+
+export const SceneRenderer = (props: SceneProps) => (
+  <AbsoluteFill>
+    {props.motion_plan?.tracks.map((track) => (
+      <Sequence
+        key={track.component_id}
+        from={msToFrames(track.enter_at_ms, 30)}
+        durationInFrames={Infinity}
+        layout="none"
+        name={`Motion ${track.component_id}`}
+      >
+        <Animated preset={track.preset}>
+          <span data-component-id={track.component_id} />
+        </Animated>
+      </Sequence>
+    ))}
+  </AbsoluteFill>
+);
