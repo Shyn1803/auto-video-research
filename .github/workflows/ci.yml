@@ -37,4 +37,15 @@ jobs:
   schema-gate:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Scene schema gate will be implemented by task 2-1."
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: packages/remotion-templates/package-lock.json
+      - run: uv sync --all-groups
+        working-directory: backend
+      - run: npm ci
+        working-directory: packages/remotion-templates
+      - run: sh scripts/check_scene_schema_sync.sh
