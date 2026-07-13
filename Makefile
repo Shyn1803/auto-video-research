@@ -23,7 +23,7 @@ test:
 	cd frontend && npm run lint
 
 gen-scene-schema:
-	@echo "TODO: implemented by task 2-1"
+	cd backend && uv run python ../scripts/generate_scene_schema.py
 
 gen-api-client:
 	@echo "TODO: implemented by API client generation task"

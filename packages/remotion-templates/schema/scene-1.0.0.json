@@ -1,0 +1,822 @@
+{
+  "$defs": {
+    "Animation": {
+      "additionalProperties": false,
+      "description": "An explicit editor animation override; null means planner-selected motion.",
+      "properties": {
+        "type": {
+          "enum": [
+            "none",
+            "fade_in",
+            "slide_up",
+            "slide_left",
+            "zoom_in",
+            "pop"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "delay_ms": {
+          "default": 0,
+          "maximum": 5000,
+          "minimum": 0,
+          "title": "Delay Ms",
+          "type": "integer"
+        },
+        "duration_ms": {
+          "default": 400,
+          "maximum": 2000,
+          "minimum": 100,
+          "title": "Duration Ms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "title": "Animation",
+      "type": "object"
+    },
+    "AssetRef": {
+      "additionalProperties": false,
+      "description": "A licensed internal asset or a temporary allowlisted source URL.",
+      "properties": {
+        "asset_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Asset Id"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "title": "AssetRef",
+      "type": "object"
+    },
+    "AudioSpec": {
+      "additionalProperties": false,
+      "description": "Produced voice asset metadata.",
+      "properties": {
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "duration_ms": {
+          "exclusiveMinimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "timestamps": {
+          "items": {
+            "$ref": "#/$defs/WordTimestamp"
+          },
+          "title": "Timestamps",
+          "type": "array"
+        }
+      },
+      "required": [
+        "path",
+        "duration_ms"
+      ],
+      "title": "AudioSpec",
+      "type": "object"
+    },
+    "BgmSpec": {
+      "additionalProperties": false,
+      "description": "Project-wide background music.",
+      "properties": {
+        "asset_id": {
+          "minLength": 1,
+          "title": "Asset Id",
+          "type": "string"
+        },
+        "volume": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Volume",
+          "type": "number"
+        },
+        "fade_out_ms": {
+          "minimum": 0,
+          "title": "Fade Out Ms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "asset_id",
+        "volume",
+        "fade_out_ms"
+      ],
+      "title": "BgmSpec",
+      "type": "object"
+    },
+    "ColorBackground": {
+      "additionalProperties": false,
+      "description": "A solid-color background.",
+      "properties": {
+        "type": {
+          "const": "color",
+          "title": "Type",
+          "type": "string"
+        },
+        "color": {
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "title": "Color",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "color"
+      ],
+      "title": "ColorBackground",
+      "type": "object"
+    },
+    "GradientBackground": {
+      "additionalProperties": false,
+      "description": "A linear-gradient background.",
+      "properties": {
+        "type": {
+          "const": "gradient",
+          "title": "Type",
+          "type": "string"
+        },
+        "from": {
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "title": "From",
+          "type": "string"
+        },
+        "to": {
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "title": "To",
+          "type": "string"
+        },
+        "angle": {
+          "default": 180,
+          "maximum": 360,
+          "minimum": 0,
+          "title": "Angle",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type",
+        "from",
+        "to"
+      ],
+      "title": "GradientBackground",
+      "type": "object"
+    },
+    "ImageBackground": {
+      "additionalProperties": false,
+      "description": "An image background with a readability overlay.",
+      "properties": {
+        "type": {
+          "const": "image",
+          "title": "Type",
+          "type": "string"
+        },
+        "asset": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "overlay_opacity": {
+          "default": 0.4,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Overlay Opacity",
+          "type": "number"
+        }
+      },
+      "required": [
+        "type",
+        "asset"
+      ],
+      "title": "ImageBackground",
+      "type": "object"
+    },
+    "ImageElement": {
+      "additionalProperties": false,
+      "description": "Resolved image primitive.",
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "asset": {
+          "$ref": "#/$defs/AssetRef"
+        },
+        "fit": {
+          "default": "cover",
+          "enum": [
+            "cover",
+            "contain"
+          ],
+          "title": "Fit",
+          "type": "string"
+        },
+        "ken_burns": {
+          "default": true,
+          "title": "Ken Burns",
+          "type": "boolean"
+        },
+        "caption": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Caption"
+        },
+        "animation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Animation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "asset"
+      ],
+      "title": "ImageElement",
+      "type": "object"
+    },
+    "MotionPlan": {
+      "additionalProperties": false,
+      "description": "Deterministic output of the motion planner.",
+      "properties": {
+        "tracks": {
+          "items": {
+            "$ref": "#/$defs/MotionTrack"
+          },
+          "title": "Tracks",
+          "type": "array"
+        },
+        "transition_out": {
+          "$ref": "#/$defs/Transition"
+        }
+      },
+      "required": [
+        "transition_out"
+      ],
+      "title": "MotionPlan",
+      "type": "object"
+    },
+    "MotionSyncPoint": {
+      "additionalProperties": false,
+      "description": "A timestamped deterministic motion cue.",
+      "properties": {
+        "at_ms": {
+          "minimum": 0,
+          "title": "At Ms",
+          "type": "integer"
+        },
+        "effect": {
+          "minLength": 1,
+          "title": "Effect",
+          "type": "string"
+        },
+        "target": {
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "at_ms",
+        "effect",
+        "target"
+      ],
+      "title": "MotionSyncPoint",
+      "type": "object"
+    },
+    "MotionTrack": {
+      "additionalProperties": false,
+      "description": "A planned motion track for one resolved component.",
+      "properties": {
+        "component_id": {
+          "minLength": 1,
+          "title": "Component Id",
+          "type": "string"
+        },
+        "preset": {
+          "minLength": 1,
+          "title": "Preset",
+          "type": "string"
+        },
+        "reason": {
+          "enum": [
+            "narration_sync",
+            "hierarchy",
+            "sequence"
+          ],
+          "title": "Reason",
+          "type": "string"
+        },
+        "enter_at_ms": {
+          "minimum": 0,
+          "title": "Enter At Ms",
+          "type": "integer"
+        },
+        "end_by_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "End By Ms"
+        },
+        "sync_points": {
+          "items": {
+            "$ref": "#/$defs/MotionSyncPoint"
+          },
+          "title": "Sync Points",
+          "type": "array"
+        }
+      },
+      "required": [
+        "component_id",
+        "preset",
+        "reason",
+        "enter_at_ms"
+      ],
+      "title": "MotionTrack",
+      "type": "object"
+    },
+    "Scene": {
+      "additionalProperties": false,
+      "description": "Resolved scene input for a Remotion composition.",
+      "properties": {
+        "scene_id": {
+          "minLength": 1,
+          "title": "Scene Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scene_number": {
+          "minimum": 1,
+          "title": "Scene Number",
+          "type": "integer"
+        },
+        "duration_ms": {
+          "maximum": 30000,
+          "minimum": 1000,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "layout": {
+          "enum": [
+            "Hero",
+            "TextFocus",
+            "MediaFull",
+            "MediaText",
+            "Comparison",
+            "BigNumber",
+            "Chart",
+            "VersusTable",
+            "List",
+            "Quote",
+            "Code"
+          ],
+          "title": "Layout",
+          "type": "string"
+        },
+        "background": {
+          "discriminator": {
+            "mapping": {
+              "color": "#/$defs/ColorBackground",
+              "gradient": "#/$defs/GradientBackground",
+              "image": "#/$defs/ImageBackground"
+            },
+            "propertyName": "type"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ColorBackground"
+            },
+            {
+              "$ref": "#/$defs/GradientBackground"
+            },
+            {
+              "$ref": "#/$defs/ImageBackground"
+            }
+          ],
+          "title": "Background"
+        },
+        "texts": {
+          "items": {
+            "$ref": "#/$defs/TextElement"
+          },
+          "maxItems": 8,
+          "title": "Texts",
+          "type": "array"
+        },
+        "images": {
+          "items": {
+            "$ref": "#/$defs/ImageElement"
+          },
+          "maxItems": 3,
+          "title": "Images",
+          "type": "array"
+        },
+        "voice": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VoiceSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "subtitle": {
+          "$ref": "#/$defs/SubtitleSpec"
+        },
+        "transition": {
+          "$ref": "#/$defs/Transition"
+        },
+        "motion_plan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MotionPlan"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "semantic_tree": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Semantic Tree"
+        },
+        "layout_override": {
+          "anyOf": [
+            {
+              "enum": [
+                "Hero",
+                "TextFocus",
+                "MediaFull",
+                "MediaText",
+                "Comparison",
+                "BigNumber",
+                "Chart",
+                "VersusTable",
+                "List",
+                "Quote",
+                "Code"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Layout Override"
+        }
+      },
+      "required": [
+        "scene_id",
+        "schema_version",
+        "scene_number",
+        "duration_ms",
+        "layout",
+        "background",
+        "transition"
+      ],
+      "title": "Scene",
+      "type": "object"
+    },
+    "SubtitleSpec": {
+      "additionalProperties": false,
+      "description": "Subtitle render preference.",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "style": {
+          "default": "line",
+          "enum": [
+            "line",
+            "karaoke"
+          ],
+          "title": "Style",
+          "type": "string"
+        }
+      },
+      "title": "SubtitleSpec",
+      "type": "object"
+    },
+    "TextElement": {
+      "additionalProperties": false,
+      "description": "Resolved text primitive rendered by a layout preset.",
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "content": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Content",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "heading",
+            "body",
+            "caption",
+            "stat"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "position": {
+          "enum": [
+            "top",
+            "center",
+            "bottom"
+          ],
+          "title": "Position",
+          "type": "string"
+        },
+        "color": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Color"
+        },
+        "highlight_color": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Highlight Color"
+        },
+        "animation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Animation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "content",
+        "role",
+        "position"
+      ],
+      "title": "TextElement",
+      "type": "object"
+    },
+    "Transition": {
+      "additionalProperties": false,
+      "description": "Transition out of a scene, assembled after individual scene renders.",
+      "properties": {
+        "type": {
+          "enum": [
+            "none",
+            "fade",
+            "slide_left",
+            "slide_up",
+            "zoom"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "duration_ms": {
+          "maximum": 1500,
+          "minimum": 200,
+          "title": "Duration Ms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type",
+        "duration_ms"
+      ],
+      "title": "Transition",
+      "type": "object"
+    },
+    "VoiceSpec": {
+      "additionalProperties": false,
+      "description": "Narration intent and optional produced audio.",
+      "properties": {
+        "text": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "voice_id": {
+          "minLength": 1,
+          "title": "Voice Id",
+          "type": "string"
+        },
+        "speed": {
+          "default": 1.0,
+          "maximum": 1.3,
+          "minimum": 0.8,
+          "title": "Speed",
+          "type": "number"
+        },
+        "audio": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AudioSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "text",
+        "voice_id"
+      ],
+      "title": "VoiceSpec",
+      "type": "object"
+    },
+    "WordTimestamp": {
+      "additionalProperties": false,
+      "description": "A word-level audio timestamp produced by the voice worker.",
+      "properties": {
+        "word": {
+          "minLength": 1,
+          "title": "Word",
+          "type": "string"
+        },
+        "start_ms": {
+          "minimum": 0,
+          "title": "Start Ms",
+          "type": "integer"
+        },
+        "end_ms": {
+          "minimum": 0,
+          "title": "End Ms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "word",
+        "start_ms",
+        "end_ms"
+      ],
+      "title": "WordTimestamp",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The root resolved render contract.",
+  "properties": {
+    "project_id": {
+      "minLength": 1,
+      "title": "Project Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "format": {
+      "enum": [
+        "vertical_1080x1920",
+        "horizontal_1920x1080"
+      ],
+      "title": "Format",
+      "type": "string"
+    },
+    "platform_profile": {
+      "default": "generic",
+      "enum": [
+        "generic",
+        "tiktok",
+        "facebook_reels",
+        "youtube_shorts",
+        "youtube_video"
+      ],
+      "title": "Platform Profile",
+      "type": "string"
+    },
+    "fps": {
+      "default": 30,
+      "maximum": 120,
+      "minimum": 1,
+      "title": "Fps",
+      "type": "integer"
+    },
+    "scenes": {
+      "items": {
+        "$ref": "#/$defs/Scene"
+      },
+      "minItems": 1,
+      "title": "Scenes",
+      "type": "array"
+    },
+    "bgm": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BgmSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "watermark": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ImageElement"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "project_id",
+    "schema_version",
+    "format",
+    "scenes"
+  ],
+  "title": "VideoProject",
+  "type": "object"
+}
