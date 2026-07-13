@@ -45,7 +45,7 @@ def create_access_token(
     algorithm: str = "HS256",
 ) -> str:
     import jwt as _jwt
-    now = datetime now(timezone.utc)
+    now = datetime.now(timezone.utc)
     exp = now + (expires_delta or timedelta(minutes=15))
     payload: dict[str, Any] = {
         "sub": subject,
