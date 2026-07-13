@@ -67,7 +67,7 @@ development_status:
   epic-2: backlog
   2-1-scene-json-schema-v1: done
   2-2-remotion-base-layer: done
-  2-3-remotion-player-preview: backlog
+  2-3-remotion-player-preview: in-progress
   2-4-tts-adapter-edge-tts: backlog
   2-5-subtitle-tu-timestamps: backlog
   2-6-layout-class-du-lieu-cau-truc: backlog

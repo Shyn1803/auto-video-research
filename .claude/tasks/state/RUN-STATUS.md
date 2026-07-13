@@ -15,7 +15,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 | 1-7 | ⬜ not-started | — | — | — |
 | 2-1 | ✅ done | 7 | feat/2-1-scene-json-schema-v1 | — |
 | 2-2 | ✅ done | 8 | feat/2-2-remotion-base-layer | — |
-| 2-3 | ⬜ not-started | — | — | — |
+| 2-3 | 🔵 in-progress | 0 | feat/2-3-remotion-player-preview | — |
 | 2-4 | ⬜ not-started | — | — | — |
 | 2-5 | ⬜ not-started | — | — | — |
 | 2-6 | ⬜ not-started | — | — | — |
