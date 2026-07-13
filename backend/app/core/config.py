@@ -13,6 +13,12 @@ class Settings(BaseSettings):
     app_env: str = "development"
     app_version: str = "0.1.0"
     database_url: str = "postgresql://app:app@localhost:5432/app"
+    jwt_secret: str = "change-me-in-production"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 15
+    refresh_token_expire_days: int = 7
+    admin_email: str = "admin@example.com"
+    admin_password: str = "changeme"
 
 
 @lru_cache
