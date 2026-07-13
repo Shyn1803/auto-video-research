@@ -57,6 +57,9 @@ class BaseAdapter(ABC):
     name: str = ""
     is_paid: bool = True
 
+    def __init__(self, settings: "ProviderSettings | None" = None) -> None:
+        self.settings: ProviderSettings = settings or ProviderSettings()
+
     @abstractmethod
     async def available(self) -> bool:
         """Return True when this provider can accept work.
