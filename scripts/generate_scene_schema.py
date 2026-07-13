@@ -26,6 +26,9 @@ def main() -> None:
         "import { convertJsonSchemaToZod } from 'zod-from-json-schema';\n"
         "import sceneJsonSchema from '../schema/scene-1.0.0.json';\n\n"
         "export const videoProjectSchema = convertJsonSchemaToZod(sceneJsonSchema as never);\n"
+        "export const sceneSchema = convertJsonSchemaToZod(\n"
+        "  { $defs: sceneJsonSchema.$defs, $ref: '#/$defs/Scene' } as never\n"
+        ");\n"
         "export type VideoProjectProps = unknown;\n"
     )
 

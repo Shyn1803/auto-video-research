@@ -3,4 +3,7 @@ import { convertJsonSchemaToZod } from 'zod-from-json-schema';
 import sceneJsonSchema from '../schema/scene-1.0.0.json';
 
 export const videoProjectSchema = convertJsonSchemaToZod(sceneJsonSchema as never);
+export const sceneSchema = convertJsonSchemaToZod(
+  { $defs: sceneJsonSchema.$defs, $ref: '#/$defs/Scene' } as never
+);
 export type VideoProjectProps = unknown;

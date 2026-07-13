@@ -1,0 +1,9 @@
+{
+  "scene_id": "overflow", "schema_version": "1.0.0", "scene_number": 1,
+  "duration_ms": 4000, "layout": "TextFocus", "background": {"type": "color", "color": "#0F172A"},
+  "texts": [
+    {"id": "t1", "content": "Một", "role": "body", "position": "center"}, {"id": "t2", "content": "Hai", "role": "body", "position": "center"},
+    {"id": "t3", "content": "Ba", "role": "body", "position": "center"}, {"id": "t4", "content": "Bốn", "role": "body", "position": "center"},
+    {"id": "t5", "content": "Năm", "role": "body", "position": "center"}, {"id": "t6", "content": "Sáu", "role": "body", "position": "center"}
+  ], "images": [], "voice": null, "subtitle": {"enabled": true, "style": "line"}, "transition": {"type": "fade", "duration_ms": 500}
+}

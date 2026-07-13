@@ -1,0 +1,6 @@
+{
+  "scene_id": "bad-duration", "schema_version": "1.0.0", "scene_number": 1,
+  "duration_ms": "abc", "layout": "TextFocus", "background": {"type": "color", "color": "#0F172A"},
+  "texts": [{"id": "body", "content": "Sai kiểu", "role": "body", "position": "center"}], "images": [],
+  "voice": null, "subtitle": {"enabled": true, "style": "line"}, "transition": {"type": "fade", "duration_ms": 500}
+}

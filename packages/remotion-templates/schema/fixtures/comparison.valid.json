@@ -1,0 +1,8 @@
+{
+  "scene_id": "comparison-1", "schema_version": "1.0.0", "scene_number": 5,
+  "duration_ms": 4000, "layout": "Comparison", "background": {"type": "color", "color": "#0F172A"},
+  "texts": [{"id": "caption", "content": "So sánh", "role": "caption", "position": "bottom"}],
+  "images": [{"id": "left", "asset": {"asset_id": "asset-3", "url": null}}, {"id": "right", "asset": {"asset_id": "asset-4", "url": null}}],
+  "voice": null, "subtitle": {"enabled": true, "style": "line"},
+  "transition": {"type": "fade", "duration_ms": 500}
+}

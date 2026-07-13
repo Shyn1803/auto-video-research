@@ -1,0 +1,7 @@
+{
+  "scene_id": "text-1", "schema_version": "1.0.0", "scene_number": 2,
+  "duration_ms": 4000, "layout": "TextFocus", "background": {"type": "color", "color": "#0F172A"},
+  "texts": [{"id": "body", "content": "Nội dung trọng tâm", "role": "body", "position": "center"}],
+  "images": [], "voice": null, "subtitle": {"enabled": true, "style": "line"},
+  "transition": {"type": "fade", "duration_ms": 500}
+}
