@@ -1,17 +1,17 @@
 {
   "task_id": "2-2",
-  "status": "in-progress",
+  "status": "done",
   "branch": "feat/2-2-remotion-base-layer",
-  "current_step": 0,
+  "current_step": 8,
   "steps": [
-    { "id": 1, "name": "Scaffold packages/remotion-templates package + Root.tsx stub", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 2, "name": "SceneRenderer composition + calculateMetadata", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 3, "name": "MotionPlan track rendering via <Sequence layout=none>", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 4, "name": "Primitives — Heading/Body/Media(kenburns)/Subtitle/Watermark", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 5, "name": "ThemeProvider + default theme (fonts embedded, BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 6, "name": "5 constraint presets (Hero/TextFocus/MediaFull/MediaText/Comparison) x 2 formats", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 7, "name": "supportedSchemaRange + SCHEMA_RANGE guard (BR-3) + render CLI", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 8, "name": "Wire up render tests (class x format matrix) + golden-frame + all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+    { "id": 1, "name": "Scaffold packages/remotion-templates package + Root.tsx stub", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "85e2f78" },
+    { "id": 2, "name": "SceneRenderer composition + calculateMetadata", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "3ff43b1" },
+    { "id": 3, "name": "MotionPlan track rendering via <Sequence layout=none>", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "99df523" },
+    { "id": 4, "name": "Primitives — Heading/Body/Media(kenburns)/Subtitle/Watermark", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "9596a7f" },
+    { "id": 5, "name": "ThemeProvider + default theme (fonts embedded, BR-4)", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "6eecf4c" },
+    { "id": 6, "name": "5 constraint presets (Hero/TextFocus/MediaFull/MediaText/Comparison) x 2 formats", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "5e8a6ae" },
+    { "id": 7, "name": "supportedSchemaRange + SCHEMA_RANGE guard (BR-3) + render CLI", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "3ff43b1" },
+    { "id": 8, "name": "Wire up render tests (class x format matrix) + golden-frame + all Acceptance Criteria", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "d24f74e" }
   ],
   "decisions": [],
   "blocked_reason": null,
