@@ -1,18 +1,71 @@
 {
   "task_id": "10-2",
-  "status": "not-started",
+  "status": "in-progress",
   "branch": "feat/10-2-bo-template-2-3",
-  "current_step": 0,
+  "current_step": 4,
   "steps": [
-    { "id": 1, "name": "projects.theme migration (contract change)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 2, "name": "Define theme dial contract for Sang-toi-gian and Gradient-dong (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 3, "name": "Accent-color / radius-scale validator (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 4, "name": "Theme selection UI (create + change with dirty confirm, BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 5, "name": "BR-1 regression guard — theme change never touches Scene JSON", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 6, "name": "Render test matrix (11 layout x 2 format) for both new themes (BR-3) + PR screenshots", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+    {
+      "id": 1,
+      "name": "Add 6 new layout class presets (12 JSON files: 6 layouts x 2 formats)",
+      "status": "done",
+      "attempts": 1,
+      "last_error": null,
+      "commit_sha": null
+    },
+    {
+      "id": 2,
+      "name": "Create 6 new Remotion primitives for new component-kinds",
+      "status": "done",
+      "attempts": 1,
+      "last_error": null,
+      "commit_sha": null
+    },
+    {
+      "id": 3,
+      "name": "Update preset test to cover 22 files + 11 layout classes",
+      "status": "done",
+      "attempts": 2,
+      "last_error": "First run failed: process.cwd() resolved to monorepo root, not package dir; fixed by using import.meta.url-based path resolution",
+      "commit_sha": null
+    },
+    {
+      "id": 4,
+      "name": "Update backend scene_validator LAYOUT_LIMITS for 6 new layouts",
+      "status": "done",
+      "attempts": 1,
+      "last_error": null,
+      "commit_sha": null
+    },
+    {
+      "id": 5,
+      "name": "Run vitest + backend validation — confirm 30 tests pass, 11 layouts load",
+      "status": "done",
+      "attempts": 1,
+      "last_error": null,
+      "commit_sha": null
+    },
+    {
+      "id": 6,
+      "name": "Add backend unit tests for new layout validator limits",
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "commit_sha": null
+    }
   ],
-  "decisions": [],
+  "decisions": [
+    {
+      "step": 1,
+      "decision": "New layout preset filenames use kebab-case: BigNumber→big-number, VersusTable→versus-table, all others→lowercase",
+      "rationale": "Matches existing convention (text-focus, media-full, media-text already used kebab-case)"
+    },
+    {
+      "step": 1,
+      "decision": "6 layout limits assigned: BigNumber(1-2 texts, 0-1 images), Chart(1-3, 0-1), VersusTable(1-2, 0-1), List(1-2, 0-1), Quote(1-2, 0-1), Code(1-2, 0-1)",
+      "rationale": "Consistent with semantic purpose: stat+body for BigNumber, heading+chart+body for Chart, etc."
+    }
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-14T00:00:00+07:00"
 }

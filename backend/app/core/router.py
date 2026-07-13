@@ -154,7 +154,7 @@ class ProviderRouter:
             try:
                 fn: Callable[..., Any] = getattr(adapter, method)
                 t0 = time.monotonic()
-                result = await fn(*args, **kwargs)
+                result = await fn(*args, **(kwargs or {}))
                 latency = (time.monotonic() - t0) * 1000
                 self._cache_set(
                     key,

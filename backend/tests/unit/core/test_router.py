@@ -291,4 +291,3 @@ async def test_timeout_failover():
     assert usage[0].error_type == "TimeoutError"
     assert usage[0].retryable is True
     assert usage[1].success is True
-```

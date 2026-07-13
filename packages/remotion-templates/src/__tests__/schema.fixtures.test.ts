@@ -1,10 +1,12 @@
 import {readFileSync, readdirSync} from 'node:fs';
-import {join} from 'node:path';
+import {join, dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {describe, expect, it} from 'vitest';
 
 import {sceneSchema} from '../schema';
 
-const fixtures = join(process.cwd(), 'schema', 'fixtures');
+const HERE = dirname(fileURLToPath(import.meta.url));
+const fixtures = join(HERE, '..', '..', 'schema', 'fixtures');
 const load = (name: string): unknown => JSON.parse(readFileSync(join(fixtures, name), 'utf8'));
 
 describe('shared Scene JSON fixtures', () => {

@@ -22,11 +22,19 @@ class SceneValidationError(ValueError):
 
 
 LAYOUT_LIMITS: dict[str, tuple[range, range]] = {
+    # Original 5 layout classes
     "Hero": (range(1, 3), range(0, 2)),
     "TextFocus": (range(1, 4), range(0, 1)),
     "MediaFull": (range(0, 3), range(1, 2)),
     "MediaText": (range(1, 4), range(1, 2)),
     "Comparison": (range(0, 4), range(2, 3)),
+    # 6 new layout classes added in 10-2
+    "BigNumber": (range(1, 3), range(0, 2)),    # stat + optional body
+    "Chart": (range(1, 4), range(0, 1)),         # heading + chart + optional body
+    "VersusTable": (range(1, 3), range(0, 1)),   # heading + table_data
+    "List": (range(1, 3), range(0, 1)),          # heading + bullet (bullet is text)
+    "Quote": (range(1, 3), range(0, 1)),         # quote + body (both text)
+    "Code": (range(1, 3), range(0, 1)),          # heading + code (code is text)
 }
 
 

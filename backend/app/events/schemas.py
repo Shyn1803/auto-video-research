@@ -26,3 +26,17 @@ class StepProgressPayload(BaseModel):
     step: str
     pct: int = Field(ge=0, le=100)
     message: str | None = None
+
+
+class ProviderFailoverPayload(BaseModel):
+    capability: str
+    provider: str
+    reason: str
+    correlation_id: str
+
+
+class ProviderExhaustedPayload(BaseModel):
+    capability: str
+    chain: list[str]
+    failure_count: int
+    correlation_id: str
