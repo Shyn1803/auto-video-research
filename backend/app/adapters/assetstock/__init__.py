@@ -1,0 +1,1 @@
+"""Stock-asset adapters."""

@@ -45,7 +45,7 @@
 #   Never let a task's status here go backwards (see workflow notes above).
 
 generated: 2026-07-12
-last_updated: 2026-07-12
+last_updated: 2026-07-13
 project: AI Content Research & Video Automation Platform
 project_key: NOKEY
 tracking_system: file-system
@@ -53,8 +53,8 @@ story_location: docs/backlog/stories
 
 development_status:
   # Epic 1 — Nền tảng: repo, auth, project, state machine, versioning, người dùng (25đ, tuần 1-3)
-  epic-1: backlog
-  1-1-khoi-tao-monorepo-moi-truong-dev: backlog
+  epic-1: in-progress
+  1-1-khoi-tao-monorepo-moi-truong-dev: in-progress
   1-2-auth-jwt-rbac: backlog
   1-3-project-crud-dashboard-nhom-vong-doi: backlog
   1-4-state-machine-status-history: backlog
