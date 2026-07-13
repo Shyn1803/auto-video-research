@@ -18,6 +18,7 @@ from app.core.security import (
     verify_password,
     validate_password,
 )
+from app.models.refresh_token import RefreshToken
 from app.models.user import User
 from app.services.token_service import TokenService
 
@@ -59,9 +60,9 @@ async def login(req: Request, body: LoginRequest, response: Response) -> TokenRe
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid credentials")
     limiter.check(body.email, req.client.host if req.client else "unknown")  # reset on success
     access = _tokens.create_access_token(subject=str(user.id), role=user.role)
-    refresh_raw, _ = _tokens.create_refresh_token(user.id)
+    refresh_raw, family_id = _tokens.create_refresh_token(user.id)
     async with req.app.state.database.session() as session:
-        await _tokens.persist_refresh(session, user.id, refresh_raw, UUID(_tokens.create_refresh_token(user.id)[1]))
+        await _tokens.persist_refresh(session, user.id, refresh_raw, family_id)
         await session.commit()
     response.set_cookie(
         "refresh_token",
