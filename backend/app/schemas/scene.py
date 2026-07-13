@@ -181,7 +181,7 @@ class Scene(ContractModel):
     duration_ms: int = Field(ge=1000, le=30000)
     layout: LayoutName
     background: Background
-    texts: list[TextElement] = Field(default_factory=list, max_length=5)
+    texts: list[TextElement] = Field(default_factory=list, max_length=8)
     images: list[ImageElement] = Field(default_factory=list, max_length=3)
     voice: VoiceSpec | None = None
     subtitle: SubtitleSpec = Field(default_factory=SubtitleSpec)
