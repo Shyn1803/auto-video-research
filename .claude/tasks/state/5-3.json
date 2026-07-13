@@ -1,0 +1,18 @@
+{
+  "task_id": "5-3",
+  "status": "not-started",
+  "branch": "feat/5-3-assetpicker",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "Backend asset endpoints (contract change)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "AssetPicker modal shell, 3 tabs", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "Stock search tab, license badge BR-1/BR-3", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "Stock selection to Asset Worker fetch to assign (BR-4, security)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "Upload tab, dedupe + validation", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

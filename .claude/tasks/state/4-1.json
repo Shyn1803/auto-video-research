@@ -1,0 +1,21 @@
+{
+  "task_id": "4-1",
+  "status": "not-started",
+  "branch": "feat/4-1-langgraph-skeleton-checkpoint-human-gate",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "Pipeline state schema + graph skeleton", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Postgres checkpointer wiring", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "Interrupt-after-every-node + node<->state-machine mapping", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "Atomic checkpoint + step_version write (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "API run/approve/get-run (BR-1, BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "Retry-with-backoff + correlation_id (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 7, "name": "SSE event chain (AC1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 8, "name": "Fault injection test - crash mid-write (AC2, AC4, BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 9, "name": "Wire remaining tests for all ACs", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

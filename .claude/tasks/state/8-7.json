@@ -1,0 +1,19 @@
+{
+  "task_id": "8-7",
+  "status": "not-started",
+  "branch": "feat/8-7-analytics-insights",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "projects.topic_group migration + retention metric keys", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "AI topic_group classification at project creation (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Retention collector extension (extends 8-5) + retention-to-scene mapping (BR-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Insight rule engine (rule-based, pure function — BR-1, BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Insights/topics API endpoints + apply-topic-weights (BR-4, admin-only)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Analytics screen — Insight tab UI (3 tabs)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

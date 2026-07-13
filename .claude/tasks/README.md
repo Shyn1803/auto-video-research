@@ -4,17 +4,25 @@
 
 Filenames match the keys in [docs/backlog/stories/sprint-status.yaml](../../docs/backlog/stories/sprint-status.yaml) exactly — update status there as tasks move, not in these files.
 
-**Do not stop and wait for confirmation between tasks.** This manifest exists specifically so an agent team can work through the backlog in one pass — see [rules/autonomy-policy.md](../rules/autonomy-policy.md): decide and continue on anything reversible/locally-scoped; escalate only per the bounded criteria there, and prefer flagging + continuing over blocking.
+**Do not stop and wait for confirmation between tasks.** This manifest exists specifically so an agent team can work through the backlog in one pass, for long unattended stretches — see [rules/autonomy-policy.md](../rules/autonomy-policy.md): decide and continue on anything reversible/locally-scoped; escalate only per the bounded criteria there, and prefer flagging + continuing over blocking.
+
+## Quick orientation (read this before opening any individual task)
+
+- Every task now follows [TASK-TEMPLATE.md](TASK-TEMPLATE.md): Scope/BR/AC/Data/DoD (unchanged, from `docs/backlog/`) **plus** a numbered **Execution Steps** checklist detailed enough for a smaller model to follow without improvising, a mandatory **Retrospective**, and a **Resuming after interruption** section.
+- Progress is tracked outside the task file, in [`state/{task-id}.json`](state/README.md) — this is the "where am I if something errors" mechanism. Check [`state/RUN-STATUS.md`](state/RUN-STATUS.md) first for a one-glance rollup of every task's status before diving into individual files.
+- The full claim → branch → execute → retry → commit/push → retrospective loop is documented once, in [workflows/autonomous-task-execution.md](../workflows/autonomous-task-execution.md) — read it once per run, not per task.
+- **Git automation is pre-authorized for this project**: auto branch-checkout, auto-commit, and auto-push to feature branches (`feat/*`) happen with no per-action confirmation (see `workflows/autonomous-task-execution.md` "Git automation scope"). Pushing to `main`, force-push, and opening a PR remain gated.
+- **Retry policy**: up to 3 attempts per Execution Step before a step (and its task) is marked `blocked` and the run moves on to a different unblocked task — never a hard stop. Full policy in the workflow doc.
 
 ## How an agent team should consume this folder
 
-1. **Read [rules/autonomy-policy.md](../rules/autonomy-policy.md) and [CLAUDE.md](../CLAUDE.md) once**, at the start of the run — not per task.
+1. **Read [rules/autonomy-policy.md](../rules/autonomy-policy.md), [CLAUDE.md](../CLAUDE.md), and [workflows/autonomous-task-execution.md](../workflows/autonomous-task-execution.md) once**, at the start of the run — not per task.
 2. **Respect the dependency graph below.** A task's `Depends` line lists other task files (by filename stem) that must be `done` first. Tasks with no unmet dependencies can run in parallel.
-3. **Claim a task**: update its status in `sprint-status.yaml` to `in-progress` before starting (avoids two agents claiming the same task).
-4. **Work the task**: every task file has Scope In/Out, Business Rules, Acceptance Criteria, Data & API impact, and a Definition of Done — implement to that, not beyond (no silent scope expansion; see [rules/pull-requests.md](../rules/pull-requests.md)).
-5. **Before marking done**: run [checklists/before-merge.md](../checklists/before-merge.md). If the task is a "đổi contract" change (flagged in the task file), update the matching `docs/specs/*` file in the same change.
-6. **Mark done** in `sprint-status.yaml`, move to the next unblocked task.
-7. **If genuinely blocked** (contract ambiguity, missing precedent, product decision): flag it in the task file's `Open Questions` area or `memory/project-memory.md`, and move to a different unblocked task rather than halting the whole run — per the async-escalation rule in autonomy-policy.md.
+3. **Claim a task**: update its status in `sprint-status.yaml` to `in-progress`, and read/initialize `state/{task-id}.json` (avoids two agents claiming the same task, and tells you immediately if this task already has partial progress to resume).
+4. **Work the task**: every task file has Scope In/Out, Business Rules, Acceptance Criteria, Data & API impact, Execution Steps, and a Definition of Done — implement to that, not beyond (no silent scope expansion; see [rules/pull-requests.md](../rules/pull-requests.md)). Update the state file after every step.
+5. **Before marking done**: run [checklists/before-merge.md](../checklists/before-merge.md) and the task's Retrospective section. If the task is a "đổi contract" change (flagged in the task file), update the matching `docs/specs/*` file in the same change.
+6. **Mark done** in `sprint-status.yaml` and `state/{task-id}.json`, move to the next unblocked task — do not pause for confirmation.
+7. **If genuinely blocked** (contract ambiguity, missing precedent, product decision, or 3 failed retries on a step): mark the task `blocked` in its state file with a specific reason, flag it in `memory/project-memory.md` Open Questions, and move to a different unblocked task rather than halting the whole run — per the async-escalation rule in autonomy-policy.md and the retry policy in the workflow doc.
 
 ## Task → agent ownership
 
@@ -39,7 +47,8 @@ Every task in this folder maps to one primary agent role from [agents/](../agent
 
 Two independent starting points, designed to run on separate agents/dev from week 1:
 
-- **Track A (backend foundation):** `1-1` → `1-2` → `1-4` → `1-5` → `1-6` → `1-3`/`1-7` → `3-1` → `3-2` → `3-3`/`3-4`/`3-5` → `4-1` → `4-2` → `4-3` → `4-4` → `4-5` → `4-6` → `4-7`/`4-8`
+- **Track A (backend foundation):** `1-1` → `1-2` → `1-3` → `1-4` → `1-5` → `1-6` (with `1-7` branching off `1-2` in parallel with `1-3`) → `3-1` → `3-2` → `3-3`/`3-4`/`3-5` → `4-1` → `4-2` → `4-3` → `4-4` → `4-5` → `4-6` → `4-7`/`4-8`
+  - Corrected 2026-07-13: task files' actual `Depends:` lines show `1-4` depends on `1-3` (not `1-2` as previously listed here), and `1-3` depends on `1-2` — `.claude/tasks/*.md` is the derived-but-verified view; this line was stale against it.
 - **Track B (Scene/Remotion foundation):** `1-1` → `2-1` → `2-2` → `2-3`/`2-4` → `2-5` → `2-6`
 - **Milestone M1** (end of Track B core + hand-written fixture): `2-1`, `2-2`, `2-3`, `2-4`, `2-5` done → hand-assembled 30s 9:16 Vietnamese-voice video with synced subtitle.
 - Tracks converge at **Epic 5 (Workspace UI)**, which depends on both `2.x` (Player/schema) and `4.x` (pipeline) outputs; `5-6` is the template exemplar and already `ready-for-dev` (see `docs/backlog/stories/story-5.6-research-review.md`).

@@ -1,0 +1,18 @@
+{
+  "task_id": "9-3",
+  "status": "not-started",
+  "branch": "feat/9-3-voice-asset-worker",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Worker entrypoint (shared backend image)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Extract produce (6-1) logic into consumer handlers", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Bounded concurrency semaphore per engine (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Host-independence (BR-2) + GPU compose profile", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Replica scaling + resume-without-duplicate test", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Full AC coverage via reused 6-1 test matrix", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

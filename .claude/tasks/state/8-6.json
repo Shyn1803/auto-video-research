@@ -1,0 +1,16 @@
+{
+  "task_id": "8-6",
+  "status": "not-started",
+  "branch": "feat/8-6-analytics-dashboard",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Dashboard aggregate + video-list API endpoints", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Missing-metric handling (BR-1) + source display (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Analytics screen UI — 4 tổng số, chart, table, filters, empty state", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "10-2",
+  "status": "not-started",
+  "branch": "feat/10-2-bo-template-2-3",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "projects.theme migration (contract change)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Define theme dial contract for Sang-toi-gian and Gradient-dong (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Accent-color / radius-scale validator (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Theme selection UI (create + change with dirty confirm, BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "BR-1 regression guard — theme change never touches Scene JSON", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Render test matrix (11 layout x 2 format) for both new themes (BR-3) + PR screenshots", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

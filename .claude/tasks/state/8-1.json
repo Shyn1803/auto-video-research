@@ -1,0 +1,18 @@
+{
+  "task_id": "8-1",
+  "status": "not-started",
+  "branch": "feat/8-1-publish-adapter-interface",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "PublishAdapter base + registry", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Mock adapter \"fakeplatform\"", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "publishes lifecycle service", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Publish/preview API endpoints", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Xuất bản tab UI — platform table, metadata form, schedule block", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

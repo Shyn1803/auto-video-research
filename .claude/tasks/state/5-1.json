@@ -1,0 +1,20 @@
+{
+  "task_id": "5-1",
+  "status": "not-started",
+  "branch": "feat/5-1-project-workspace-topbar-stepper",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "Route shell + topbar", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "PipelineStepper, 5 stations", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "Scenes 3-column frame", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "Schema-driven SceneForm generator (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "Autosave (BR-3) + 422 error handling", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "Scene approve + ApproveBar contract change", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 7, "name": "Readonly / \"Sua lai tu day\" (BR-1/BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 8, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

@@ -1,0 +1,21 @@
+{
+  "task_id": "6-2",
+  "status": "not-started",
+  "branch": "feat/6-2-render-orchestrator",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Scaffold orchestrator + cache_key", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "bundle() once at startup, cache serveUrl (BR-6)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "In-process queue, NATS-like interface, bounded concurrency", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "cache_key idempotency — skip on cache hit (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Job-level fail isolation + honest batch status (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Retry per job, no double-render on worker kill (BR-1 continued)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "ffmpeg merge — concat + BGM + CRF (BR-3, BR-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 8, "name": "Dirty-scene-during-batch handling (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 9, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

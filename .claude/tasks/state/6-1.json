@@ -1,0 +1,19 @@
+{
+  "task_id": "6-1",
+  "status": "not-started",
+  "branch": "feat/6-1-node-produce",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Scaffold the node skeleton", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "TTS batch, bounded concurrency", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Idempotency by hash (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Asset resolve chain + license enforcement (BR-2, BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Duration auto-raise + Motion Planner pass-2 (BR-5, BR-6)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Local-error containment, node-level fail threshold (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

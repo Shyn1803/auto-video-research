@@ -1,0 +1,18 @@
+{
+  "task_id": "7-3",
+  "status": "not-started",
+  "branch": "feat/7-3-gate-config-thong-ke",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "accuracy_events table + migration (contract change)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "\"Was PASS correct?\" detection (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "30-day stats endpoint + gate change endpoint (contract change)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Publish-step gate enforcement", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Providers tab banner + admin gate UI", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

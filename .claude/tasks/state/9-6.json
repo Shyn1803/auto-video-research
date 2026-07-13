@@ -1,0 +1,19 @@
+{
+  "task_id": "9-6",
+  "status": "not-started",
+  "branch": "feat/9-6-langfuse-sentry-self-host",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Langfuse self-host compose service", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "LLM router trace instrumentation (3-2 integration)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Fire-and-forget failure handling (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Clean disable when env unconfigured (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Sentry/GlitchTip backend + worker integration", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Sentry frontend integration", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Denylist secret-scrub test (BR-1, reuse 9-4 pattern) + full AC coverage", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

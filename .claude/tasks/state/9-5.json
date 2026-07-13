@@ -1,0 +1,18 @@
+{
+  "task_id": "9-5",
+  "status": "not-started",
+  "branch": "feat/9-5-prometheus-grafana-alerts",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "FastAPI instrumentator + exporters", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Prometheus scrape config + 30-day retention", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Grafana provisioned-as-code dashboards (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Alert rules with runbook annotations + cooldown (BR-2, BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "make drill-alerts script + persistence check (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Full AC coverage tests", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

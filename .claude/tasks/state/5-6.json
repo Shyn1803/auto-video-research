@@ -1,0 +1,20 @@
+{
+  "task_id": "5-6",
+  "status": "not-started",
+  "branch": "feat/5-6-man-nghien-cuu",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "Nguon tab, SourceCard list (pin/loai/xoa, badges)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Add URL by hand (BR-6)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "Kiem chung tab, ClaimRow grouped by verdict", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "Override flow (BR-2, BR-3) + contract change", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "Cascading downgrade on source removal (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "ApproveBar gate (BR-1) + stale banner (BR-7)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 7, "name": "RunningState integration + all 5 UI states", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 8, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

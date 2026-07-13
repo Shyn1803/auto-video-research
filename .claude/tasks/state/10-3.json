@@ -1,0 +1,20 @@
+{
+  "task_id": "10-3",
+  "status": "not-started",
+  "branch": "feat/10-3-tiktok-facebook-linkedin-adapters",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "TikTok Content Posting adapter (doc, AIGC disclosure)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "TikTok capability validation (BR-2: vertical only, <=10min)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Facebook Reels adapter (<=90s cap, BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "LinkedIn video adapter (horizontal-preferred)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "4xx/5xx/quota branch coverage for all 3 adapters (AC4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Cho duyet nen tang UI state + submission date tracking", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Runbook — app review submission + rejection retry checklist (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 8, "name": "Sandbox-level integration check + PR not-verifiable callout", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

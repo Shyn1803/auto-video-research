@@ -1,0 +1,20 @@
+{
+  "task_id": "4-7",
+  "status": "not-started",
+  "branch": "feat/4-7-dieu-khien-run-huy-ngam-resume",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "RUNNING->CANCELLED state machine edge (+previous_status)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "POST runs/{id}/cancel - best-effort abort after current node (BR-1, BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "Cost/usage preserved, versions preserved (BR-2, BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "run.cancelled event + event-catalog update", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "Resume-after-cancel = new run from checkpoint", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "Race test - cancel vs node-finish (AC2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 7, "name": "Dashboard/RunningState UI wiring (AC4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 8, "name": "Wire remaining tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

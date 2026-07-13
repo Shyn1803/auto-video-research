@@ -1,0 +1,18 @@
+{
+  "task_id": "1-6",
+  "status": "not-started",
+  "branch": "feat/1-6-event-bus-sse",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "In-process async event bus", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Event envelope + wire into state_machine.transition()", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "One-time-token issuance", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "SSE endpoint with permission filter", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "Frontend useEventStream hook + reconnect + polling fallback", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

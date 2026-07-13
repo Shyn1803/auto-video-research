@@ -1,0 +1,19 @@
+{
+  "task_id": "6-5",
+  "status": "not-started",
+  "branch": "feat/6-5-thu-vien-nhac-nen",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Resolve seed-track storage + acquire the 10 tracks", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "assets(audio) rows with mandatory license metadata (BR-1, BR-3 shape)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "GET /assets/bgm endpoint (contract change)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Admin upload endpoint (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Picker UI wiring + preview playback", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Attribution auto-append (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

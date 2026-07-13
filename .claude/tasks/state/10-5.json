@@ -1,0 +1,19 @@
+{
+  "task_id": "10-5",
+  "status": "not-started",
+  "branch": "feat/10-5-load-test-backup-drill",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "k6 load test script — 5 concurrent renders + 20 UI users", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Run load test on staging, capture p95 + error rate (AC1, BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Autoscale needed/not-needed assessment", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Prepare restore-drill runbook for a non-developer operator (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Execute restore drill on a clean machine, timed, by a non-developer (BR-1, AC2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Nightly 0-key E2E CI job (local-first verification)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Confirm 3 consecutive green nightly runs (BR-3, AC3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

@@ -1,0 +1,20 @@
+{
+  "task_id": "4-3",
+  "status": "not-started",
+  "branch": "feat/4-3-node-research",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "sources/source_embeddings schema", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Connector adapters (arXiv, HN-Algolia, GitHub, RSS-list, SearXNG)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "Crawl trafilatura + paywall -> partial_content", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "Dedupe url_hash + embedding similarity (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "content_hash cache TTL 30d (BR-3) + max-N cap (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "Bounded-parallel summarize via research.summarize (BR-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 7, "name": "Node orchestration - connector-failure tolerance (BR-1) + SSE progress", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 8, "name": "Wire remaining tests for all ACs", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

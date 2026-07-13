@@ -1,0 +1,20 @@
+{
+  "task_id": "3-1",
+  "status": "not-started",
+  "branch": "feat/3-1-adapter-base-registry-config-layer",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "ProviderError + capability base classes", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Registry decorator with duplicate-name fail-startup (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "ProviderSettings config layer (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Align story 2-4's TTS adapter with the new base (if it exists yet)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Sample adapter + sample test (the copy-paste template, AC1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "BR-4 default-paid test + registry duplicate-startup test (AC2, AC3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "mypy strict + docs/CONFIGURATION.md entry", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 8, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

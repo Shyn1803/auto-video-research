@@ -1,0 +1,21 @@
+{
+  "task_id": "10-4",
+  "status": "not-started",
+  "branch": "feat/10-4-security-hardening",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "RBAC test generator from OpenAPI (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Rate limiting — user+IP, 429 + Retry-After (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Security headers — CSP (no unsafe-inline script), HSTS (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "CORS production allowlist", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Secret-in-log test extended system-wide (AC5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "make rotate-fernet + staging rotation drill (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Dependency scanning — pip-audit/npm-audit CI, fail-on-critical", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 8, "name": "Non-root images + pinned digests", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 9, "name": "Full Security Checklist evidence pass (AC1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

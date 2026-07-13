@@ -1,0 +1,17 @@
+{
+  "task_id": "2-5",
+  "status": "not-started",
+  "branch": "feat/2-5-subtitle-tu-timestamps",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Evaluate @remotion/captions against scene-json-schema §3.6 constraints", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Custom segmentation algorithm (only if @remotion/captions doesn't fit)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Subtitle line style component + enabled/disabled (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Wire segments into SceneRenderer props preparation", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Wire up tests + property test + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

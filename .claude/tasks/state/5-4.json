@@ -1,0 +1,17 @@
+{
+  "task_id": "5-4",
+  "status": "not-started",
+  "branch": "feat/5-4-scene-ops",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "Scene ops reducer (reorder/add/delete/duplicate)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Drag-and-drop reorder + up-down buttons", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "Add scene (layout picker, insert-after)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "Delete (confirm + impact) and duplicate", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

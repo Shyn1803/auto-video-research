@@ -1,0 +1,18 @@
+{
+  "task_id": "6-4",
+  "status": "not-started",
+  "branch": "feat/6-4-benchmark-chot-nfr",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Scaffold the benchmark harness as a single reusable command (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Define and record the reference machine (\"máy chuẩn\")", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Run the benchmark 3x and take the median", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Update NFR-1 in SRS.md with real numbers", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "BR-1 — bad results don't stay silent", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Confirm reusability + assemble go/no-go report", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

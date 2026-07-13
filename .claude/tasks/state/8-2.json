@@ -1,0 +1,19 @@
+{
+  "task_id": "8-2",
+  "status": "not-started",
+  "branch": "feat/8-2-youtube-oauth-flow",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "OAuth client config + CSRF state param plumbing", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "/admin/oauth/youtube/start + /admin/oauth/youtube/callback endpoints", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Encrypted token storage + auto-refresh", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Multi-channel support (default + per-publish selection)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Revoke/reconnect (BR-4) + audit logging", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Admin › API Keys UI — YouTube connect block", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Wire up tests + verify all Acceptance Criteria (mock Google OAuth server)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "10-1",
+  "status": "not-started",
+  "branch": "feat/10-1-multi-format-render-production",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Confirm 16:9 production template + cache_key format isolation (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "projects.formats[] multi-value support in project service", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Per-format render batch + independent UI status (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Asset orientation re-resolve + crop warning flag (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Publish auto-selects format per platform (AC4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Render test matrix acceptance + manual review of 2 videos", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

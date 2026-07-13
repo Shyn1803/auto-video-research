@@ -1,0 +1,19 @@
+{
+  "task_id": "5-5",
+  "status": "not-started",
+  "branch": "feat/5-5-man-hoan-thien",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "Route guard (BR-1), Hoan thien station lock", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "TimelineBar, resize with audio-length floor (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "BGM picker + volume/fade", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "Total duration (realtime) + Play-all preview", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "Dirty tracking (BR-3), Tao lai (N canh thay doi)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "Render trigger block + inline progress (BR-4, consumes 6-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 7, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

@@ -1,0 +1,17 @@
+{
+  "task_id": "7-4",
+  "status": "not-started",
+  "branch": "feat/7-4-notification-telegram-email",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Notification adapter base + Telegram/SMTP providers", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Event wiring — factcheck FAIL, pipeline FAILED/timeout, READY, cost cap, provider exhausted, DLQ>0", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Vietnamese templates + deep-links", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "5-minute spam coalescing (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

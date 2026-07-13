@@ -82,9 +82,10 @@ Nhiều key cùng provider: `GEMINI_API_KEY_1..N` hoặc nhập qua UI — route
 |---|---|---|---|
 | `edge_tts` | luôn có | word-timestamp cho subtitle | Free |
 | `local_tts` | `TTS_LOCAL_MODEL=vixtts\|f5tts` + GPU | clone giọng (viXTTS) | Free |
-| `fpt` | `FPT_API_KEY` + `ALLOW_PAID=true` | chất lượng cao nhất; có key → tự lên đầu chain nếu đặt trước trong `TTS_CHAIN` | **Paid** |
+| `fpt` | `FPT_API_KEY` + `ALLOW_PAID=true` | chất lượng cao nhất trong nhóm giọng Việt bản địa; có key → tự lên đầu chain nếu đặt trước trong `TTS_CHAIN` | **Paid** |
 | `google_tts` | `GOOGLE_TTS_CREDENTIALS` + `ALLOW_PAID=true` | vi-VN Wavenet | **Paid** |
 | `zalo` | `ZALO_API_KEY` + `ALLOW_PAID=true` | | **Paid** |
+| `elevenlabs` | `ELEVENLABS_API_KEY` + `ALLOW_PAID=true` | giọng chất lượng cao nhất chain, đa ngôn ngữ; API call qua mạng ngoài — nếu chạy trong agent sandbox bị chặn mạng, xem [patterns/sandboxed-agent-network-fallback.md](../.claude/patterns/sandboxed-agent-network-fallback.md) để test/debug adapter cục bộ | **Paid** |
 
 Subtitle align fallback: `SUBTITLE_ALIGNER=faster_whisper` (`WHISPER_MODEL=phowhisper-small`, local).
 
@@ -264,4 +265,7 @@ LLM_CHAIN_STRONG=gemini,openrouter_paid,groq
 OPENROUTER_PAID_MODEL=anthropic/claude-sonnet-5
 TTS_CHAIN=fpt,edge_tts,local_tts
 FPT_API_KEY=...
+# hoặc thay/thêm elevenlabs nếu ưu tiên giọng đa ngôn ngữ chất lượng cao nhất chain:
+# TTS_CHAIN=elevenlabs,fpt,edge_tts,local_tts
+# ELEVENLABS_API_KEY=...
 ```

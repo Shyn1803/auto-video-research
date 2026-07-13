@@ -1,0 +1,19 @@
+{
+  "task_id": "6-3",
+  "status": "not-started",
+  "branch": "feat/6-3-man-xuat-ban-video-download",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Scaffold the route + wireframe skeleton", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Final video player", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Download presigned + regenerate on expiry (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "First-download triggers PUBLISHED, idempotent (BR-2, BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Metadata copy incl. BGM attribution (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Platform status table + lock/error states", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "E2E Playwright — canonical M4 flow", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

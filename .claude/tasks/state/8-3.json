@@ -1,0 +1,17 @@
+{
+  "task_id": "8-3",
+  "status": "not-started",
+  "branch": "feat/8-3-youtube-upload-ai-disclosure",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "quota_used_today migration", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "YouTube publish adapter — resumable upload + metadata", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "AI disclosure (BR-1, no bypass) + quota guard (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Error mapping + BGM attribution + external_id/url", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

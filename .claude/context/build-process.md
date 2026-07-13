@@ -20,4 +20,6 @@ npx skills add remotion-dev/skills   # inside packages/remotion-templates/
 
 **No GPU dev fallback:** set `OLLAMA_MODEL_CHEAP=qwen2.5:7b-instruct` or configure `GEMINI_API_KEY` for faster dev iteration. All unit tests must run without Ollama/GPU (mocked).
 
+**Coding-agent sandbox network/time limits:** if you (the agent) are developing/debugging inside a restricted sandbox (narrow network allowlist, hard per-command timeout, no background process across commands) rather than the real dev-compose stack, see [patterns/sandboxed-agent-network-fallback.md](../patterns/sandboxed-agent-network-fallback.md) before assuming a capability (TTS, Remotion render) is unreachable — this is a dev-tooling constraint, not a production design change.
+
 TODO once real: replace this file's command list with verified, tested commands; note actual `Makefile` target names if they diverge from the plan.

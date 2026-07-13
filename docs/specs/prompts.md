@@ -88,20 +88,31 @@ Nếu không nguồn nào đề cập claim → WARN với explanation "không t
 
 Biến: `topic`, `ranked_summaries` (top N source), `target_duration_s`, `claims_passed`
 
+**Persona chung** (lặp lại nguyên văn ở đầu prompt 5/6/7 — 3 lời gọi LLM độc lập, có thể khác provider trong chain, nên phải tự mang theo persona thay vì kỳ vọng "nhớ" từ bước trước):
+`Bạn là biên kịch video ngắn công nghệ tiếng Việt: giọng nói chuyện tự nhiên, nhịp nhanh, ưu tiên số liệu cụ thể, không giật tít sai sự thật.`
+
 ```
-Bạn là biên kịch video ngắn công nghệ tiếng Việt (phong cách: nhanh, có số liệu, không giật tít sai).
+{{ persona }}
+
 Lập dàn ý video {{ target_duration_s }} giây về "{{ topic }}" từ nghiên cứu sau:
 {{ ranked_summaries }}
 
 Chỉ dùng fact đã kiểm chứng: {{ claims_passed }}
 
 Output JSON: { "outline": {
-  "hook": "1-2 câu mở đầu gây chú ý — PHẢI dựa trên fact thật, kèm [source_id]",
-  "introduction": "...", "problem": "...", "solution": "...",
+  "hook": "1-2 câu mở đầu — PHẢI là 1 trong 3 dạng: (a) số liệu gây bất ngờ,
+           (b) câu hỏi phản trực giác, (c) mâu thuẫn/tranh cãi giữa các nguồn —
+           dựa trên fact thật, kèm [source_id]. KHÔNG viết mô tả chung chung.",
+  "introduction": "...", "problem": "...",
+  "controversy": "quan điểm trái chiều giữa các nguồn nếu có, hoặc null —
+                  KHÔNG bịa tranh cãi nếu các nguồn đồng thuận",
+  "solution": "...",
   "demo": "ví dụ/số liệu minh hoạ cụ thể", "conclusion": "...",
   "cta": "kêu gọi hành động ngắn"
 }}
-Mỗi phần 1-3 câu, tổng phù hợp {{ target_duration_s }}s đọc (≈ {{ target_duration_s * 4 }} từ).
+Ngân sách từ theo phần (tổng ≈ {{ target_duration_s * 4 }} từ, ~{{ target_duration_s }}s đọc):
+hook ≤15%, introduction+problem ~20%, controversy (nếu có) ~10%, demo ≥25%, phần còn lại chia đều.
+Mỗi phần 1-3 câu.
 ```
 
 ## 6. `script.generate` — tier `strong`
@@ -109,8 +120,12 @@ Mỗi phần 1-3 câu, tổng phù hợp {{ target_duration_s }}s đọc (≈ {{
 Biến: `topic`, `outline_json`, `target_duration_s`
 
 ```
-Viết kịch bản video từ dàn ý đã duyệt. Giọng văn: nói chuyện tự nhiên tiếng Việt,
-câu ngắn (dưới 20 từ), số đọc được ("92,5 phần trăm" không phải "92.5%").
+{{ persona }}
+
+Viết kịch bản video từ dàn ý đã duyệt. Câu ngắn (dưới 20 từ) nhưng XEN vài câu trung bình
+(12-20 từ) để tạo nhịp đọc tự nhiên — tránh mọi câu đều ngắn đều đều như liệt kê.
+Số đọc được ("92,5 phần trăm" không phải "92.5%"). KHÔNG dùng emoji, KHÔNG dùng viết tắt
+không đọc được (viết tắt phải phiên âm được, vd "AI" giữ nguyên vì đọc được, "vs." → "so với").
 
 {{ outline_json }}
 
@@ -129,10 +144,24 @@ Giữ nguyên mọi số liệu từ outline — KHÔNG làm tròn, KHÔNG thêm
 Biến: `script_json`, `target_duration_s` *(không còn `layouts_available` — layout do Layout Engine quyết, xem [layout-engine.md](layout-engine.md))*
 
 ```
+{{ persona }}
+
 Chia kịch bản thành các cảnh video (mỗi cảnh 4-8 giây, tổng ≈ {{ target_duration_s }}s).
 Bạn CHỈ mô tả NỘI DUNG và Ý ĐỒ từng cảnh — KHÔNG chọn bố cục, vị trí, font, hiệu ứng.
 
 Kịch bản: {{ script_json.voice_over }}
+
+Ví dụ 1 cảnh ĐÚNG (minh hoạ cách trích narration_anchor — không phải nội dung cần theo):
+{"purpose": "evidence", "beat": "reveal",
+ "narration": "SWE-bench của model mới đạt 92,5 phần trăm, tăng so với 74,9 phần trăm trước đó.",
+ "components": [
+   {"kind": "stat", "value": "92.5", "suffix": "%", "label": "SWE-bench (mới)", "source_id": "S1",
+    "narration_anchor": "đạt 92,5 phần trăm"},
+   {"kind": "stat", "value": "74.9", "suffix": "%", "label": "SWE-bench (cũ)", "source_id": "S1",
+    "narration_anchor": "74,9 phần trăm trước đó"}
+ ]}
+narration_anchor LÀ CHUỖI CON Y HỆT của narration (đối chiếu ký tự) — không diễn giải lại,
+không đổi thứ tự từ, không thêm/bớt dấu câu.
 
 Output theo schema:
 { "scenes": [{
@@ -161,6 +190,15 @@ Quy tắc:
 - Một cảnh nói về 1 con số → dùng stat; liệt kê → bullet (3-6); so sánh 2 vế → 2 group.
 - narration_anchor phải là TRÍCH ĐOẠN NGUYÊN VĂN từ narration (hệ thống match chính xác).
 - Tối đa 8 component/cảnh; cảnh đầu purpose=hook, cảnh cuối purpose=cta.
+- KHÔNG để 2 cảnh liên tiếp cùng purpose VÀ cùng component kind chủ đạo (vd 2 cảnh stat liền
+  nhau) — đổi góc trình bày (bullet/compare/chart) để tránh đơn điệu.
+
+TỰ KIỂM TRA trước khi trả JSON — nếu sai, sửa lại rồi mới xuất:
+□ Mọi stat/chart_data/table_data/quote đều có source_id
+□ Cảnh đầu purpose=hook, cảnh cuối purpose=cta
+□ Không có 2 cảnh liên tiếp trùng purpose+component kind chủ đạo
+□ Tổng ước lượng thời lượng các cảnh nằm trong ±10% target_duration_s
+□ Mọi narration_anchor là chuỗi con nguyên văn của narration tương ứng
 ```
 
 *(beat + narration_anchor là tín hiệu ngữ nghĩa cho Motion Planner — layout-engine.md §9. AI vẫn không chọn kiểu/thời điểm animation; anchor sai/thiếu → planner fallback theo thứ tự, không lỗi.)*

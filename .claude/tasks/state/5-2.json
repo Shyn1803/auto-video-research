@@ -1,0 +1,18 @@
+{
+  "task_id": "5-2",
+  "status": "not-started",
+  "branch": "feat/5-2-edit-controls",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "Text controls + BoldButton (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Color picker + contrast check (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "Animation controls (Layout-Engine-approved presets only)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "Layout dry-run (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "Voice panel + stale badge (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "8-4",
+  "status": "not-started",
+  "branch": "feat/8-4-publish-theo-lich",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "publish job type on the 7-1 scheduler", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Client + server past-time guard (BR-1) and cancel rule (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Failure handling (BR-3) — keep record scheduled, don't silently drop", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Mode 1 auto-publish wiring (7-3) through this same path", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Xuất bản schedule block UI", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

@@ -1,0 +1,18 @@
+{
+  "task_id": "5-10",
+  "status": "not-started",
+  "branch": "feat/5-10-projectdrawer",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "Backend summary endpoint (contract change)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "AI-generated 2-sentence summary (cheap tier, cached, post-research)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "ProjectDrawer shell + Thong tin tab", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "Cai dat tab, PATCH rename/format/voice/theme (BR-1, BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "Nhan ban + Luu tru actions (BR-3, moved from dashboard card menu)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

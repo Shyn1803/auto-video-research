@@ -1,0 +1,18 @@
+{
+  "task_id": "7-5",
+  "status": "not-started",
+  "branch": "feat/7-5-dashboard-cho-duyet-hom-nay",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "GET /projects/review-queue endpoint (contract change)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Queue card component + empty/loading/error states", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "\"Duyệt & đăng\" action wired to gate-enforced publish", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Sidebar badge count", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "Mobile responsive (<1024px) for this screen only", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

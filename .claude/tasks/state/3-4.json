@@ -1,0 +1,21 @@
+{
+  "task_id": "3-4",
+  "status": "not-started",
+  "branch": "feat/3-4-api-key-management",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "api_keys table with Fernet encryption at rest", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "CRUD endpoints with masked response (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Validate-before-save via lightweight provider call", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Round-robin multi-key + env-key-first ordering (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "429 -> exhausted_until -> auto re-activation (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Delete-last-active-key consequence warning (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Admin - API Keys tab UI", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 8, "name": "Security regression test — plaintext never surfaces (BR-1, permanent)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 9, "name": "Wire up remaining tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

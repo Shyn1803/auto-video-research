@@ -1,0 +1,21 @@
+{
+  "task_id": "2-6",
+  "status": "not-started",
+  "branch": "feat/2-6-layout-class-du-lieu-cau-truc",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Pydantic + Zod — 6 new element types (extends 2-1's schema)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Validator rules — data bounds (BR-1) and quote source_id gate (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Motion preset table (§9.1) + MotionPlan renderer (§9.3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "List stagger mapped to voice timestamps (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "6 constraint presets (BigNumber/Chart/VersusTable/List/Quote/Code) x 2 formats", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "SceneForm controls + gallery override in editor", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Fixtures (share pool with 2-1) + render test matrix (11 class x 2 format)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 8, "name": "Pipeline sanity check — enable 6 classes in Classifier rule table (AC-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 9, "name": "Wire up remaining tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

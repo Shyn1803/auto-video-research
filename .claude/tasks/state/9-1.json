@@ -1,0 +1,18 @@
+{
+  "task_id": "9-1",
+  "status": "not-started",
+  "branch": "feat/9-1-nats-jetstream-event-library",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Event envelope + Pydantic schemas", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "In-process bus (existing) stays default; publisher/consumer abstraction", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "NATS JetStream publisher/consumer helper", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Idempotent stream/subject provisioning", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "SSE bridge compatibility check", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "CI matrix (in-process + NATS) + tests for every AC", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

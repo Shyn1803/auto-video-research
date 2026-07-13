@@ -19,10 +19,10 @@ When you start a task, load in this order — stop as soon as you have enough:
 
 1. This file (`CLAUDE.md`) — orchestration + priority rules.
 2. [memory/project-memory.md](memory/project-memory.md) — current state, known issues, open questions. **Always check this — it changes between sessions.**
-3. [tasks/](tasks/) + [docs/backlog/stories/sprint-status.yaml](../docs/backlog/stories/sprint-status.yaml) — **the actual work queue for an agent team**: 65 self-contained, dev-ready task files across 10 epics, dependency graph, task→agent ownership. Claim a task by setting it `in-progress` in `sprint-status.yaml` before starting — see [tasks/README.md](tasks/README.md). This is where a multi-agent run should start after reading this file and memory.
+3. [tasks/](tasks/) + [docs/backlog/stories/sprint-status.yaml](../docs/backlog/stories/sprint-status.yaml) — **the actual work queue for an agent team**: 65 self-contained, dev-ready task files across 10 epics, dependency graph, task→agent ownership. Claim a task by setting it `in-progress` in `sprint-status.yaml` before starting — see [tasks/README.md](tasks/README.md). This is where a multi-agent run should start after reading this file and memory. **If told to run/execute the whole backlog (not just one task), go to §10 below instead of picking a single task manually.**
 4. [context/](context/) — the specific context doc(s) matching your task (architecture, tech-stack, business-domain, glossary...).
 5. [rules/](rules/) — the specific rule file(s) that govern the code/doc you're about to touch.
-6. The matching [workflows/](workflows/) file if your task fits a known workflow (feature, bug fix, migration, release...).
+6. The matching [workflows/](workflows/) file if your task fits a known workflow (feature, bug fix, migration, release...). Executing anything from `tasks/` → always load [workflows/autonomous-task-execution.md](workflows/autonomous-task-execution.md) first (claim/branch/retry/git/retrospective mechanics, not repeated per task).
 7. The real source doc in `docs/` (SRS.md, ARCHITECTURE.md, backlog/*, specs/*) — `.claude/context/` summarizes and points at these; `docs/` is authoritative for detail. `.claude/tasks/` is a derived execution view of `docs/backlog/` — if they disagree, `docs/backlog/` wins, fix the task file.
 8. [patterns/](patterns/) and [anti-patterns/](anti-patterns/) relevant to the component you're building.
 9. [templates/](templates/) and [checklists/](checklists/) at the point you produce an artifact (PR, ADR, postmortem, story).
@@ -36,6 +36,8 @@ When you start a task, load in this order — stop as soon as you have enough:
 5. Never invent a fact `docs/` doesn't state. If unknown, say `Unknown — TODO` rather than guessing.
 
 **Don't stop the workflow to ask unless you have to.** Every "Escalation" line in `.claude/agents/*.md` is governed by [rules/autonomy-policy.md](rules/autonomy-policy.md) — default is decide-and-continue for anything reversible and locally-scoped; only genuinely irreversible, contract-novel, scope-ambiguous, product-owned, or conflicting-instruction situations warrant stopping to ask, and even then prefer flagging + continuing other work over a hard block. `.claude/settings.json` pre-authorizes the routine, reversible tool calls (build/test/lint/git-read/git-commit/edit) so the harness itself doesn't interrupt for those.
+
+**Git push to a feature branch is durably pre-authorized** (user decision, 2026-07-13): auto branch-checkout, auto-commit, and auto-`push origin feat/*` happen with no per-action confirmation during task execution — see [workflows/autonomous-task-execution.md](workflows/autonomous-task-execution.md) "Git automation scope" and the scoped allow-rules in `.claude/settings.json`. Push to `main`, force-push, and opening a PR remain gated — this authorization does not extend to those.
 
 ## 4. Reasoning Strategy
 
@@ -76,7 +78,39 @@ After every completed task, run the retrospective in [memory/project-memory.md](
 
 Bugs fixed (once code exists) → propose a postmortem using [templates/postmortem.md](templates/postmortem.md). Architectural decisions → an ADR using [templates/adr.md](templates/adr.md) in [decisions/](decisions/).
 
-## 9. Known Gaps (honest state, not guessed)
+For work done via [tasks/](tasks/), this retrospective is not optional — it's a required step in [tasks/TASK-TEMPLATE.md](tasks/TASK-TEMPLATE.md) and [workflows/autonomous-task-execution.md](workflows/autonomous-task-execution.md), gated by DoD passing and required before a task's state file can be set to `done`.
+
+## 9. Project Structure (target — not yet scaffolded)
+
+No `backend/`, `frontend/`, `packages/`, `render-worker/` directories exist yet — only `docs/` and `.claude/`. Task `1-1` creates this structure; every later task assumes it exists. Full detail: `docs/dev-guide.md` §1 and [context/folder-structure.md](context/folder-structure.md) (do not restate it a third time here).
+
+```
+auto-video-research/
+├── backend/app/{api,core,models,schemas,services,pipeline,adapters,events,workers}/  # FastAPI, Python 3.12
+├── backend/{alembic,tests}/
+├── frontend/src/{app,components,lib/api,lib/sse.ts}          # Next.js 15 App Router, TypeScript
+├── packages/remotion-templates/src/{SceneRenderer.tsx,primitives,motion,theme,presets/layouts,schema.ts}
+├── render-worker/                                             # Node.js + Remotion CLI + NATS consumer
+├── docker/
+├── docs/                                                      # normative spec, exists today
+└── .claude/                                                   # AI operating knowledge, exists today
+```
+
+`app/schemas/scene.py` (Pydantic) is the one Scene JSON source of truth, exported to JSON Schema then Zod — never hand-edit the generated Zod file. `packages/remotion-templates/` is shared source between the frontend `<Player>` and `render-worker`'s `renderMedia()` — one implementation, not a fork per side.
+
+## 10. Running the Full Backlog ("chạy toàn bộ task" / run all tasks)
+
+When told to run the whole backlog, run continuously, or work through all tasks (not just one), this is the entry point — an agent should not need to ask what to do next:
+
+1. Read this file, then [memory/project-memory.md](memory/project-memory.md) (current state + Open Questions), then [tasks/README.md](tasks/README.md) in full — it has the dependency graph, task→agent ownership table, and per-task DoD.
+2. Read [rules/autonomy-policy.md](rules/autonomy-policy.md) and [workflows/autonomous-task-execution.md](workflows/autonomous-task-execution.md) **once**, at the start of the run — they define the claim → branch → execute → retry → commit/push → retrospective → next-task loop and are not repeated per task.
+3. Check [tasks/state/RUN-STATUS.md](tasks/state/RUN-STATUS.md) for a one-glance rollup of every task's status before picking work — resume `in-progress`/`blocked` tasks via their `tasks/state/{id}.json` rather than restarting them.
+4. Work tasks in dependency order (`Depends:` line in each task file; the two parallel tracks and full index are in `tasks/README.md`). Multiple unblocked tasks may run in parallel across sub-agents, dispatched per the task→agent ownership table in `tasks/README.md`.
+5. **Do not stop between tasks to ask for confirmation.** Per `rules/autonomy-policy.md`: decide and continue on anything reversible/locally-scoped; a blocked task gets flagged (state file `blocked_reason` + `memory/project-memory.md` Open Questions) and the run moves to a different unblocked task — it never halts the whole run. Git checkout/commit/push to `feat/*` is durably pre-authorized (§3 above) — no per-action confirmation needed for that either.
+6. Only genuinely stop the whole run for: a product/business decision (PO-owned), a contract change with no precedent in `docs/specs/`, or literally every remaining task being blocked with nothing else to work on. Otherwise: claim next unblocked task → repeat from step 4.
+7. This loop has no fixed end condition other than the backlog — 65 tasks across 10 epics, 230 points, per `tasks/README.md`'s full index. Stop only when every task is `done` or every remaining task is `blocked`.
+
+## 11. Known Gaps (honest state, not guessed)
 
 - No code, no `package.json`/`pyproject.toml`, no CI workflow, no test suite exist. Everything in `context/build-process.md`, `context/testing-strategy.md`, `rules/*` about actual tooling behavior is **intent from `docs/dev-guide.md` and `docs/test-plan.md`, not yet verified against a real build.** Update these files with real findings once Phase 1 week 1 code lands.
 - `docs/specs/remotion-integration.md` has a cosmetic section-numbering gap (§3 renumbered to §5, no standalone §3) — not fixed, not user-flagged, low priority.

@@ -1,0 +1,20 @@
+{
+  "task_id": "2-2",
+  "status": "not-started",
+  "branch": "feat/2-2-remotion-base-layer",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Scaffold packages/remotion-templates package + Root.tsx stub", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "SceneRenderer composition + calculateMetadata", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "MotionPlan track rendering via <Sequence layout=none>", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Primitives — Heading/Body/Media(kenburns)/Subtitle/Watermark", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "ThemeProvider + default theme (fonts embedded, BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "5 constraint presets (Hero/TextFocus/MediaFull/MediaText/Comparison) x 2 formats", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "supportedSchemaRange + SCHEMA_RANGE guard (BR-3) + render CLI", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 8, "name": "Wire up render tests (class x format matrix) + golden-frame + all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

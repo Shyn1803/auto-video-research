@@ -1,0 +1,22 @@
+{
+  "task_id": "4-2",
+  "status": "not-started",
+  "branch": "feat/4-2-prompt-management-seed",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "prompts/prompt_versions schema + migration (BR-1 unique index)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Seed 8 prompts from docs/specs/prompts.md §1-8", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "Jinja2 render + variable validation (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "get_active_prompt(name) invalidate-on-activate cache", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "CI grep guard against hardcoded prompt strings (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "Activate/rollback endpoints + audit (BR-2, BR-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 7, "name": "RBAC Creator -> 403 (AC3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 8, "name": "Admin UI tab Quan tri > Prompts", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 9, "name": "CLI make prompt-eval + eval_topics.json fixture (AC4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 10, "name": "Wire remaining tests + BR-1 race test (AC5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

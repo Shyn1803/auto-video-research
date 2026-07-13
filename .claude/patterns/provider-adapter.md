@@ -31,6 +31,8 @@ class FptTTS(TTSAdapter):
 
 **When to use:** any new external capability, always. There is no "just call the SDK directly this once" exception — see [anti-patterns/direct-provider-call.md](../anti-patterns/direct-provider-call.md).
 
+**Developing/testing an adapter from a network-restricted agent sandbox** (can't reach the real provider API): see [sandboxed-agent-network-fallback.md](sandboxed-agent-network-fallback.md) — prefer an offline-bundled binary where one exists, or a standalone local-run script for genuinely network-only paid providers. This never changes the shipped adapter's shape, only how you exercise it during dev.
+
 **Router logic (the failover chain, ARCHITECTURE.md §2.2):**
 ```
 for provider in chain(tier):

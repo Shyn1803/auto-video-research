@@ -1,0 +1,19 @@
+{
+  "task_id": "3-5",
+  "status": "not-started",
+  "branch": "feat/3-5-cost-tracking-daily-cap-man-providers",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "llm_usage table partitioned by month", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Daily cap check before each call + cost.cap_reached event (BR-1, BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "/admin/providers endpoint — 3-reason inactive matrix (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "/admin/providers/{n}/health-check endpoint", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "/admin/costs?group_by= endpoint", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Admin - Providers tab UI", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

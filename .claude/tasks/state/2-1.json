@@ -1,0 +1,19 @@
+{
+  "task_id": "2-1",
+  "status": "not-started",
+  "branch": "feat/2-1-scene-json-schema-v1",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Pydantic models — VideoProject/Scene/11 layout classes/element types", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Canonical hash function (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Validator — auto_fix / strict modes (BR-2, BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "JSON Schema export + Zod codegen (make gen-scene-schema)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "CI gate — fail if schema changed without regenerating", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Shared fixtures (pytest + vitest, valid + >=3 invalid) (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Wire up remaining tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

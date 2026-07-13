@@ -1,0 +1,17 @@
+{
+  "task_id": "1-4",
+  "status": "not-started",
+  "branch": "feat/1-4-state-machine",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "FR-17 transition matrix as data", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "status_history table + ProjectStateMachine.transition()", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "Event emission stub + CI grep guard (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "GET status-history API endpoint", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "Wire up tests — parametrized edges + property test + all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

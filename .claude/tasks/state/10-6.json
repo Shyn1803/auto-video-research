@@ -1,0 +1,19 @@
+{
+  "task_id": "10-6",
+  "status": "not-started",
+  "branch": "feat/10-6-release-docs-checklist-go-live",
+  "current_step": 0,
+  "steps": [
+    { "id": 1, "name": "Docs-vs-code reality check", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 2, "name": "Release Checklist (docs/plan.md §6) — evidence for every item (AC1, BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 3, "name": "Tag v1.0.0", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 4, "name": "Deploy to production per runbook §1 (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 5, "name": "48h monitoring with 30-minute alert response assignment (BR-3, AC2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 6, "name": "Release retro + v1.1 backlog seed (AC3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
+    { "id": 7, "name": "Final memory update — v1.0 milestone", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

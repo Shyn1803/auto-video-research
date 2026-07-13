@@ -1,0 +1,19 @@
+{
+  "task_id": "1-3",
+  "status": "not-started",
+  "branch": "feat/1-3-project-crud-dashboard",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "projects table + migration", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Project CRUD service + ownership enforcement", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "next_action computation (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "Dashboard lifecycle grouping (BR-6) + Mode filter (BR-7)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "TTS preview via adapter (BR-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "Dashboard + Create-project modal UI", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 7, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}

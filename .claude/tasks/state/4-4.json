@@ -1,0 +1,20 @@
+{
+  "task_id": "4-4",
+  "status": "not-started",
+  "branch": "feat/4-4-node-ranking-factcheck",
+  "current_step": 0,
+  "steps": [
+    {"id": 1, "name": "claims schema + contract-change to api-spec §5", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Ranking node (ranking.score prompt, configurable weights)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "Claim extraction (factcheck.extract_claims prompt)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 4, "name": "Evidence gathering (embedding search) + verify_claim verdicts (BR-1, BR-2, BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 5, "name": "Overall verdict + gate (FAIL -> NEED_REVIEW + notify)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 6, "name": "Override endpoint - audit + synchronous verdict recompute (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 7, "name": "Disable/delete source cascade (BR-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 8, "name": "Wire remaining tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+  ],
+  "decisions": [],
+  "blocked_reason": null,
+  "opened_at": "2026-07-13T00:00:00+07:00",
+  "updated_at": "2026-07-13T00:00:00+07:00"
+}
