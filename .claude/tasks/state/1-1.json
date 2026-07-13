@@ -2,11 +2,11 @@
   "task_id": "1-1",
   "status": "in-progress",
   "branch": "feat/1-1-khoi-tao-monorepo",
-  "current_step": 1,
+  "current_step": 3,
   "steps": [
-    {"id": 1, "name": "Scaffold monorepo directory structure", "status": "in-progress", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 2, "name": "Backend FastAPI skeleton", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "Next.js + Tailwind + shadcn init", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 1, "name": "Scaffold monorepo directory structure", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "b665d22"},
+    {"id": 2, "name": "Backend FastAPI skeleton", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "c35e4e2"},
+    {"id": 3, "name": "Next.js + Tailwind + shadcn init", "status": "in-progress", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 4, "name": "Docker compose base + dev, Makefile", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 5, "name": "Remotion Agent Skills install", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 6, "name": "CI pipeline + .env.example + env-sync gate (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
@@ -16,5 +16,5 @@
   "decisions": [],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T16:10:00+07:00"
+  "updated_at": "2026-07-13T16:25:00+07:00"
 }
