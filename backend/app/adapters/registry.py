@@ -34,6 +34,7 @@ def _register(capability: str, name: str, cls: type[BaseAdapter]) -> None:
             f"Duplicate adapter registration for ({capability}, {name!r}): "
             f"already registered by {existing_src}, conflict with {new_src}"
         )
+       cls.name = name
     _registry[key] = cls
 
 
