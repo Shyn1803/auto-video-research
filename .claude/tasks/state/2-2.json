@@ -1,6 +1,6 @@
 {
   "task_id": "2-2",
-  "status": "not-started",
+  "status": "in-progress",
   "branch": "feat/2-2-remotion-base-layer",
   "current_step": 0,
   "steps": [
@@ -16,5 +16,5 @@
   "decisions": [],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-13T20:20:00+07:00"
 }

@@ -4,14 +4,24 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts Scene out/scene.mp4",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "devDependencies": {
+    "@remotion/cli": "^4.0.489",
     "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "typescript": "^5.9.3",
     "vitest": "^4.1.10",
     "zod": "^4.4.3",
     "zod-from-json-schema": "^0.5.4"
+  },
+  "dependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "remotion": "^4.0.489"
   }
 }
