@@ -41,6 +41,8 @@ None yet — no code exists to accrue debt in. Watch for: Constraint Resolver v1
 
 ## Open Questions
 
+- 2026-07-13 — Task 1-1 is blocked at Docker smoke verification: Docker CLI is installed but the daemon is unavailable at `unix:///Users/mac/.docker/run/docker.sock`. Start Docker Desktop (or provide a reachable daemon), then resume step 4 with `make up`.
+
 - No CI provider chosen yet (GitHub Actions implied by `docs/` structure but not confirmed).
 - Actual `Makefile` target names, exact `pyproject.toml`/`package.json` dependency versions — all TODO until Phase 1 scaffolding.
 - Remotion company license review (needed before commercialization, per SRS §12 risk table) — not yet done, no urgency until monetization is active.

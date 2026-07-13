@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    command: uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@postgres:5432/${POSTGRES_DB:-app}
+    volumes:
+      - ../backend:/workspace/backend
+    working_dir: /workspace/backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${API_PORT:-8000}:8000"
+    networks: [internal]
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    command: npm run dev -- --hostname 0.0.0.0
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+    volumes:
+      - ../frontend:/workspace/frontend
+      - frontend_node_modules:/workspace/frontend/node_modules
+    working_dir: /workspace/frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    networks: [internal]
+
+volumes:
+  frontend_node_modules:
