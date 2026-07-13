@@ -102,10 +102,10 @@
 
 | Method | Path | Mô tả |
 |---|---|---|
-| POST 🅞 | `/projects/{id}/render` | `{formats?: [...]}` → enqueue; chỉ khi mọi scene approve; → `{render_batch_id}` |
+| POST 🅞 | `/projects/{id}/render` | `{targets?: [{format, platform_profile}]}` → enqueue; `platform_profile` mặc định `generic`; chỉ khi mọi scene approve; → `{render_batch_id}` |
 | GET 🅞 | `/projects/{id}/renders` | Trạng thái từng job scene/merge (`queued/running/done/failed/cache_hit`, % tổng) |
 | POST 🅞 | `/projects/{id}/renders/{rid}/retry` | Retry job failed |
-| GET 🅞 | `/projects/{id}/video?format=...` | `{url}` presigned MinIO (video hoàn chỉnh, 404 nếu chưa READY) |
+| GET 🅞 | `/projects/{id}/video?format=...&platform_profile=...` | `{url}` presigned MinIO (profile mặc định `generic`; video hoàn chỉnh, 404 nếu chưa READY) |
 
 # 8. Publish & Analytics (FR-12, FR-13)
 

@@ -13,7 +13,7 @@ As a developer, I want một nguồn schema duy nhất mà backend, frontend và
 Scene JSON là contract quan trọng nhất ([decisions/0004-scene-json-contract.md](../decisions/0004-scene-json-contract.md)): preview, cache, render, versioning, editor đều đứng trên nó.
 
 ## Scope
-**In:** Pydantic models đầy đủ theo `docs/specs/scene-json-schema.md` (VideoProject/Scene/5 layout/các type §3); validator ngoài-schema §5 hai chế độ `auto_fix`/`strict`; `make gen-scene-schema` (JSON Schema → Zod — Zod là schema prop chính thức của `<Composition>` Remotion, xem `docs/specs/remotion-integration.md` §2.1); fixtures share pytest/vitest (hợp lệ mỗi layout + ≥3 lỗi); CI gate diff; hàm canonical hash.
+**In:** Pydantic models đầy đủ theo `docs/specs/scene-json-schema.md` (SemanticStoryboard strict riêng; VideoProject/Scene resolved có format + platform_profile; 5 layout/các type §3); validator ngoài-schema §5 hai chế độ `auto_fix`/`strict`; `make gen-scene-schema` (JSON Schema → Zod — Zod là schema prop chính thức của `<Composition>` Remotion, xem `docs/specs/remotion-integration.md` §2.1); fixtures share pytest/vitest (hợp lệ mỗi layout + ≥3 lỗi); CI gate diff; hàm canonical hash.
 **Out:** schema v2 elements (chart/video/karaoke); migration runner; UI form (5-1 tiêu thụ).
 
 ## Business Rules
@@ -21,6 +21,7 @@ Scene JSON là contract quan trọng nhất ([decisions/0004-scene-json-contract
 2. `auto_fix` chỉ sửa vi phạm "cắt được" (thừa phần tử, duration lệch, thiếu default) + log warning; kiểu dữ liệu sai → lỗi kể cả auto_fix.
 3. Mọi lỗi strict có `field_path` máy-đọc-được để FE map inline.
 4. Fixtures là contract test hai chiều — thêm rule validator mới bắt buộc kèm fixture fail tương ứng.
+5. `SemanticStoryboard` dùng `extra="forbid"`: payload LLM có `layout`, `position`, `font`, `animation`, `camera`, `transition` hoặc field không khai báo phải fail trước resolver; resolved Scene không được dùng làm model parse output LLM.
 
 ## Acceptance Criteria
 1. **(happy)** Fixture hợp lệ pass pytest+vitest; fixture lỗi fail cả hai cùng field_path.
@@ -42,7 +43,7 @@ Work these in order. Update `state/2-1.json` after **every** step (mark it `done
 
 ### Step 1: Pydantic models — VideoProject/Scene/11 layout classes/element types
 - **Files:** `backend/app/schemas/scene.py`
-- **Do:** Implement Pydantic models per `docs/specs/scene-json-schema.md` §3: `VideoProject`, `Scene`, the 5 base layout classes shipped in this story (`Hero`, `TextFocus`, `MediaFull`, `MediaText`, `Comparison` — the remaining 6 data/structure classes are 2-6's scope, but the 11-class enum/discriminator itself must exist now per `rules/naming.md` PascalCase list so 2-6 only adds variants, not renames), and the shared element types (`heading`, `body`, `media_intent`, etc., snake_case per `rules/naming.md`). Use a discriminated union keyed on layout class name. No `layout`/`position`/`animation` field anywhere in the AI-facing (Semantic Storyboard) portion — see `rules/type-safety.md` and `anti-patterns/ai-chooses-layout.md`.
+- **Do:** Implement Pydantic models per `docs/specs/scene-json-schema.md` §3: strict `SemanticStoryboard` (all models `extra="forbid"`), resolved `VideoProject` (including `platform_profile`) and `Scene`, the 5 base layout classes shipped in this story (`Hero`, `TextFocus`, `MediaFull`, `MediaText`, `Comparison` — the remaining 6 data/structure classes are 2-6's scope, but the 11-class enum/discriminator itself must exist now per `rules/naming.md` PascalCase list so 2-6 only adds variants, not renames), and the shared element types (`heading`, `body`, `media_intent`, etc., snake_case per `rules/naming.md`). Use a discriminated union keyed on layout class name. No `layout`/`position`/`animation` field anywhere in the AI-facing Semantic Storyboard — see `rules/type-safety.md` and `anti-patterns/ai-chooses-layout.md`.
 - **Verify:** `python -c "from app.schemas.scene import VideoProject, Scene; print('ok')"` → prints `ok`, no import error.
 - **On failure:** transient (missing dep) → `pip install`/`uv sync` and retry, up to 3×, log attempt in state file; logic/type error → stop retrying, invoke `systematic-debugging` skill; still failing after 3 → mark step + task `blocked` in state file with `blocked_reason`, note in `memory/project-memory.md` Open Questions, move to a different unblocked task.
 - **Commit:** `git add backend/app/schemas/scene.py && git commit -m "feat(scene): 2-1 add Pydantic models for Scene JSON v1.0.0"` → `git push`

@@ -13,7 +13,7 @@ As a Content Creator, I want tạo video nhanh nhờ chỉ render phần thay đ
 Hiện thực lời hứa trung tâm của SRS ("scene là đơn vị cache/render độc lập"). **Invoke `/remotion-saas` + `/remotion-render` before writing** (dev-guide.md §2.1). Read [patterns/scene-video-composition-split.md](../patterns/scene-video-composition-split.md) first — render-worker only ever calls `renderMedia()` on the `Scene` composition, never `Video`.
 
 ## Scope
-**In:** cache_key/cảnh (hash 2-1 + template_version + format); queue in-process (interface NATS-like); song song `RENDER_CONCURRENCY`; worker theo pipeline chính thức Remotion `bundle() → selectComposition() → renderMedia()` (`docs/specs/remotion-integration.md` §2.5) → MinIO; bảng renders + SSE render.progress; merge ffmpeg (concat + BGM volume/fade + CRF); retry từng job; per-format batch.
+**In:** cache_key/cảnh (hash 2-1 + template_version + format + platform_profile); queue in-process (interface NATS-like); song song `RENDER_CONCURRENCY`; worker theo pipeline chính thức Remotion `bundle() → selectComposition() → renderMedia()` (`docs/specs/remotion-integration.md` §2.5) → MinIO; bảng renders + SSE render.progress; ffmpeg assembler (`xfade` + `acrossfade` theo transition, rồi BGM volume/fade + CRF); cache output cuối theo scene keys theo thứ tự + transition + BGM + format + profile; retry từng job; per-format/profile batch.
 **Out:** worker container (9-2); multi-format UI (10-1 — engine sẵn); GPU encode (v1.1 nếu benchmark cần).
 
 ## Business Rules
@@ -23,9 +23,10 @@ Hiện thực lời hứa trung tâm của SRS ("scene là đơn vị cache/rend
 4. Sửa cảnh khi đang render → batch hiện tại chạy nốt; cảnh sửa dirty cho batch sau.
 5. Output theo layout storage cố định (ARCHITECTURE §6); cache TTL dọn bởi cleanup job.
 6. `bundle()` **1 lần lúc khởi động**, cache `serveUrl` in-memory, tái dùng cho mọi job sau đó — không bundle lại mỗi render (see [rules/performance.md](../rules/performance.md), [postmortems/](../postmortems/) bundle-caching gap).
+7. `transition=none` là hard cut; transition khác phải có mapping `xfade` + `acrossfade`. Duration output trừ overlap transition; mapping thiếu là validation error, không fallback im lặng.
 
 ## Acceptance Criteria
-1. **(happy)** 8 cảnh 3 dirty → 3 render + 5 cache_hit; MP4 đúng thứ tự, audio sync, BGM fade.
+1. **(happy)** 8 cảnh 3 dirty → 3 render + 5 cache_hit; MP4 đúng thứ tự, transition thật, audio sync, BGM fade.
 2. **(biên/BR-4)** Sửa cảnh giữa batch → batch xong bình thường; nút "Tạo lại (1 cảnh)" hiện.
 3. **(lỗi/BR-2)** 1 cảnh fail → batch kết thúc "7/8 + 1 lỗi"; retry cảnh đó → merge chạy.
 4. **(biên/BR-1)** Kill worker giữa job → retry không double-render.
@@ -45,7 +46,7 @@ Work these in order. Update `state/6-2.json` after **every** step. **Before Step
 
 ### Step 1: Scaffold orchestrator + cache_key
 - **Files:** `backend/app/services/render_orchestrator.py`, `backend/app/services/cache_key.py`, `render-worker/src/bundleCache.ts`, `render-worker/src/worker.ts`
-- **Do:** implement `compute_cache_key(canonical_scene_json, template_version, format) -> str` = `sha256(...)` per [rules/performance.md](../rules/performance.md) — treat this function as high-risk, a bug here silently defeats the entire cache. Reuse the canonical scene JSON hashing already established in 2-1. Scaffold `render-worker/src/worker.ts` module skeleton (no logic yet).
+- **Do:** implement `compute_cache_key(canonical_scene_json, template_version, format, platform_profile) -> str` = `sha256(...)` per [rules/performance.md](../rules/performance.md) — treat this function as high-risk, a bug here silently defeats the entire cache. Reuse the canonical scene JSON hashing already established in 2-1. Scaffold `render-worker/src/worker.ts` module skeleton (no logic yet).
 - **Verify:** `cd backend && python -c "from app.services.cache_key import compute_cache_key"` → exit 0; `cd render-worker && npm run typecheck` → exit 0.
 - **On failure:** transient → retry 3×; logic/config → `systematic-debugging` skill; still failing → mark `blocked`, note in `memory/project-memory.md` Open Questions, work a different unblocked task.
 - **Commit:** `git add backend/app/services/render_orchestrator.py backend/app/services/cache_key.py render-worker/src/bundleCache.ts render-worker/src/worker.ts && git commit -m "feat(render): 6-2 scaffold orchestrator + cache_key" && git push`
@@ -85,10 +86,10 @@ Work these in order. Update `state/6-2.json` after **every** step. **Before Step
 - **On failure:** non-transient by nature (race condition) — invoke `systematic-debugging` skill on first failure, don't blind-retry.
 - **Commit:** `git commit -m "feat(render): 6-2 job retry without double-render on kill"`
 
-### Step 7: ffmpeg merge — concat + BGM + CRF (BR-3, BR-5)
+### Step 7: ffmpeg assemble — transition + BGM + CRF (BR-3, BR-5, BR-7)
 - **Files:** `backend/app/services/video_merge.py`
-- **Do:** merge triggers only when 100% of scene jobs reached a terminal state (BR-3). ffmpeg concat demuxer in scene order + BGM mix (volume/fade, track from 6-5) + `-crf 20 -preset medium` (Decisions already locked, ⏳ tuned after 6-4 benchmark) → output to the fixed storage layout per ARCHITECTURE.md §6. **This step is ffmpeg only — never a second `renderMedia()` call on a whole-video `Video` composition** (see [rules/performance.md](../rules/performance.md), [patterns/scene-video-composition-split.md](../patterns/scene-video-composition-split.md)).
-- **Verify:** `pytest backend/tests/unit/services/test_video_merge.py::test_merge_only_at_100_percent -v` → passes; manual audio-sync check on 3 sample videos (start/middle/end), per the epic's Test Notes checklist.
+- **Do:** assemble triggers only when 100% of scene jobs reached a terminal state (BR-3). Use hard concat for `none`; otherwise map transition to ffmpeg `xfade` and matching `acrossfade`, then BGM mix (volume/fade, track from 6-5) + `-crf 20 -preset medium` (Decisions already locked, ⏳ tuned after 6-4 benchmark) → output to the fixed storage layout per ARCHITECTURE.md §6. Include ordered scene keys, transitions, BGM, format and platform profile in the final-output fingerprint. **This step is ffmpeg only — never a second `renderMedia()` call on a whole-video `Video` composition** (see [rules/performance.md](../rules/performance.md), [patterns/scene-video-composition-split.md](../patterns/scene-video-composition-split.md)).
+- **Verify:** `pytest backend/tests/unit/services/test_video_merge.py::test_merge_only_at_100_percent -v` → passes; golden tests cover hard-cut/fade/slide, duration overlap and audio at each boundary; manual audio-sync check on 3 sample videos (start/middle/end), per the epic's Test Notes checklist.
 - **On failure:** same policy as Step 1.
 - **Commit:** `git commit -m "feat(render): 6-2 ffmpeg merge concat+BGM+CRF (BR-3/BR-5)"`
 

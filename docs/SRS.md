@@ -139,6 +139,8 @@ Sau khi Script approve, **AI chỉ sinh Semantic Storyboard**: chia cảnh với
 
 **Layout Engine** (deterministic — [specs/layout-engine.md](specs/layout-engine.md)) đảm nhận phần còn lại: Scene Tree → Semantic Analysis → Layout Classifier (rule table) → Constraint Resolver (preset flex) → Responsive Solver (đa format không gọi lại AI) → Theme → Motion preset → Scene JSON resolved. User ghi đè layout được (`layout_override`).
 
+Semantic Storyboard và Scene JSON resolved là hai contract khác nhau: input từ LLM phải validate bằng schema semantic strict (cấm mọi field layout/motion/style); chỉ Layout Engine mới được phép tạo hoặc sửa các field resolved.
+
 ## FR-08 Scene JSON (Contract render)
 
 Scene JSON là **đầu ra resolved của Layout Engine** và input duy nhất của Remotion.
@@ -147,6 +149,7 @@ Scene JSON là **đầu ra resolved của Layout Engine** và input duy nhất c
 * Trường bắt buộc `schema_version` (semver). Package Remotion khai báo range schema hỗ trợ; breaking change → tăng major + migration script.
 * Scene lưu kèm `semantic_tree` (nguồn nội dung) + `layout` (kết quả classifier, 11 class PascalCase) + `layout_override`.
 * Remotion phía hiện thực: **1 SceneRenderer + primitives + preset json** — không composition cứng per-layout (layout-engine §11).
+* Mỗi render có `platform_profile` độc lập với `format`: `generic`, `tiktok`, `facebook_reels`, `youtube_shorts`, hoặc `youtube_video`. Profile quyết định safe-area và các kiểm tra output; không làm thay đổi nội dung hay gọi lại AI.
 * Schema v2+: chart line/pie, video nhúng, lower-third, Gallery/Timeline class, karaoke subtitle, constraint solver tổng quát.
 
 ## FR-09 Scene Preview & Edit
@@ -163,8 +166,9 @@ Sau khi approve tất cả Scene: Timeline cho phép kéo dài/rút ngắn scene
 
 Khi bấm Generate Video: Generate Voice (FR-19) → Subtitle → Resolve Assets (FR-20) → Render từng scene (song song trên worker pool) → Encode → Merge Audio → MP4.
 
-* Format hỗ trợ: **9:16 1080×1920** (TikTok/Reels/Shorts) và **16:9 1920×1080** (YouTube). Format khai báo ở cấp Project; một Project có thể render nhiều format từ cùng Scene JSON (layout responsive theo template).
+* Format hỗ trợ: **9:16 1080×1920** (TikTok/Reels/Shorts) và **16:9 1920×1080** (YouTube). Format khai báo ở cấp Project; một Project có thể render nhiều format từ cùng Scene JSON (layout responsive theo template). `platform_profile` tách riêng khỏi format để áp safe-area/capability đúng cho TikTok, Facebook Reels, YouTube Shorts hoặc YouTube video.
 * Render theo scene, cache theo hash Scene JSON — scene không đổi không render lại.
+* Render worker cache MP4 từng scene; bước assemble cuối dùng transition/audio crossfade thật giữa các scene rồi mix BGM. Cache của video cuối phải bao gồm thứ tự scene, transition, BGM, format và `platform_profile`.
 * Job render đưa vào hàng đợi (NATS JetStream), thực thi bởi Render Worker pool scale ngang (chi tiết: ARCHITECTURE.md).
 
 ## FR-12 Publish

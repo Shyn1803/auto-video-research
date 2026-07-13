@@ -164,8 +164,9 @@ renderMedia()        — 1 lần/CẢNH (composition "Scene"), nhận inputProps
         (cảnh cache hit: bỏ qua, dùng file cũ — glossary "mỗi Scene là đơn vị render độc lập")
         │
         ▼ khi 100% cảnh done (renders bảng — story 6.2 BR-3)
-[ffmpeg — KHÔNG phải Remotion]
-  concat N file mp4 theo thứ tự + mix BGM (volume/fade) + encode CRF → video hoàn chỉnh
+[ffmpeg assembler — KHÔNG phải Remotion]
+  ghép MP4 cache bằng xfade + acrossfade audio theo transition giữa cảnh,
+  rồi mix BGM (volume/fade) + encode CRF → video hoàn chỉnh
         │
         ▼
   videos/{project}/{version}/{format}.mp4 → user tải/xem (story 6.3) / publish (8.x)
@@ -182,9 +183,9 @@ renderMedia()        — 1 lần/CẢNH (composition "Scene"), nhận inputProps
 | Composition | Dùng bởi | Mục đích | Render thật (renderMedia) không? |
 |---|---|---|---|
 | `Scene` | `<Player>` trong editor (per-cảnh) **và** Render Worker | Preview 1 cảnh; render-worker render **từng cảnh riêng** để cache theo `cache_key` | **Có** — đây là composition duy nhất render-worker gọi |
-| `Video` | `<Player>` trong màn Hoàn thiện, nút "Xem thử toàn bộ" (story 5.5) | Preview cả video nối cảnh trong browser — xem transition/nhịp tổng thể | **Không** — chỉ dùng cho Player; final render vẫn là N lần `Scene` + ffmpeg concat, không phải 1 lần `Video` |
+| `Video` | `<Player>` trong màn Hoàn thiện, nút "Xem thử toàn bộ" (story 5.5) | Preview cả video nối cảnh trong browser — xem transition/nhịp tổng thể | **Không** — chỉ dùng cho Player; final render vẫn là N lần `Scene` + ffmpeg assembler, không phải 1 lần `Video` |
 
-**Vì sao không render thẳng bằng composition `Video`** (dù kỹ thuật làm được, gọn hơn): sẽ mất khả năng cache từng cảnh (ADR #4/#3 — "mỗi Scene là đơn vị độc lập để preview, cache, render riêng"). Nếu render cả video trong 1 lần `renderMedia()`, sửa 1 cảnh giữa video buộc render lại toàn bộ timeline. Việc `Video` chỉ tồn tại cho Player là đánh đổi có chủ đích: browser preview chấp nhận xấp xỉ (transition không hoàn hảo 100%, đã ghi "quyết định đã chốt" ở story 2.3), đổi lại giữ được cache per-scene cho bước render thật — nơi thời gian/chi phí mới thực sự quan trọng.
+**Vì sao không render thẳng bằng composition `Video`** (dù kỹ thuật làm được, gọn hơn): sẽ mất khả năng cache từng cảnh (ADR #4/#3 — "mỗi Scene là đơn vị độc lập để preview, cache, render riêng"). Nếu render cả video trong 1 lần `renderMedia()`, sửa 1 cảnh giữa video buộc render lại toàn bộ timeline. Việc `Video` chỉ tồn tại cho Player là đánh đổi có chủ đích: browser preview chấp nhận xấp xỉ, đổi lại giữ được cache per-scene cho bước render thật — nơi thời gian/chi phí mới thực sự quan trọng. Assembler cuối vẫn thực hiện transition thật từ các scene cache; fingerprint của output cuối phải gồm scene theo thứ tự, transition, BGM, format và `platform_profile`.
 
 ## 4.2 Hai điểm chạm Remotion runtime — không có điểm thứ ba
 
@@ -195,7 +196,7 @@ LLM (research/factcheck/storyboard/script) **không phải điểm chạm Remoti
 
 ## 4.3 Vai trò ffmpeg — bổ trợ Remotion, không thay thế
 
-Remotion render **từng cảnh** (có audio/subtitle/animation trong cảnh đó). ffmpeg chỉ làm 2 việc Remotion không làm trong kiến trúc này: **nối N file mp4** theo thứ tự và **mix nhạc nền xuyên suốt video** (BGM không thuộc về 1 cảnh cụ thể). Không dùng ffmpeg để render animation hay xử lý nội dung — việc đó 100% là Remotion.
+Remotion render **từng cảnh** (có audio/subtitle/animation trong cảnh đó). ffmpeg chỉ làm 3 việc ở bước assemble: **ghép N file bằng transition thật** (`xfade` video + `acrossfade` audio theo mapping enum), **tính overlap duration**, và **mix nhạc nền xuyên suốt video** (BGM không thuộc về 1 cảnh cụ thể). Không dùng ffmpeg để render animation hay xử lý nội dung — việc đó 100% là Remotion. `transition=none` được concat hard cut; một transition không có mapping ffmpeg là lỗi validation, không fallback im lặng.
 
 # 5. Sửa backlog theo phát hiện (bao gồm §4)
 

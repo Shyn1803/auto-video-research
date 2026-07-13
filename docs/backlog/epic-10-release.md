@@ -11,13 +11,14 @@
 **Bối cảnh & giá trị:** FR-11 multi-format — nhân đôi giá trị mỗi video sản xuất. Template responsive đã dựng từ 2.2; story này đưa nó thành luồng sản phẩm hoàn chỉnh.
 
 ## Scope
-**In:** nghiệm thu production template 16:9; projects.formats nhiều giá trị; render batch per-format (cache riêng — 6.2 engine sẵn); UI: chọn format khi tạo (1.3 có sẵn) + "＋ Tạo bản 16:9" tại tab Xuất bản; publish tự chọn format hợp nền tảng (8.1 BR-3).
+**In:** nghiệm thu production template 16:9; projects.formats nhiều giá trị; render batch per-format/**platform profile** (cache riêng — 6.2 engine sẵn); UI: chọn format khi tạo (1.3 có sẵn) + "＋ Tạo bản 16:9" tại tab Xuất bản; publish tự chọn profile hợp nền tảng (8.1 BR-3).
 **Out:** format vuông 1:1 (v1.1 nếu cần); layout khác nhau per-format (template responsive đủ).
 
 ## Business Rules
 - **BR-1:** thêm format sau không đụng cache format cũ.
 - **BR-2:** mỗi format trạng thái render/download độc lập trên UI.
 - **BR-3:** asset orientation: format ngang ưu tiên ảnh ngang — produce re-resolve asset thiếu orientation (cờ cảnh báo nếu phải dùng ảnh dọc crop).
+- **BR-4:** profile và format phải tương thích: TikTok/Facebook Reels/YouTube Shorts → 9:16; YouTube video → 16:9. Profile áp safe-area, subtitle và watermark nhưng không gọi lại AI hay đổi layout class.
 
 ## UI/UX
 Tab Xuất bản: badge per-format (wireframe ✓9:16 ✓16:9); nút thêm format kèm ước lượng "sẽ render 8 cảnh". States: từng format có trạng thái riêng (○ chưa tạo · ● đang · ✓ · ✗ retry).
@@ -29,7 +30,7 @@ Tab Xuất bản: badge per-format (wireframe ✓9:16 ✓16:9); nút thêm forma
 1. **(happy)** Cùng scene_set 2 format → PO duyệt chất lượng cả hai.
 2. **(biên/BR-1)** Thêm 16:9 vào project 9:16 done → chỉ render 16:9; cache 9:16 nguyên.
 3. **(BR-3)** Cảnh có ảnh dọc sang 16:9 → cờ cảnh báo crop; picker gợi ý tìm ảnh ngang.
-4. **(publish)** YouTube chọn 16:9; platform dọc chọn 9:16 tự động.
+4. **(publish)** YouTube video chọn `youtube_video` + 16:9; TikTok/FB Reels/Shorts chọn profile dọc + 9:16 tự động; safe-area đúng profile.
 
 ## Test Notes
 Render test matrix layout×format từ 2.2 nâng thành nghiệm thu; kiểm tay 2 video.

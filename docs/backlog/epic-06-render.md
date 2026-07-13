@@ -53,7 +53,7 @@ Semaphore test (không vượt bound); idempotency test là trọng tâm. Fixtur
 **Bối cảnh & giá trị:** Hiện thực lời hứa trung tâm của SRS ("scene là đơn vị cache/render độc lập" — nguyên tắc #3). Interface queue giống NATS consumer để 9.2 tách worker không đổi logic.
 
 ## Scope
-**In:** cache_key/cảnh (hash 2.1 + template_version + format); queue in-process (interface NATS-like); song song `RENDER_CONCURRENCY`; worker theo pipeline chính thức Remotion `bundle() → selectComposition() → renderMedia()` ([remotion-integration.md](../specs/remotion-integration.md) §2.5) → MinIO; bảng renders + SSE render.progress; merge ffmpeg (concat + BGM volume/fade + CRF); retry từng job; per-format batch. Trigger skill: dev-guide.md §2.1.
+**In:** cache_key/cảnh (hash 2.1 + template_version + format + platform_profile); queue in-process (interface NATS-like); song song `RENDER_CONCURRENCY`; worker theo pipeline chính thức Remotion `bundle() → selectComposition() → renderMedia()` ([remotion-integration.md](../specs/remotion-integration.md) §2.5) → MinIO; bảng renders + SSE render.progress; assembler ffmpeg (`xfade` + `acrossfade` theo transition, rồi BGM volume/fade + CRF); cache output cuối theo ordered scene keys + transitions + BGM + format + platform_profile; retry từng job; per-format/profile batch. Trigger skill: dev-guide.md §2.1.
 **Out:** worker container (9.2); multi-format UI (10.1 — engine sẵn); GPU encode (v1.1 nếu benchmark cần).
 
 ## Business Rules
@@ -63,6 +63,7 @@ Semaphore test (không vượt bound); idempotency test là trọng tâm. Fixtur
 - **BR-4:** sửa cảnh khi đang render → batch hiện tại chạy nốt; cảnh sửa dirty cho batch sau (5.5 BR-4 khoá UI tương ứng).
 - **BR-5:** output theo layout storage cố định (ARCHITECTURE §6); cache TTL dọn bởi cleanup job.
 - **BR-6 (mới — remotion-integration.md §2.5):** worker `bundle()` **1 lần lúc khởi động**, cache `serveUrl` in-memory, tái dùng cho mọi job sau đó — không bundle lại mỗi render (bundle tốn vài giây, sai giả định ban đầu là gọi CLI trực tiếp mỗi job). Ảnh hưởng trực tiếp benchmark 6.4.
+- **BR-7:** `transition=none` là hard cut; mọi transition khác phải có mapping `xfade` + `acrossfade` và được áp vào MP4 cuối. Tổng duration trừ overlap transition; mapping thiếu → validation lỗi, không fallback hard cut im lặng.
 
 ## UI/UX
 Tiến độ inline màn Hoàn thiện + modal chi tiết (⚡ cache / ● đang / ✓ / ✗ + retry) — wireframe. Error từng cảnh có nút thử lại riêng.
@@ -72,14 +73,14 @@ Tiến độ inline màn Hoàn thiện + modal chi tiết (⚡ cache / ● đang
 - Contract change: không.
 
 ## Acceptance Criteria
-1. **(happy)** 8 cảnh 3 dirty → 3 render + 5 cache_hit; MP4 đúng thứ tự, audio sync, BGM fade (kiểm tay 3 video).
+1. **(happy)** 8 cảnh 3 dirty → 3 render + 5 cache_hit; MP4 đúng thứ tự, transition thật, audio sync, BGM fade (kiểm tay 3 video).
 2. **(biên/BR-4)** Sửa cảnh giữa batch → batch xong bình thường; nút "Tạo lại (1 cảnh)" hiện.
 3. **(lỗi/BR-2)** 1 cảnh fail → batch kết thúc "7/8 + 1 lỗi"; retry cảnh đó → merge chạy.
 4. **(biên/BR-1)** Kill worker giữa job → retry không double-render (đo số lần render thực).
 5. **(SSE)** Progress từng cảnh + tổng % đúng.
 
 ## Test Notes
-Render test dùng template 2.2 + fixture; đo "số lần render thực" bằng counter wrapper quanh CLI call. Audio sync kiểm tay có checklist (đầu/giữa/cuối video).
+Render test dùng template 2.2 + fixture; đo "số lần render thực" bằng counter wrapper quanh CLI call. Golden test assembler cho hard-cut/fade/slide, kiểm duration sau overlap và audio sync ở ranh giới cảnh.
 
 ## Quyết định đã chốt
 - CRF 20, preset medium khởi điểm — tune sau benchmark 6.4. ⏳

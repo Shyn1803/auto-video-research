@@ -114,11 +114,11 @@ call(tier, prompt) →
 
 # 4. Render Worker
 
-* Mỗi worker: Node.js + Remotion CLI, nhận `render.scene.request` (scene JSON + template id + format), render ra MinIO, ack + phát `render.scene.done`.
-* **Cache**: key = `hash(scene_json + template_version + format)`; hit → trả URL luôn, không render.
-* **Merge**: node render cuối ghép scene (ffmpeg concat) + merge audio + encode (h264, CRF cấu hình).
+* Mỗi worker: Node.js + Remotion CLI, nhận `render.scene.request` (scene JSON + template id + format + platform profile), render ra MinIO, ack + phát `render.scene.done`.
+* **Cache**: scene key = `hash(scene_json + template_version + format + platform_profile)`; hit → trả URL luôn, không render. Output cuối có fingerprint riêng gồm scene key theo thứ tự, transition, BGM, format, platform profile và template version.
+* **Assemble**: node render cuối ghép scene bằng ffmpeg (`xfade` video + `acrossfade` audio theo transition), mix BGM và encode (h264, CRF cấu hình); `transition=none` là hard cut.
 * **Scale**: số worker = biến compose `RENDER_WORKER_REPLICAS`; Phase 3 autoscale theo queue depth (NATS consumer pending).
-* **Đa format**: cùng Scene JSON render 9:16 và 16:9 — template chịu trách nhiệm layout responsive; job format khác nhau là job độc lập (cache riêng).
+* **Đa format/profile**: cùng Scene JSON render 9:16 và 16:9 — template chịu trách nhiệm layout responsive; platform profile chịu trách nhiệm safe-area/capability. Mỗi cặp format/profile là job độc lập (cache riêng).
 * Worker stateless: crash → message redeliver sang worker khác.
 
 ---

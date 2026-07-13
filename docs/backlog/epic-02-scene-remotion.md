@@ -118,7 +118,7 @@ N/A — client-side thuần, props từ state.
 Vitest component với fixture 2.1; kiểm bundle bằng next build analyze trong PR đầu.
 
 ## Quyết định đã chốt
-- Preview "cả video" ở màn Hoàn thiện dùng Player nối cảnh — chấp nhận transition xấp xỉ (transition thật chỉ trong render); ghi rõ trong UI "bản xem thử". ⏳
+- Preview "cả video" ở màn Hoàn thiện dùng Player nối cảnh — chấp nhận transition xấp xỉ; transition thật được ffmpeg assembler áp vào MP4 cuối từ scene cache (6.2). Ghi rõ trong UI "bản xem thử". ⏳
 
 **Depends:** 2.2 · **Design:** wireframe **Phân cảnh** cột phải · **FR:** FR-09, AR-4
 
