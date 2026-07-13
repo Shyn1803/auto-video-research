@@ -1,17 +1,18 @@
 import {Composition} from 'remotion';
 
-import {SceneRenderer} from './SceneRenderer';
+import {SceneRenderer, sceneMetadata, type SceneProps} from './SceneRenderer';
 import {sceneSchema} from './schema';
 
 export const RemotionRoot = () => (
   <Composition
     id="Scene"
     component={SceneRenderer}
-    defaultProps={{}}
+    defaultProps={{duration_ms: 1000, schema_version: '1.0.0'} satisfies SceneProps}
     durationInFrames={1}
     fps={30}
     width={1080}
     height={1920}
     schema={sceneSchema}
+    calculateMetadata={sceneMetadata}
   />
 );
