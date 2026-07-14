@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git merge *)",
+      "Bash(git show *)",
+      "Bash(git ls-tree *)"
+    ]
+  }
+}

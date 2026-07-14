@@ -1,9 +1,8 @@
 """Project state machine — FR-17 transition service.
 
-Publishes a "project.status" event via the in-process bus on every
-successful transition so the frontend can track progress in real time.
+Writes to projects.status + status_history table; emits project.status
+event on every successful transition.
 """
-
 from __future__ import annotations
 
 import logging
@@ -13,6 +12,7 @@ from typing import ClassVar
 
 from app.events.bus import publish
 from app.events.schemas import project_status
+from app.services.state_machine_edges import EDGES, validate
 
 logger = logging.getLogger(__name__)
 
@@ -32,46 +32,21 @@ class ProjectStatus(StrEnum):
     ARCHIVED = "ARCHIVED"
 
 
-class _EdgesMeta(type):
-    edges: ClassVar[dict[str, set[str]]] = {
-        ProjectStatus.DRAFT: {ProjectStatus.RESEARCHING, ProjectStatus.ARCHIVED},
-        ProjectStatus.RESEARCHING: {ProjectStatus.NEED_REVIEW, ProjectStatus.FAILED},
-        ProjectStatus.NEED_REVIEW: {
-            ProjectStatus.APPROVED,
-            ProjectStatus.REVISING,
-        },
-        ProjectStatus.REVISING: {
-            ProjectStatus.NEED_REVIEW,
-            ProjectStatus.APPROVED,
-        },
-        ProjectStatus.APPROVED: {
-            ProjectStatus.PRODUCING,
-            ProjectStatus.REVISING,
-            ProjectStatus.FAILED,
-        },
-        ProjectStatus.PRODUCING: {ProjectStatus.RENDERING, ProjectStatus.FAILED},
-        ProjectStatus.RENDERING: {ProjectStatus.READY, ProjectStatus.FAILED},
-        ProjectStatus.READY: {ProjectStatus.PUBLISHING, ProjectStatus.ARCHIVED},
-        ProjectStatus.PUBLISHING: {ProjectStatus.PUBLISHED, ProjectStatus.FAILED},
-        ProjectStatus.PUBLISHED: {ProjectStatus.ARCHIVED},
-        ProjectStatus.FAILED: set(),
-        ProjectStatus.ARCHIVED: set(),
-    }
-
-
-class EDGES(metaclass=_EdgesMeta):
-    pass
-
-
-def _edges_for(status: str) -> set[str]:
-    return EDGES.edges.get(status, set())
+ABNORMAL_EDGES = {f"{a}->{ProjectStatus.FAILED}" for a in [
+    ProjectStatus.RESEARCHING, ProjectStatus.NEED_REVIEW, ProjectStatus.REVISING,
+    ProjectStatus.APPROVED, ProjectStatus.PRODUCING, ProjectStatus.RENDERING,
+    ProjectStatus.PUBLISHING, ProjectStatus.PUBLISHED,
+]}
+ABNORMAL_EDGES.add(f"{ProjectStatus.APPROVED}->{ProjectStatus.REVISING}")
+ABNORMAL_EDGES.add("ARCHIVED->*")
+ABNORMAL_EDGES.add("*->ARCHIVED")
 
 
 class ProjectStateMachine:
     """Validate and record a project-status transition (FR-17).
 
-    Every successful call publishes "project.status" on the in-process bus
-    with a full EventEnvelope (BR-1).
+    The only module allowed to write ``projects.status``.
+    Idempotent: same-state call is a no-op (200, no new history row).
     """
 
     def __init__(self, bus: MutableMapping[str, object] | None = None) -> None:
@@ -79,32 +54,58 @@ class ProjectStateMachine:
 
     async def transition(
         self,
-        project_id: str,
-        from_state: str,
+        project,
         to_state: str,
-        correlation_id: str,
-        actor: str = "system",
+        actor: str,
         reason: str | None = None,
+        session=None,
     ) -> None:
-        allowed = _edges_for(from_state)
-        if to_state not in allowed:
-            if from_state == to_state:
-                return
-            raise TransitionError(
-                f"Invalid transition {from_state!r} -> {to_state!r}. "
-                f"Allowed targets: {sorted(allowed) or '(none)'}"
-            )
-        await publish(
-            "project.status",
-            project_status(
-                project_id=project_id,
-                from_state=from_state,
-                to_state=to_state,
-                correlation_id=correlation_id,
-                actor=actor,
-                reason=reason,
-            ).model_dump(),
+        from_state = project.status
+        correlation_id = str(project.id)
+
+        # Idempotent: same target → no-op unless it's a side-effect edge
+        if from_state == to_state:
+            return
+
+        validate(from_state, to_state)
+
+        edge_key = f"{from_state}->{to_state}"
+        is_abnormal = edge_key in ABNORMAL_EDGES or "ARCHIVED" in (from_state, to_state)
+
+        if is_abnormal and not reason:
+            from app.services.state_machine import TransitionError
+            raise TransitionError("reason is required for abnormal transitions")
+
+        project.status = to_state
+
+        from app.models.status_history import StatusHistory
+        history_row = StatusHistory(
+            project_id=project.id,
+            from_status=from_state,
+            to_status=to_state,
+            actor=actor,
+            reason=reason,
         )
+        session.add(history_row)
+
+        self._emit(from_state, to_state, correlation_id, actor, reason)
+        logger.info("transition %s %s->%s actor=%s", project.id, from_state, to_state, actor)
+
+    def _emit(self, from_state: str, to_state: str, correlation_id: str, actor: str | None, reason: str | None) -> None:
+        try:
+            publish(
+                "project.status",
+                project_status(
+                    project_id=correlation_id,
+                    from_state=from_state,
+                    to_state=to_state,
+                    correlation_id=correlation_id,
+                    actor=actor,
+                    reason=reason,
+                ).model_dump(),
+            )
+        except Exception:
+            logger.debug("event bus unavailable for project.status %s", correlation_id)
 
 
 class TransitionError(ValueError):

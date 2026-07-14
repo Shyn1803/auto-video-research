@@ -61,6 +61,10 @@ class Project(Base):
         "StepVersion", back_populates="project", cascade="all, delete-orphan"
     )
 
+status_history: Mapped[list["StatusHistory"]] = relationship(
+        "StatusHistory", back_populates="project", cascade="all, delete-orphan"
+    )
+
     __table_args__ = (
         CheckConstraint(
             "mode IN ('interactive', 'daily_news')", name="ck_projects_mode"
