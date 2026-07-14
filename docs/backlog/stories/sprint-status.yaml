@@ -78,14 +78,14 @@ development_status:
   3-1-adapter-base-registry-config-layer: backlog
   3-2-chain-router-failover-allow-paid: backlog
   3-3-llm-adapters: backlog
-  3-4-api-key-management: backlog
+  3-4-api-key-management: done
   3-5-cost-tracking-daily-cap-man-providers: backlog
   epic-3-retrospective: optional
 
   # Epic 4 — Pipeline AI + Layout Engine core + entry script (33đ, tuần 5-8)
   epic-4: backlog
   4-1-langgraph-skeleton-checkpoint-human-gate: backlog
-  4-2-prompt-management-seed: backlog
+  4-2-prompt-management-seed: done
   4-3-node-research: backlog
   4-4-node-ranking-factcheck: backlog
   4-5-node-write-outline-script: backlog
