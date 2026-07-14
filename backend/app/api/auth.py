@@ -18,6 +18,7 @@ from app.core.security import (
     verify_password,
     validate_password,
 )
+from app.core.deps import get_current_user
 from app.models.refresh_token import RefreshToken
 from app.models.user import User
 from app.services.token_service import TokenService
@@ -114,5 +115,5 @@ async def logout(request: Request, response: Response) -> dict[str, str]:
 
 
 @router.get("/auth/me", response_model=UserOut)
-async def me(user: User = Depends(_deps.get_current_user)) -> UserOut:
+async def me(user: User = Depends(get_current_user)) -> UserOut:
     return UserOut(id=user.id, email=user.email, display_name=user.display_name, role=user.role)

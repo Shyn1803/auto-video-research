@@ -1,12 +1,12 @@
 """Adapter registry -- decorator-based, duplicate-name guard at import time.
 
-Registers adapters by (capability, name).  A duplicate registration raises
+Registers adapters by (capability, name). A duplicate registration raises
 at decoration/import time with a message naming both files (BR-3).
 """
 
 from __future__ import annotations
 
-from typing import Callable, TypeVar, get_args
+from typing import Callable, TypeVar
 
 from app.adapters.base import (
     AssetStockAdapter,
@@ -34,11 +34,13 @@ def _register(capability: str, name: str, cls: type[BaseAdapter]) -> None:
             f"Duplicate adapter registration for ({capability}, {name!r}): "
             f"already registered by {existing_src}, conflict with {new_src}"
         )
-       cls.name = name
+    cls.name = name
     _registry[key] = cls
 
 
-def register_llm(name: str) -> Callable[[type[LLMAdapter]], type[LLMAdapter]]:
+def register_llm(
+    name: str,
+) -> Callable[[type[LLMAdapter]], type[LLMAdapter]]:
     def deco(cls: type[LLMAdapter]) -> type[LLMAdapter]:
         _register("llm", name, cls)
         return cls
@@ -47,7 +49,9 @@ def register_llm(name: str) -> Callable[[type[LLMAdapter]], type[LLMAdapter]]:
     return deco
 
 
-def register_tts(name: str) -> Callable[[type[TTSAdapter]], type[TTSAdapter]]:
+def register_tts(
+    name: str,
+) -> Callable[[type[TTSAdapter]], type[TTSAdapter]]:
     def deco(cls: type[TTSAdapter]) -> type[TTSAdapter]:
         _register("tts", name, cls)
         return cls
@@ -56,7 +60,9 @@ def register_tts(name: str) -> Callable[[type[TTSAdapter]], type[TTSAdapter]]:
     return deco
 
 
-def register_search(name: str) -> Callable[[type[SearchAdapter]], type[SearchAdapter]]:
+def register_search(
+    name: str,
+) -> Callable[[type[SearchAdapter]], type[SearchAdapter]]:
     def deco(cls: type[SearchAdapter]) -> type[SearchAdapter]:
         _register("search", name, cls)
         return cls
