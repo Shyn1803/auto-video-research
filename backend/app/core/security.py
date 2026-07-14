@@ -1,14 +1,14 @@
 """Password hashing — argon2id with OWASP parameters."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
-import argon2
+import jwt as _jwt
+from argon2 import PasswordHasher
 from fastapi import HTTPException
-from jwt import DecodeError, ExpiredSignatureError, PyJWT
+from jwt import DecodeError, ExpiredSignatureError
 
-
-ph = argon2.PasswordHasher(
+ph = PasswordHasher(
     time_cost=2,
     memory_cost=102400,
     parallelism=8,
@@ -27,13 +27,15 @@ def verify_password(password: str, hashed: str) -> bool:
     try:
         ph.verify(hashed, password)
         return True
-    except argon2.exceptions.VerifyMismatchError:
+    except Exception:
         return False
 
 
 def validate_password(password: str) -> None:
     if len(password) < MIN_PASSWORD_LENGTH:
-        raise ValueError(f"password must be at least {MIN_PASSWORD_LENGTH} characters")
+        raise ValueError(
+            f"password must be at least {MIN_PASSWORD_LENGTH} characters"
+        )
 
 
 def create_access_token(
@@ -44,8 +46,7 @@ def create_access_token(
     secret: str,
     algorithm: str = "HS256",
 ) -> str:
-    import jwt as _jwt
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     exp = now + (expires_delta or timedelta(minutes=15))
     payload: dict[str, Any] = {
         "sub": subject,
@@ -57,8 +58,13 @@ def create_access_token(
     return _jwt.encode(payload, secret, algorithm=algorithm)
 
 
-def decode_access_token(token: str, *, secret: str, algorithm: str = "HS256") -> dict[str, Any]:
+def decode_access_token(
+    token: str,
+    *,
+    secret: str,
+    algorithm: str = "HS256",
+) -> dict[str, Any]:
     try:
         return _jwt.decode(token, secret, algorithms=[algorithm])
     except (ExpiredSignatureError, DecodeError):
-        raise HTTPException(status_code=401, detail="invalid token")
+        raise HTTPException(status_code=401, detail="invalid token") from None

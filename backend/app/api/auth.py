@@ -2,23 +2,18 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
 from uuid import UUID
 
-from fastapi import APIRouter, Cookie, HTTPException, Request, Response, status
-from sqlalchemy import select
-from sqlalchemy import update
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, EmailStr
+from sqlalchemy import select, update
 
 from app.core.config import get_settings
+from app.core.deps import get_current_user, require_role
 from app.core.rate_limit import limiter
 from app.core.security import (
-    create_access_token,
-    hash_password,
     verify_password,
-    validate_password,
 )
-from app.core.deps import get_current_user
 from app.models.refresh_token import RefreshToken
 from app.models.user import User
 from app.services.token_service import TokenService
@@ -117,3 +112,12 @@ async def logout(request: Request, response: Response) -> dict[str, str]:
 @router.get("/auth/me", response_model=UserOut)
 async def me(user: User = Depends(get_current_user)) -> UserOut:
     return UserOut(id=user.id, email=user.email, display_name=user.display_name, role=user.role)
+
+
+class AdminResponse(BaseModel):
+    detail: str = "admin endpoint"
+
+
+@router.get("/auth/admin/ping", response_model=AdminResponse, tags=["_test_rbac"])
+async def _admin_ping(user: User = Depends(require_role("admin"))) -> AdminResponse:
+    return AdminResponse()
