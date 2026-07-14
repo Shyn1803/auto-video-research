@@ -1,7 +1,7 @@
 """Typed application settings loaded from the environment.
 
 Config precedence: env > api_keys DB table (Admin UI, FR-15) > default.
-Adapters receive ProviderSettings via constructor -- never os.environ directly.
+Adapters receive ProviderSettings via constructor; never os.environ directly.
 """
 
 from __future__ import annotations
