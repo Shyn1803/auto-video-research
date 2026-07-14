@@ -1,6 +1,4 @@
-"""003_add_user_must_change_password
-
-add must_change_password column to users table (BR-4: temp password flow).
+"""003_add_user_must_change_password 3 Add must_change_password to users (BR-4).
 
 Epic 1, task 1-7 (Quản lý người dùng — Admin).
 """
@@ -16,16 +14,10 @@ depends_on: Sequence[str] | None = None
 
 
 def upgrade() -> None:
-	op.add_column(
-		"users",
-		sa.Column(
-			"must_change_password",
-			sa.Boolean(),
-			nullable=False,
-			server_default=sa.text("false"),
-		),
-	)
+    op.add_column("users", sa.Column("must_change_password", sa.Boolean(), server_default=sa.text("false"), nullable=False))
+    op.create_index("idx_users_must_change_password", "users", ["must_change_password"], unique=False)
 
 
 def downgrade() -> None:
-	op.drop_column("users", "must_change_password")
+    op.drop_index("idx_users_must_change_password", table_name="users")
+    op.drop_column("users", "must_change_password")
