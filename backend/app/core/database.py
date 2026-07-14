@@ -1,7 +1,10 @@
-"""Minimal database lifecycle support for application health checks."""
+"""Database lifecycle — engine + declarative Base for models."""
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
 
 
 class Database:
