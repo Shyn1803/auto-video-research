@@ -41,10 +41,6 @@ ABNORMAL_EDGES.add("ARCHIVED->*")
 ABNORMAL_EDGES.add("*->ARCHIVED")
 
 
-def _edges_for(status: str) -> set[str]:
-    return EDGES.get(status, set())
-
-
 class ProjectStateMachine:
     """Validate and record a project-status transition (FR-17).
 

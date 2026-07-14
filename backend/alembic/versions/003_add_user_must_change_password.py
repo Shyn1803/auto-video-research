@@ -1,4 +1,4 @@
-"""002_add_user_must_change_password
+"""003_add_user_must_change_password
 
 add must_change_password column to users table (BR-4: temp password flow).
 
@@ -10,8 +10,8 @@ from typing import Sequence
 from alembic import op
 import sqlalchemy as sa
 
-revision: str = "002_add_user_must_change_password"
-down_revision: str = "001_create_projects"
+revision: str = "003_add_user_must_change_password"
+down_revision: str = "002_add_status_history"
 depends_on: Sequence[str] | None = None
 
 

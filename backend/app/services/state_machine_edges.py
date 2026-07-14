@@ -1,7 +1,7 @@
 """FR-17 transition matrix as data.
 
 Single truth source for allowed transitions — code, tests, and docs
-all import EDGES and TransitionError from here (Task 1-4).
+all import EDGES from here (Task 1-4).
 """
 from __future__ import annotations
 
@@ -35,13 +35,20 @@ class _EdgesMeta(type):
 EDGES: dict[str, set[str]] = _EdgesMeta.edges
 
 
-def validate(from_status: str, to_status: str) -> None:
-    """Raise TransitionError if to_status is not in the allowed set."""
-    allowed = EDGES.get(from_status, set())
+def _edges_for(status: str) -> set[str]:
+    return EDGES.get(status, set())
+
+
+def validate(from_status: str, to_status: str) -> "TransitionError | None":
+    """Raise TransitionError if to_status is not in the allowed set.
+
+    No raise (returns None) means the transition is valid.
+    Idempotent: same-state call is silently allowed (caller already handles the no-op).
+    """
+    allowed = _edges_for(from_status)
     if to_status not in allowed:
-        if from_status == to_status:
-            return  # idempotent no-op
         raise TransitionError(
             f"Invalid transition {from_status!r} -> {to_status!r}. "
             f"Allowed targets: {sorted(allowed) or '(none)'}"
         )
+    return None

@@ -1,4 +1,4 @@
-"""003_add_status_history 3 Add status_history table + index (FR-17).
+"""002_add_status_history 3 Add status_history table + index (FR-17).
 
 Epic 1, task 1-4 (State machine).
 """
@@ -7,8 +7,8 @@ from typing import Sequence
 from alembic import op
 import sqlalchemy as sa
 
-revision: str = "003_add_status_history"
-down_revision: str = "002_add_user_must_change_password"
+revision: str = "002_add_status_history"
+down_revision: str = "001_create_projects"
 depends_on: Sequence[str] | None = None
 
 
