@@ -1,6 +1,6 @@
 """Password hashing — argon2id with OWASP parameters."""
 
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import argon2
@@ -54,11 +54,11 @@ def create_access_token(
         "iat": int(now.timestamp()),
         "exp": int(exp.timestamp()),
     }
-    return jwt.encode(payload, secret, algorithm=algorithm)
+    return _jwt.encode(payload, secret, algorithm=algorithm)
 
 
 def decode_access_token(token: str, *, secret: str, algorithm: str = "HS256") -> dict[str, Any]:
     try:
-        return jwt.decode(token, secret, algorithms=[algorithm])
+        return _jwt.decode(token, secret, algorithms=[algorithm])
     except (ExpiredSignatureError, DecodeError):
         raise HTTPException(status_code=401, detail="invalid token")
