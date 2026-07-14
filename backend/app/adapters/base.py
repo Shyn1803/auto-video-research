@@ -1,9 +1,10 @@
 """Abstract base classes for all provider adapters.
 
-One ABC per capability (7 total in v1). Each declares ``name``, ``is_paid``,
-an ``available()`` readiness check, and the single capability-specific method.
-Adapters receive config via ``ProviderSettings`` — never read ``os.environ``
-directly. All external exceptions must be wrapped in ``ProviderError``.
+One ABC per capability (7 total in v1). Each declares ``name``,
+``is_paid``, an ``available()`` readiness check, and the single
+capability-specific method.  Adapters receive config via
+``ProviderSettings`` — never read ``os.environ`` directly.  All
+external exceptions must be wrapped in ``ProviderError``.
 """
 
 from __future__ import annotations
@@ -12,12 +13,16 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
 
+# ---------------------------------------------------------------------------
+# Config
+# ---------------------------------------------------------------------------
+
 @dataclass(frozen=True)
 class ProviderSettings:
     """Typed config for a single adapter invocation.
 
-    Filled by ``app.core.config`` from env / DB / defaults — adapters must
-    NOT call ``os.environ`` or ``os.getenv`` directly.
+    Filled by ``app.core.config`` from env / DB / defaults — adapters
+    must NOT call ``os.environ`` or ``os.getenv`` directly.
     """
 
     provider_name: str = ""
@@ -26,13 +31,17 @@ class ProviderSettings:
     extra: dict[str, str] = field(default_factory=dict)
 
 
+# ---------------------------------------------------------------------------
+# Error
+# ---------------------------------------------------------------------------
+
 class ProviderError(Exception):
     """Unified error raised by every adapter on failure.
 
     Attributes:
-        retryable: True if the caller/retry loop should attempt again
-            (timeout, 5xx, rate-limit). False for terminal errors
-            (auth failure, invalid request, quota exhausted permanently).
+        retryable: ``True`` when the caller / retry loop should attempt
+        again (timeout, 5xx, rate-limit).  ``False`` for terminal errors
+        (auth failure, invalid request, quota exhausted permanently).
     """
 
     def __init__(self, message: str, *, retryable: bool = False) -> None:
@@ -43,7 +52,6 @@ class ProviderError(Exception):
 # ---------------------------------------------------------------------------
 # Capability ABCs
 # ---------------------------------------------------------------------------
-
 
 class BaseAdapter(ABC):
     """Common contract shared by every capability adapter.
@@ -57,12 +65,12 @@ class BaseAdapter(ABC):
     name: str = ""
     is_paid: bool = True
 
-    def __init__(self, settings: "ProviderSettings | None" = None) -> None:
+    def __init__(self, settings: ProviderSettings | None = None) -> None:
         self.settings: ProviderSettings = settings or ProviderSettings()
 
     @abstractmethod
     async def available(self) -> bool:
-        """Return True when this provider can accept work.
+        """Return ``True`` when this provider can accept work.
 
         Typically checks config (key present, base_url reachable).
         Called before every invocation; no side effects.
@@ -86,7 +94,7 @@ class LLMAdapter(BaseAdapter):
         Raises:
             ProviderError: on any failure (network, auth, rate-limit …).
                 Set ``retryable=True`` when the caller should rotate
-                key/provider and retry, ``False`` for hard failures.
+                key / provider and retry, ``False`` for hard failures.
         """
 
 
@@ -184,7 +192,9 @@ class StorageAdapter(BaseAdapter):
         """
 
     @abstractmethod
-    async def presign_get(self, key: str, *, expires_seconds: int = 3600) -> str:
+    async def presign_get(
+        self, key: str, *, expires_seconds: int = 3600
+    ) -> str:
         """Return a pre-signed GET URL for *key*.
 
         Raises:
