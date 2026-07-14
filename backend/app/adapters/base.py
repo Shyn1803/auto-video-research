@@ -1,6 +1,6 @@
 """Abstract base classes for all provider adapters.
 
-One ABC per capability (7 total in v1). Each declares ``name``,
+One ABC per capability (7 total in v1).  Each declares ``name``,
 ``is_paid``, an ``available()`` readiness check, and the single
 capability-specific method.  Adapters receive config via
 ``ProviderSettings`` — never read ``os.environ`` directly.  All
@@ -50,6 +50,46 @@ class ProviderError(Exception):
 
 
 # ---------------------------------------------------------------------------
+# TTS value types (shared between base and edge_tts)
+# ---------------------------------------------------------------------------
+
+class TTSResult:
+    """Output of a successful TTS synthesis call."""
+
+    __slots__ = ("audio_bytes", "duration_ms", "word_timestamps", "cache_key")
+
+    def __init__(
+        self,
+        audio_bytes: bytes,
+        duration_ms: int,
+        word_timestamps: list[dict[str, object]],
+        cache_key: str = "",
+    ) -> None:
+        self.audio_bytes = audio_bytes
+        self.duration_ms = duration_ms
+        self.word_timestamps = word_timestamps
+        self.cache_key = cache_key
+
+    @staticmethod
+    def cache_key(text: str, voice_id: str, speed: float, engine: str) -> str:
+        """Content-addressed key for deduplication cache lookups."""
+        import hashlib
+        raw = f"{text}\x00{voice_id}\x00{speed}\x00{engine}"
+        return hashlib.sha256(raw.encode()).hexdigest()
+
+
+class TTSRequest:
+    """Immutable input for a single TTS synthesis call."""
+
+    __slots__ = ("text", "voice_id", "speed")
+
+    def __init__(self, text: str, voice_id: str, speed: float = 1.0) -> None:
+        self.text = text
+        self.voice_id = voice_id
+        self.speed = speed
+
+
+# ---------------------------------------------------------------------------
 # Capability ABCs
 # ---------------------------------------------------------------------------
 
@@ -92,7 +132,7 @@ class LLMAdapter(BaseAdapter):
         """Return structured JSON matching *schema* for *prompt*.
 
         Raises:
-            ProviderError: on any failure (network, auth, rate-limit …).
+            ProviderError: on any failure (network, auth, rate-limit ...).
                 Set ``retryable=True`` when the caller should rotate
                 key / provider and retry, ``False`` for hard failures.
         """
@@ -104,13 +144,9 @@ class TTSAdapter(BaseAdapter):
     @abstractmethod
     async def synthesize(
         self,
-        text: str,
-        *,
-        voice_id: str = "",
-        language: str = "vi",
-        speaking_rate: float = 1.0,
-    ) -> bytes:
-        """Return raw audio bytes for *text*.
+        request: TTSRequest,
+    ) -> TTSResult:
+        """Return synthesized audio plus metadata.
 
         Raises:
             ProviderError: on any failure.
@@ -156,7 +192,7 @@ class ImageGenAdapter(BaseAdapter):
 
 
 class AssetStockAdapter(BaseAdapter):
-    """Stock-photo / asset search adapter (Pexels, Unsplash …)."""
+    """Stock-photo / asset search adapter (Pexels, Unsplash ...)."""
 
     @abstractmethod
     async def search(
@@ -193,7 +229,10 @@ class StorageAdapter(BaseAdapter):
 
     @abstractmethod
     async def presign_get(
-        self, key: str, *, expires_seconds: int = 3600
+        self,
+        key: str,
+        *,
+        expires_seconds: int = 3600,
     ) -> str:
         """Return a pre-signed GET URL for *key*.
 
@@ -203,7 +242,7 @@ class StorageAdapter(BaseAdapter):
 
 
 class PublishAdapter(BaseAdapter):
-    """Platform-publish adapter (YouTube, TikTok, download …)."""
+    """Platform-publish adapter (YouTube, TikTok, download ...)."""
 
     @abstractmethod
     async def publish(

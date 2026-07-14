@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, String, Text
+from sqlalchemy import DateTime, ForeignKey, Index, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -22,7 +22,9 @@ class StatusHistory(Base):
         PG_UUID(as_uuid=True), primary_key=True, server_default="gen_random_uuid()"
     )
     project_id: Mapped[UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True
+        PG_UUID(as_uuid=True),
+        ForeignKey("projects.id", ondelete="CASCADE"),
+        nullable=False,
     )
     from_status: Mapped[str] = mapped_column(String(20), nullable=False)
     to_status: Mapped[str] = mapped_column(String(20), nullable=False)
@@ -34,5 +36,6 @@ class StatusHistory(Base):
 
     project: Mapped["Project"] = relationship("Project", back_populates="status_history")
 
-
-StatusHistory.__table_args__ = ()
+    __table_args__ = (
+        Index("idx_status_history_project", "project_id", "created_at"),
+    )
