@@ -1,18 +1,19 @@
 {
   "task_id": "1-2",
-  "status": "in-progress",
+  "status": "done",
   "branch": "feat/1-2-auth-jwt-rbac",
   "current_step": 6,
   "steps": [
-    {"id": 1, "name": "DB models + migration — users, refresh_tokens", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "b85ada5"},
-    {"id": 2, "name": "Password hashing + admin seed", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "b85ada5"},
-    {"id": 3, "name": "Token service (access/refresh, rotate, reuse-detection)", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "b897d16"},
-    {"id": 4, "name": "Auth endpoints + require_role + rate limiting", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "b897d16"},
-    {"id": 5, "name": "Frontend Login page + AuthProvider + auto-refresh interceptor", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "d6fea6e"},
-    {"id": 6, "name": "Wire up tests + verify all Acceptance Criteria", "status": "in-progress", "attempts": 1, "last_error": null, "commit_sha": "7d513ee"}
+    {"id": 1, "name": "DB models + migration — users, refresh_tokens", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "dbb758f"},
+    {"id": 2, "name": "Password hashing + admin seed", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "dbb758f"},
+    {"id": 3, "name": "Token service (access/refresh, rotate, reuse-detection)", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "7d513ee"},
+    {"id": 4, "name": "Auth endpoints + require_role + rate limiting", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "7d513ee"},
+    {"id": 5, "name": "Frontend Login page + AuthProvider + auto-refresh interceptor", "status": "done", "attempts": 0, "last_error": null, "commit_sha": "0feb804"},
+    {"id": 6, "name": "Wire up tests + verify all Acceptance Criteria", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "3dc8a6d"}
   ],
   "decisions": [],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-14T00:00:00+07:00"
+  "updated_at": "2026-07-14T00:00:00+07:00",
+  "closed_at": "2026-07-14T00:00:00+07:00"
 }
