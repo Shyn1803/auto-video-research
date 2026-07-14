@@ -1,7 +1,7 @@
-"""Adapter registry -- decorator-based, duplicate-name guard at import time.
+"""Adapter registry — decorator-based, duplicate-name guard at import time.
 
 Registers adapters by (capability, name). A duplicate registration raises
-at decoration/import time with a message naming both files (BR-3).
+at decoration / import time with a message naming both files (BR-3).
 """
 
 from __future__ import annotations
@@ -24,7 +24,9 @@ _T = TypeVar("_T", bound=BaseAdapter)
 _registry: dict[tuple[str, str], type[BaseAdapter]] = {}
 
 
-def _register(capability: str, name: str, cls: type[BaseAdapter]) -> None:
+def _register(
+    capability: str, name: str, cls: type[BaseAdapter]
+) -> None:
     key = (capability, name)
     if key in _registry:
         existing = _registry[key]
@@ -115,11 +117,15 @@ def register_publish(
     return deco
 
 
-def get_adapter_class(capability: str, name: str) -> type[BaseAdapter] | None:
+def get_adapter_class(
+    capability: str, name: str
+) -> type[BaseAdapter] | None:
     return _registry.get((capability, name))
 
 
 def get_registered(capability: str) -> dict[str, type[BaseAdapter]]:
     return {
-        name: cls for (cap, name), cls in _registry.items() if cap == capability
+        name: cls
+        for (cap, name), cls in _registry.items()
+        if cap == capability
     }
