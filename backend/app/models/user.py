@@ -19,6 +19,7 @@ class User(Base):
     display_name: Mapped[str] = mapped_column(Text, nullable=False)
     role: Mapped[str] = mapped_column(nullable=False, server_default='creator')
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default='true')
+must_change_password: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default='false')
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default='now()')
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default='now()')
 
