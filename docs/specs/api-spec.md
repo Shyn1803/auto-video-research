@@ -24,9 +24,10 @@
 
 | Method | Path | Body → Response | Ghi chú |
 |---|---|---|---|
-| POST | `/auth/login` | `{email, password}` → `{access_token, user}` + set refresh cookie | 429 sau 5 lần sai/15' |
+| POST | `/auth/login` | `{email, password}` → `{access_token, must_change_password, user}` + set refresh cookie | 429 sau 5 lần sai/15' |
 | POST | `/auth/refresh` | (cookie) → `{access_token}` | rotate refresh token |
 | POST | `/auth/logout` | → 204 | revoke refresh |
+| POST | `/auth/change-password` | `{old_password, new_password}` → `{detail}` | clears must_change_password flag |
 | GET | `/auth/me` | → `{id, email, display_name, role}` | |
 | 🅐 POST | `/users` | `{email, password, display_name, role}` → User | |
 | 🅐 GET/PATCH | `/users`, `/users/{id}` | | deactivate qua PATCH `is_active` |
