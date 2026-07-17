@@ -5,9 +5,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
-    Boolean,
     CheckConstraint,
-    Column,
     DateTime,
     String,
     Text,
@@ -18,6 +16,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 
 if TYPE_CHECKING:
+    from app.models.status_history import StatusHistory
     from app.models.step_version import StepVersion
 
 
@@ -61,7 +60,7 @@ class Project(Base):
         "StepVersion", back_populates="project", cascade="all, delete-orphan"
     )
 
-status_history: Mapped[list["StatusHistory"]] = relationship(
+    status_history: Mapped[list[StatusHistory]] = relationship(
         "StatusHistory", back_populates="project", cascade="all, delete-orphan"
     )
 

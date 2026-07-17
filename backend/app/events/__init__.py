@@ -8,9 +8,10 @@ from app.events.schemas import ProjectStatusPayload as ProjectStatusPayload
 from app.events.schemas import StepProgressPayload as StepProgressPayload
 from app.events.schemas import project_status as project_status
 from app.events.schemas import step_progress as step_progress
-from app.events.schemas import StepProgressPayload as step_progress_payload
-from app.services.state_machine import EDGES as EDGES
-from app.services.state_machine import ProjectStateMachine as ProjectStateMachine
-from app.services.state_machine import ProjectStatus as ProjectStatus
-from app.services.state_machine import TransitionError as TransitionError
-from app.services.state_machine import _edges_for as _edges_for
+
+# Note: this package must not import from app.services.* -- state_machine.py
+# imports app.events.bus, so re-exporting state-machine symbols here creates
+# a circular import (events -> services.state_machine -> events.bus ->
+# triggers this __init__ -> services.state_machine, partially initialized).
+# Import ProjectStateMachine/EDGES/etc. from app.services.state_machine
+# directly instead.

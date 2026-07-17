@@ -9,7 +9,6 @@ from uuid import UUID
 from sqlalchemy import select, update, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_user_dep
 from app.models.project import Project
 from app.models.refresh_token import RefreshToken
 from app.models.status_history import StatusHistory

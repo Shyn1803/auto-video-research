@@ -95,17 +95,17 @@ class ProjectStateMachine:
         )
         session.add(history_row)
 
-        self._emit(from_state, to_state, correlation_id, actor, reason)
+        await self._emit(from_state, to_state, correlation_id, actor, reason)
         logger.info(
             "transition %s %s->%s actor=%s",
             project.id, from_state, to_state, actor,
         )
 
-    def _emit(self, from_state: str, to_state: str,
+    async def _emit(self, from_state: str, to_state: str,
               correlation_id: str, actor: str | None,
               reason: str | None) -> None:
         try:
-            publish(
+            await publish(
                 "project.status",
                 project_status(
                     project_id=correlation_id,

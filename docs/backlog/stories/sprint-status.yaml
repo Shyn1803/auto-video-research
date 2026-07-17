@@ -90,7 +90,7 @@ development_status:
 
   # Epic 4 — Pipeline AI + Layout Engine core + entry script (33đ, tuần 5-8)
   epic-4: backlog
-  4-1-langgraph-skeleton-checkpoint-human-gate: backlog
+  4-1-langgraph-skeleton-checkpoint-human-gate: done
   4-2-prompt-management-seed: backlog
   4-3-node-research: backlog
   4-4-node-ranking-factcheck: backlog
