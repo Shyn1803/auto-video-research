@@ -91,8 +91,9 @@
 
 | Method | Path | Mô tả |
 |---|---|---|
-| GET 🅞 | `/projects/{id}/scenes?version=latest` | Scene list (đầy đủ Scene JSON) |
-| PUT 🅞 | `/projects/{id}/scenes/{scene_id}` | Body = Scene JSON → validate (422 chi tiết) → set dirty, tạo scene_set version mới (autosave debounce phía FE) |
+| GET 🅞 | `/projects/{id}/scenes?version=latest` | Scene list (đầy đủ Scene JSON), mỗi scene kèm field `approved: bool` (task 5-1) |
+| PUT 🅞 | `/projects/{id}/scenes/{scene_id}` | Body = Scene JSON → validate (422 chi tiết, `detail.field_path`) → set dirty, tạo scene_set version mới (autosave debounce phía FE). Sửa một cảnh đã duyệt sẽ tự động bỏ duyệt cảnh đó (task 5-1) |
+| POST 🅞 | `/projects/{id}/scenes/{scene_id}/approve` | (task 5-1, FR-09) Duyệt từng cảnh — **không phải theo cả bước** (quyết định đã chốt). `approved` lưu tách khỏi Scene JSON contract (không phải field trong `app/schemas/scene.py`) vì đây là trạng thái workflow UI, không phải nội dung render — xem `app/models/scene_approval.py`. → `{scene_id, approved: true, approved_at}` |
 | POST 🅞 | `/projects/{id}/scenes` | `{after_scene_number, layout}` → scene mới từ template rỗng |
 | DELETE 🅞 | `/projects/{id}/scenes/{scene_id}` | |
 | POST 🅞 | `/projects/{id}/scenes/{scene_id}/duplicate` | |
