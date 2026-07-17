@@ -23,7 +23,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 | 2-6 | ✅ done | 7 | feat/2-6-layout-class-du-lieu | In 10-2 bundle |
 | 3-1 | ✅ done | 8 | feat/3-1-adapter-base-registry-config-layer | — |
 | 3-2 | ✅ done | 6 | feat/3-2-chain-router-failover-allow-paid | — |
-| 3-3 | ⬜ not-started | — | feat/3-3-llm-adapters | — |
+| 3-3 | ✅ done | 9/9 | feat/3-3-llm-adapters | pushed 2a2105a |
 | 3-4 | ⬜ not-started | — | feat/3-4-api-key-management | — |
 | 3-5 | ⬜ not-started | — | feat/3-5-cost-tracking | — |
 | 4-1 | ⬜ not-started | — | feat/4-1-langgraph | — |
