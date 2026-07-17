@@ -15,7 +15,7 @@ import logging
 import os
 from typing import Any
 
-from app.adapters.base import ProviderError, ProviderSettings
+from app.adapters.base import LLMAdapter, ProviderError, ProviderSettings
 from app.adapters.registry import register_llm
 
 logger = logging.getLogger("avr.llm.bge_m3")
@@ -57,13 +57,22 @@ class BgeM3LocalLLM(LLMAdapter):
 
     async def available(self) -> bool:
         """Available when sentence-transformers is installed and importable."""
-        if not _HAS_ST:
-            logger.warning(
-                "bge_m3_local unavailable: sentence-transformers not installed. "
-                "Install it with: pip install sentence-transformers"
-            )
-            return False
-        return True
+        import sys
+
+        if _HAS_ST or "sentence_transformers" in sys.modules:
+            return True
+        try:
+            import importlib.util
+
+            if importlib.util.find_spec("sentence_transformers") is not None:
+                return True
+        except (ImportError, ValueError):
+            pass
+        logger.warning(
+            "bge_m3_local unavailable: sentence-transformers not installed. "
+            "Install it with: pip install sentence-transformers"
+        )
+        return False
 
     # ------------------------------------------------------------------
     # call_structured() — implemented as embed()

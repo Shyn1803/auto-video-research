@@ -71,7 +71,7 @@ class TTSResult:
         self.cache_key = cache_key
 
     @staticmethod
-    def cache_key(text: str, voice_id: str, speed: float, engine: str) -> str:
+    def compute_cache_key(text: str, voice_id: str, speed: float, engine: str) -> str:
         """Content-addressed key for deduplication cache lookups."""
         import hashlib
         raw = f"{text}\x00{voice_id}\x00{speed}\x00{engine}"

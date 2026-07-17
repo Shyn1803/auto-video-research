@@ -48,12 +48,12 @@ class TestRegistryLookup:
 
 class TestAvailable:
 
-    def test_available_true_with_key(self) -> None:
-        assert GroqLLM(settings=_settings()).available() is True
+    async def test_available_true_with_key(self) -> None:
+        assert await GroqLLM(settings=_settings()).available() is True
 
-    def test_available_false_without_key(self) -> None:
+    async def test_available_false_without_key(self) -> None:
         s = ProviderSettings(provider_name="groq", api_key="")
-        assert GroqLLM(settings=s).available() is False
+        assert await GroqLLM(settings=s).available() is False
 
 
 # ── call_structured() — happy path ────────────────────────────────────────────

@@ -145,31 +145,55 @@ def _build_gemini_body(
     }
 
 
-def _sanitize_schema(schema: dict[str, object]) -> dict[str, object]:
-    """Strip non-JSON-Schema keys that Gemini doesn't accept."""
-    ACCEPTED_KEYS = {
-        "type",
-        "properties",
-        "required",
-        "items",
-        "enum",
-        "description",
-        "format",
-        "minimum",
-        "maximum",
-        "minItems",
-        "maxItems",
-    }
+_ACCEPTED_PROP_KEYS = {
+    "type",
+    "properties",
+    "required",
+    "items",
+    "enum",
+    "format",
+    "minimum",
+    "maximum",
+    "minItems",
+    "maxItems",
+}
+
+
+def _sanitize_property(prop: object) -> object:
+    """Recursively strip non-JSON-Schema keys (``description``/``title``/
+    any unrecognized key) from a single property definition."""
+    if not isinstance(prop, dict):
+        return prop
     out: dict[str, object] = {}
-    for k, v in schema.items():
-        if k in ACCEPTED_KEYS:
-            out[k] = v
+    for k, v in prop.items():
+        if k == "properties" and isinstance(v, dict):
+            out[k] = {name: _sanitize_property(pv) for name, pv in v.items()}
         elif k == "anyOf" and isinstance(v, list):
-            out[k] = [
-                _sanitize_schema(alt) if isinstance(alt, dict) else alt
-                for alt in v
-            ]
+            out[k] = [_sanitize_property(alt) for alt in v]
+        elif k in _ACCEPTED_PROP_KEYS:
+            out[k] = v
     return out
+
+
+def _sanitize_schema(schema: dict[str, object]) -> dict[str, object]:
+    """Build a Gemini ``responseSchema`` from *schema*.
+
+    Accepts either calling convention used across ``call_structured``
+    callers: a full JSON-Schema envelope (``{"type": "object", "properties":
+    {...}}``) or a flat ``{field_name: {"type": ..., ...}}`` property map.
+    Unknown/unsupported keys (``description``, ``title``, custom keys) are
+    stripped from every property, recursively.
+    """
+    if schema.get("type") == "object" and isinstance(schema.get("properties"), dict):
+        props = schema["properties"]
+    else:
+        props = schema
+    return {
+        "type": "object",
+        "properties": {
+            name: _sanitize_property(prop) for name, prop in props.items()
+        },
+    }
 
 
 def _parse_gemini_response(raw: dict[str, Any]) -> dict[str, object]:
