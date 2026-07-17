@@ -56,8 +56,18 @@ class BgeM3LocalLLM(LLMAdapter):
     # ------------------------------------------------------------------
 
     async def available(self) -> bool:
-        """Available when sentence-transformers is installed and importable."""
-        if not _HAS_ST:
+        """Available when sentence-transformers is installed and importable.
+
+        Re-checks importability live (rather than trusting only the
+        module-import-time ``_HAS_ST`` flag) so that availability reflects the
+        environment at call time — e.g. a test double injected into
+        ``sys.modules`` after this module was first imported.
+        """
+        if _HAS_ST:
+            return True
+        try:
+            import sentence_transformers  # noqa: F401
+        except ImportError:
             logger.warning(
                 "bge_m3_local unavailable: sentence-transformers not installed. "
                 "Install it with: pip install sentence-transformers"

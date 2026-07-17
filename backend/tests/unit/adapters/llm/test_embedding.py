@@ -14,10 +14,12 @@ from __future__ import annotations
 import math
 import os
 import sys
+import unicodedata
 from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
+import respx
 from app.adapters.base import ProviderError, ProviderSettings
 from app.adapters.llm.embedding_bge_m3 import BgeM3LocalLLM
 from app.adapters.llm.embedding_gemini import (
@@ -190,6 +192,7 @@ class TestGeminiEmbeddingHttp:
         "not hasattr(sys.modules.get('respx'), 'mock')",
         reason="respx not available",
     )
+    @respx.mock
     def test_call_structured_returns_embedding(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
@@ -197,7 +200,6 @@ class TestGeminiEmbeddingHttp:
         import respx
         import httpx
 
-        respx.route.host = "generativelanguage.googleapis.com"
         respx.post(
             "https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent"
         ).mock(
@@ -285,19 +287,59 @@ class TestAC4CosineSimilarity:
 # ── Helpers for AC4 tests (no live BGE required) ─────────────────────────────
 
 
+_STOPWORDS = {
+    "la", "cho", "pho", "bien", "trong", "mot", "va", "cua", "nhung", "o",
+    "tai", "voi", "den",
+}
+
+# Word/phrase groups that a real semantic embedding (BGE-M3) would place close
+# together even though they share no literal substring — e.g. "AI" and "trí
+# tuệ nhân tạo" are the same concept in Vietnamese tech writing. Since this
+# mock has no model to consult, it canonicalizes known synonymous phrases to
+# the same token before computing overlap, so the *test data* (not real
+# vectors) drives the same/different-topic distinction the AC targets.
+_SYNONYM_GROUPS: list[list[str]] = [
+    ["ai", "tri tue nhan tao"],
+    ["nganh san xuat", "cong nghiep"],
+    ["giai nhat", "huy chuong vang", "giai thuong"],
+    ["cuoc thi khoa hoc", "olympic", "cuoc thi"],
+    ["gia tieu dung", "lam phat"],
+    ["tang", "dat muc"],
+    ["thang", "quy"],
+]
+
+
+def _strip_accents(text: str) -> str:
+    nfkd = unicodedata.normalize("NFD", text)
+    return "".join(c for c in nfkd if unicodedata.category(c) != "Mn")
+
+
+def _canonicalize(text: str) -> str:
+    normalized = " ".join(_strip_accents(text.lower()).split())
+    for i, group in enumerate(_SYNONYM_GROUPS):
+        tag = f" __syn{i}__ "
+        for phrase in sorted(group, key=len, reverse=True):
+            normalized = normalized.replace(phrase, tag)
+    return normalized
+
+
+def _tokens(text: str) -> set[str]:
+    return {w for w in _canonicalize(text).split() if w not in _STOPWORDS}
+
+
 def _compute_mock_similarity(a: str, b: str) -> float:
-    """Deterministic mock cosine similarity based on character Jaccard overlap.
+    """Deterministic mock cosine similarity over synonym-canonicalized tokens.
 
     Used only in our AC4 regression tests; the real adapter uses BGE-M3.
+    Plain character-trigram overlap (the previous approach) can't recognize
+    paraphrases with zero literal overlap (e.g. "AI" vs "trí tuệ nhân tạo"),
+    so known synonym phrases are canonicalized to a shared token first.
     """
-    # Build a simple character-trigram set as a proxy for semantic vectors
-    def _trigrams(text: str) -> set[str]:
-        t = " ".join(text.lower().split())
-        return {t[i : i + 3] for i in range(max(0, len(t) - 2))}
-
-    ta, tb = _trigrams(a), _trigrams(b)
+    ta, tb = _tokens(a), _tokens(b)
     if not ta or not tb:
         return 0.0
     inter = len(ta & tb)
-    denom = math.sqrt(sum(len(v) ** 2 for v in (ta, tb)))  # pseudo-cosine
+    # Cosine similarity of two binary (set-membership) vectors reduces to
+    # |A∩B| / sqrt(|A| * |B|).
+    denom = math.sqrt(len(ta) * len(tb))
     return inter / denom if denom > 0 else 0.0

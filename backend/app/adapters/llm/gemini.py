@@ -140,20 +140,31 @@ def _build_gemini_body(
             "temperature": temperature,
             "maxOutputTokens": max_tokens,
             "responseMimeType": "application/json",
-            "responseSchema": _sanitize_schema(schema),
+            "responseSchema": _sanitize_schema(_normalize_schema(schema)),
         },
     }
 
 
+def _normalize_schema(schema: dict[str, object]) -> dict[str, object]:
+    """Wrap a bare field-map (no top-level ``type``) into an object schema.
+
+    Callers may pass either a full JSON Schema (``{"type": "object",
+    "properties": {...}}``) or a shorthand field-map (``{"field": {"type":
+    "string"}}``). Gemini's ``responseSchema`` always requires the former.
+    """
+    if "type" not in schema:
+        return {"type": "object", "properties": schema}
+    return schema
+
+
 def _sanitize_schema(schema: dict[str, object]) -> dict[str, object]:
-    """Strip non-JSON-Schema keys that Gemini doesn't accept."""
+    """Strip non-JSON-Schema keys that Gemini doesn't accept (recursively)."""
     ACCEPTED_KEYS = {
         "type",
         "properties",
         "required",
         "items",
         "enum",
-        "description",
         "format",
         "minimum",
         "maximum",
@@ -162,7 +173,14 @@ def _sanitize_schema(schema: dict[str, object]) -> dict[str, object]:
     }
     out: dict[str, object] = {}
     for k, v in schema.items():
-        if k in ACCEPTED_KEYS:
+        if k == "properties" and isinstance(v, dict):
+            out[k] = {
+                pk: (_sanitize_schema(pv) if isinstance(pv, dict) else pv)
+                for pk, pv in v.items()
+            }
+        elif k == "items" and isinstance(v, dict):
+            out[k] = _sanitize_schema(v)
+        elif k in ACCEPTED_KEYS:
             out[k] = v
         elif k == "anyOf" and isinstance(v, list):
             out[k] = [
