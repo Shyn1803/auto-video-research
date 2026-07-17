@@ -1,17 +1,19 @@
 {
   "task_id": "1-7",
-  "status": "not-started",
-  "branch": "feat/1-7-user-management-admin",
-  "current_step": 0,
+  "status": "in-progress",
+  "branch": "feat/1-7-quan-ly-nguoi-dung-admin",
+  "current_step": 3,
   "steps": [
-    {"id": 1, "name": "users table extension (must_change_password) + migration", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 2, "name": "Admin user CRUD service + last-admin/self-lock guards", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "must_change_password login flow (contract change)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 1, "name": "users table extension (must_change_password) + migration", "status": "done", "attempts": 1, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Admin user CRUD service + last-admin/self-lock guards", "status": "done", "attempts": 1, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "must_change_password login flow (contract change)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": null},
     {"id": 4, "name": "Admin › Users UI tab", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 5, "name": "Wire up tests covering all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
   ],
-  "decisions": [],
+  "decisions": [
+    "2026-07-17 reconciliation: steps 1-3 committed to main (5ef3a50 admin CRUD service + last-admin/self-lock guards, 6827f6b must_change_password login flow + migration). backend/app/api/users.py exists but is UNTRACKED (uncommitted) and NOT wired into backend/app/main.py's include_router() list — commit and wire it before calling step 3 fully closed. frontend/src/app/admin/users/ is an empty directory on main — step 4 not started here. Worker-B's unpushed worktree (branch worktree-agent-a3b47cc427c4448c4) has a more complete users.py and a 430-line frontend/src/app/admin/users/page.tsx that could supply step 4 once split out and reviewed."
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-17T00:00:00+07:00"
 }

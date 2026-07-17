@@ -1,8 +1,8 @@
 {
   "task_id": "2-4",
-  "status": "not-started",
+  "status": "done",
   "branch": "feat/2-4-tts-adapter-edge-tts",
-  "current_step": 0,
+  "current_step": 7,
   "steps": [
     { "id": 1, "name": "TTSAdapter base class + ProviderError", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
     { "id": 2, "name": "edge_tts provider adapter — registration + config (BR-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
@@ -12,8 +12,10 @@
     { "id": 6, "name": "POST scenes/{id}/tts-preview endpoint", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
     { "id": 7, "name": "Wire up tests + mock adapter + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
   ],
-  "decisions": [],
+  "decisions": [
+    "2026-07-17 reconciliation: merged to main via the 3-1 bundle commit 56d32e3 (\"feat(adapters): 3-1 adapter base + registry + 2-4 TTS adapter\"). backend/app/adapters/tts/edge_tts.py + base.py present on main; marking done."
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-17T00:00:00+07:00"
 }

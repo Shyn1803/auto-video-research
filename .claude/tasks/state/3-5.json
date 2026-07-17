@@ -12,8 +12,10 @@
     { "id": 6, "name": "Admin - Providers tab UI", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
     { "id": 7, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
   ],
-  "decisions": [],
-  "blocked_reason": null,
+  "decisions": [
+    "2026-07-17 reconciliation: main has no cost-tracking implementation. Real work (services/cost_service.py, cost_guard.py, core/cap_guard.py, events/cost.py, api/admin/costs.py, config/pricing.yaml) exists only in worker-B's unpushed worktree. origin/feat/3-5-cost-tracking-daily-cap-man-providers exists but its diff vs. current main looks stale, not the real work. Blocked pending worker-B splitting/pushing."
+  ],
+  "blocked_reason": "Real implementation exists only in worker-B's unpushed worktree; needs to be split onto feat/3-5-cost-tracking-daily-cap-man-providers (or a fresh push replacing the stale origin branch) before this task can be verified/merged.",
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-17T00:00:00+07:00"
 }

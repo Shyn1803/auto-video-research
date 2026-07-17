@@ -1,6 +1,6 @@
 {
   "task_id": "3-2",
-  "status": "not-started",
+  "status": "done",
   "branch": "feat/3-2-chain-router-failover-allow-paid",
   "current_step": 0,
   "steps": [
@@ -13,8 +13,10 @@
     { "id": 7, "name": "Health check — periodic + on-demand", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
     { "id": 8, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
   ],
-  "decisions": [],
+  "decisions": [
+    "2026-07-17 reconciliation: merged to main (backend/app/core/router.py, 413 lines, chain/failover logic present). Marking done."
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-17T00:00:00+07:00"
 }

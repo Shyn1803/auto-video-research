@@ -1,19 +1,21 @@
 {
   "task_id": "1-3",
-  "status": "not-started",
-  "branch": "feat/1-3-project-crud-dashboard",
-  "current_step": 0,
+  "status": "in-progress",
+  "branch": "feat/1-3-project-crud-dashboard-nhom-vong-doi",
+  "current_step": 2,
   "steps": [
-    {"id": 1, "name": "projects table + migration", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 2, "name": "Project CRUD service + ownership enforcement", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 1, "name": "projects table + migration", "status": "done", "attempts": 1, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Project CRUD service + ownership enforcement", "status": "done", "attempts": 1, "last_error": null, "commit_sha": null},
     {"id": 3, "name": "next_action computation (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 4, "name": "Dashboard lifecycle grouping (BR-6) + Mode filter (BR-7)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 5, "name": "TTS preview via adapter (BR-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 6, "name": "Dashboard + Create-project modal UI", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 7, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
   ],
-  "decisions": [],
+  "decisions": [
+    "2026-07-17 reconciliation: project_service.py (148 lines) is merged to main. Steps 1-2 done there. The API router (projects.py) and dashboard UI exist as 2 commits (68b24e4, cba4fb3) on local branch feat/1-3-project-crud-dashboard-nhom-vong-doi but are NOT merged into main and NOT wired into backend/app/main.py. Remaining work: merge/rebase that branch, wire projects_router into main.py, verify steps 3-7."
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-17T00:00:00+07:00"
 }

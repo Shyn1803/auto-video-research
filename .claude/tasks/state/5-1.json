@@ -13,8 +13,10 @@
     {"id": 7, "name": "Readonly / \"Sua lai tu day\" (BR-1/BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 8, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
   ],
-  "decisions": [],
-  "blocked_reason": null,
+  "decisions": [
+    "2026-07-17 reconciliation: main has no workspace UI. Real work (Topbar.tsx, PipelineStepper.tsx, SceneFormPanel.tsx, ScenePlayerPanel.tsx, SceneSidebar.tsx, ApproveBar.tsx, useAutosave.ts, workspace-context.tsx, workspace-store.ts, schema-form/generate.ts) exists only in worker-B's unpushed worktree. No feat/5-1 branch exists. Blocked pending worker-B splitting/pushing."
+  ],
+  "blocked_reason": "Real implementation exists only in worker-B's unpushed worktree; needs to be split onto a dedicated feat/5-1-project-workspace-topbar-stepper branch and pushed before this task can be verified/merged.",
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-17T00:00:00+07:00"
 }

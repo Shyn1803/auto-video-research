@@ -6,6 +6,10 @@
 
 Task 1-1 established the monorepo foundation: FastAPI health service, Next.js login placeholder, local Docker development stack, CI/env-template gate, and smoke/unit tests. `docs/` remains the normative BA/architecture handoff; implementation must continue from the task dependency graph, starting with unblocked task 2-1 (Scene JSON schema) and then Epic 1 foundations.
 
+## Open Questions
+
+- 2026-07-17: `sprint-status.yaml`/`RUN-STATUS.md`/`state/*.json` reconciled against actual git history (see RUN-STATUS.md "Audited" line). Tasks **3-3 (LLM adapters), 3-4 (API key management), 3-5 (cost tracking), 5-1 (workspace UI)** have real, substantial implementations sitting only in worker-B's unpushed worktree (`.claude/worktrees/agent-a3b47cc427c4448c4`, branch `worktree-agent-a3b47cc427c4448c4`, 9 bundled commits) — no dedicated `feat/*` branch exists for these 4 tasks yet. Needs worker-B (or whoever picks these tasks up) to split the relevant commits/files out onto proper per-task branches and push before those tasks can be marked done or safely built upon. Tasks 1-3 and 1-5 also have real, pushed-but-unmerged work sitting on `feat/1-3-project-crud-dashboard-nhom-vong-doi` (local) and `origin/feat/1-5-versioning-engine` respectively — these just need a normal merge, not a split.
+
 ## Known Issues
 
 - `docs/specs/remotion-integration.md` has a cosmetic section-numbering gap (§4 was inserted before the old §3, which got renumbered to §5 — no standalone §3 exists). Not user-flagged, not fixed, low priority.
