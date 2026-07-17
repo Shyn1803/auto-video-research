@@ -8,11 +8,10 @@ from __future__ import annotations
 import logging
 from collections.abc import MutableMapping
 from enum import StrEnum
-from typing import ClassVar
 
 from app.events.bus import publish
 from app.events.schemas import project_status
-from app.services.state_machine_edges import EDGES, validate
+from app.services.state_machine_edges import EDGES, TransitionError, validate
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +41,10 @@ ABNORMAL_EDGES.add("ARCHIVED->*")
 ABNORMAL_EDGES.add("*->ARCHIVED")
 
 
+def _edges_for(status: str) -> set[str]:
+    return EDGES.get(status, set())
+
+
 class ProjectStateMachine:
     """Validate and record a project-status transition (FR-17).
 
@@ -63,18 +66,22 @@ class ProjectStateMachine:
         from_state = project.status
         correlation_id = str(project.id)
 
-        # Idempotent: same target → no-op unless it's a side-effect edge
+        # Idempotent: same target -> no-op unless it's a side-effect edge
         if from_state == to_state:
             return
 
         validate(from_state, to_state)
 
         edge_key = f"{from_state}->{to_state}"
-        is_abnormal = edge_key in ABNORMAL_EDGES or "ARCHIVED" in (from_state, to_state)
+        is_abnormal = (
+            edge_key in ABNORMAL_EDGES
+            or "ARCHIVED" in (from_state, to_state)
+        )
 
         if is_abnormal and not reason:
-            from app.services.state_machine import TransitionError
-            raise TransitionError("reason is required for abnormal transitions")
+            raise TransitionError(
+                "reason is required for abnormal transitions"
+            )
 
         project.status = to_state
 
@@ -89,9 +96,14 @@ class ProjectStateMachine:
         session.add(history_row)
 
         self._emit(from_state, to_state, correlation_id, actor, reason)
-        logger.info("transition %s %s->%s actor=%s", project.id, from_state, to_state, actor)
+        logger.info(
+            "transition %s %s->%s actor=%s",
+            project.id, from_state, to_state, actor,
+        )
 
-    def _emit(self, from_state: str, to_state: str, correlation_id: str, actor: str | None, reason: str | None) -> None:
+    def _emit(self, from_state: str, to_state: str,
+              correlation_id: str, actor: str | None,
+              reason: str | None) -> None:
         try:
             publish(
                 "project.status",
@@ -105,8 +117,6 @@ class ProjectStateMachine:
                 ).model_dump(),
             )
         except Exception:
-            logger.debug("event bus unavailable for project.status %s", correlation_id)
-
-
-class TransitionError(ValueError):
-    pass
+            logger.debug(
+                "event bus unavailable for project.status %s", correlation_id
+            )

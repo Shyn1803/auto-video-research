@@ -1,0 +1,61 @@
+# pricing.yaml — LLM cost estimates (USD per 1K tokens)
+#
+# Used by llm.helpers.estimate_cost() via load_pricing().
+# Free providers have 0.0 for both fields (still logs tokens per BR-3).
+# Never hardcode these values in adapter code — always consult this file.
+
+ollama:
+  qwen2.5:14b-instruct:
+    input_per_1k_usd: 0.0
+    output_per_1k_usd: 0.0
+  qwen2.5:32b-instruct:
+    input_per_1k_usd: 0.0
+    output_per_1k_usd: 0.0
+  llama3.1:8b:
+    input_per_1k_usd: 0.0
+    output_per_1k_usd: 0.0
+  llama3.1:70b:
+    input_per_1k_usd: 0.0
+    output_per_1k_usd: 0.0
+
+gemini:
+  gemini-flash-latest:
+    input_per_1k_usd: 0.00001875
+    output_per_1k_usd: 0.000075
+  gemini-2.0-flash-exp:free:
+    input_per_1k_usd: 0.0
+    output_per_1k_usd: 0.0
+
+groq:
+  llama-3.3-70b-versatile:
+    input_per_1k_usd: 0.00059
+    output_per_1k_usd: 0.00079
+  llama-3.1-8b-instant:
+    input_per_1k_usd: 0.00005
+    output_per_1k_usd: 0.00008
+
+openrouter_free:
+  google/gemini-2.0-flash-exp:free:
+    input_per_1k_usd: 0.0
+    output_per_1k_usd: 0.0
+  meta-llama/llama-3.1-8b-instruct:free:
+    input_per_1k_usd: 0.0
+    output_per_1k_usd: 0.0
+
+openrouter_paid:
+  openai/gpt-4o-mini:
+    input_per_1k_usd: 0.00015
+    output_per_1k_usd: 0.00060
+  anthropic/claude-sonnet-5:
+    input_per_1k_usd: 0.0030
+    output_per_1k_usd: 0.0150
+
+bge_m3_local:
+  bge-m3:
+    input_per_1k_usd: 0.0
+    output_per_1k_usd: 0.0
+
+gemini_embedding:
+  text-embedding-004:
+    input_per_1k_usd: 0.0000125
+    output_per_1k_usd: 0.0
