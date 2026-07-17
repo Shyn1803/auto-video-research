@@ -64,7 +64,7 @@ development_status:
   1-2-auth-jwt-rbac: done
   1-3-project-crud-dashboard-nhom-vong-doi: done   # 2026-07-17: merged to main (740a19e) — fixed real import/FK bugs blocking Project model, wired projects_router, completed service, added dashboard UI. Integration/e2e tests deferred (no live env in sandbox)
   1-4-state-machine-status-history: done
-  1-5-versioning-engine: in-progress   # main has stub only; real impl on unmerged origin/feat/1-5-versioning-engine
+  1-5-versioning-engine: done   # 2026-07-17: merged to main (8aae243) — real service merged, broken router dep fixed, create/current endpoints + 409 running-guard added, api-spec.md §3 updated. Property test deferred (no live env in sandbox)
   1-6-event-bus-noi-bo-sse: done
   1-7-quan-ly-nguoi-dung-admin: done   # 2026-07-17: merged to main (bca3b1b/051c247) — service+router+migration+tests+frontend admin/users page all present
   epic-1-retrospective: optional
