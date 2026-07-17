@@ -61,7 +61,7 @@ class Project(Base):
         "StepVersion", back_populates="project", cascade="all, delete-orphan"
     )
 
-status_history: Mapped[list["StatusHistory"]] = relationship(
+    status_history: Mapped[list["StatusHistory"]] = relationship(
         "StatusHistory", back_populates="project", cascade="all, delete-orphan"
     )
 
