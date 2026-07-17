@@ -45,8 +45,13 @@ class ProjectService:
         self._sm = ProjectStateMachine()
 
     async def get(self, project_id: UUID, user_id: UUID) -> Project | None:
+        """Get a non-archived project owned by user_id (ownership enforcement)."""
         result = await self._db.execute(
-            select(Project).where(Project.id == project_id, Project.archived_at.is_(None))
+            select(Project).where(
+                Project.id == project_id,
+                Project.owner_id == user_id,
+                Project.archived_at.is_(None),
+            )
         )
         return result.scalar_one_or_none()
 

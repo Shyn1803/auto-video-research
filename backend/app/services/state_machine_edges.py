@@ -104,3 +104,17 @@ def is_terminal(status: str) -> bool:
     """A terminal status has no outgoing transitions in the normal matrix
     (FAILED and ARCHIVED)."""
     return not EDGES.get(status, frozenset())
+
+
+class TransitionError(ValueError):
+    """Raised for an unknown status or a disallowed from→to transition."""
+
+
+def validate(from_status: str, to_status: str) -> None:
+    """Raise ``TransitionError`` unless ``from_status -> to_status`` is a valid edge."""
+    if from_status not in ALL_STATUSES:
+        raise TransitionError(f"Unknown status {from_status!r}")
+    if to_status not in ALL_STATUSES:
+        raise TransitionError(f"Unknown status {to_status!r}")
+    if not is_valid_edge(from_status, to_status):
+        raise TransitionError(f"invalid transition {from_status} -> {to_status}")

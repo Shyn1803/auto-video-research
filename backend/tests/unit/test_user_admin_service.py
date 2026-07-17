@@ -60,7 +60,7 @@ def tokens():
 async def test_create_sets_must_change_password(tokens):
     session = _FakeSession()
     svc = UserAdminService(db=session, token_service=tokens)
-    user = await svc.create(email="a@b.com", display_name="A", role="creator", temp_password="temp123")
+    user = await svc.create(email="a@b.com", display_name="A", role="creator", temp_password="temp123456")
     assert user.must_change_password is True
     session.add.assert_called_once()
 

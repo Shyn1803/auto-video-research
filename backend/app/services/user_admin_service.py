@@ -9,6 +9,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import validate_password
 from app.models.user import User
 from app.services.token_service import TokenService
 
@@ -36,6 +37,14 @@ class UserAdminService:
 
     async def create(self, *, email: str, display_name: str, role: str, temp_password: str) -> User:
         from app.core.security import hash_password
+
+        try:
+            validate_password(temp_password)
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        existing = await self._db.execute(select(User).where(User.email == email))
+        if existing.scalar_one_or_none() is not None:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="email already exists")
 
         user = User(
             email=email,
