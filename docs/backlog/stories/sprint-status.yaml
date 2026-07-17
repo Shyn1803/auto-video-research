@@ -66,7 +66,7 @@ development_status:
   1-4-state-machine-status-history: done
   1-5-versioning-engine: in-progress   # main has stub only; real impl on unmerged origin/feat/1-5-versioning-engine
   1-6-event-bus-noi-bo-sse: done
-  1-7-quan-ly-nguoi-dung-admin: in-progress   # backend done on main; API router uncommitted, frontend UI missing
+  1-7-quan-ly-nguoi-dung-admin: done   # 2026-07-17: merged to main (bca3b1b/051c247) — service+router+migration+tests+frontend admin/users page all present
   epic-1-retrospective: optional
 
   # Epic 2 — Scene JSON + Remotion + TTS + 11 layout (26đ, tuần 1-3, 2.6: tuần 4-6)

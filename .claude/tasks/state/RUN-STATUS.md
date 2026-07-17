@@ -14,7 +14,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 | 1-4 | ✅ done | 4 | feat/1-4-state-machine | — |
 | 1-5 | 🔵 in-progress | 1 | feat/1-5-versioning-engine | Main's `versioning_service.py` is a 1-line stub. Real implementation (versions API router 116 lines, schemas/version.py, 160-line service) exists on origin/feat/1-5-versioning-engine — pushed but not merged into main |
 | 1-6 | ✅ done | 6 | feat/1-6-event-bus-sse | Merged d937b44 |
-| 1-7 | 🔵 in-progress | 3 | feat/1-7-quan-ly-nguoi-dung-admin | Migration + user_admin_service.py + must_change_password login flow committed to main (5ef3a50, 6827f6b). API router backend/app/api/users.py written but UNCOMMITTED (untracked) and not wired into main.py's include_router(). Frontend Admin › Users UI tab not built (frontend/src/app/admin/users/ is an empty dir on main). A more complete version of both users.py and admin/users/page.tsx (430 lines) exists in worker-B's unpushed worktree — see note below |
+| 1-7 | ✅ done | 6 | feat/1-7-quan-ly-nguoi-dung-admin | Merged to main 2026-07-17 (bca3b1b/051c247): reconciled HEAD's tested UserAdminService/users.py with origin/main's worker-B version (kept HEAD's API since it had passing tests, folded in email/password validation); frontend admin/users/page.tsx (430 lines) merged from worker-B worktree |
 | 2-1 | ✅ done | 7 | feat/2-1-scene-json-schema-v1 | — |
 | 2-2 | ✅ done | 8 | feat/2-2-remotion-base-layer | — |
 | 2-3 | ✅ done | 7 | feat/2-3-remotion-player-preview | — |
@@ -73,6 +73,21 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 | 10-4 | ⬜ not-started | — | feat/10-4-security-hardening | — |
 | 10-5 | ⬜ not-started | — | feat/10-5-load-test | — |
 | 10-6 | ⬜ not-started | — | feat/10-6-release-docs | — |
+
+## 2026-07-17 (later) — merge reconciliation + full test run findings
+
+1-7 merged to main. While reconciling, discovered worker-B's worktree content (3-1..3-5, 5-1, 4-1, 1-3 partial) had *already* been merged into main by a prior session (commits `760d0de`..`d37a9ab`..`24ac6b2`, then `d937b44`/`0d33718`/`be4699a`) — this file and `sprint-status.yaml` were stale relative to main's actual git history at the point this session started. Fixed several pre-existing bugs blocking the whole backend test suite from even collecting: `TTSResult.cache_key` slots/method name collision (`app/adapters/base.py`), missing `DateTime` import (`app/models/api_key.py`), missing `TransitionError`/`validate` exports (`app/services/state_machine_edges.py`), missing `LLMAdapter` import (`app/adapters/llm/embedding_bge_m3.py`), missing `registry.unregister` (`app/adapters/registry.py`).
+
+**After those fixes, full `pytest` run: 102 failed / 122 passed / 3 errors.** These failures are real, pre-existing gaps in the 3-3/3-4/3-5/1-5/event-bus work that landed via the worktree merge — NOT caused by the 1-7 merge itself (isolated `test_user_admin_service.py` run is 9/9 green). Whoever picks up these tasks needs to fix, in roughly this order of blast radius:
+- `tests/unit/core/test_router.py` (3-2): `ProviderRouter.__init__()` doesn't accept a `settings=` kwarg the tests expect — signature drift.
+- `tests/unit/services/test_api_key_service.py` + `tests/security/test_api_key_plaintext.py` (3-4): Fernet key fixture/config isn't a valid 32-byte urlsafe-base64 key; `mask()` helper behavior doesn't match test expectations.
+- `tests/unit/services/test_cost_service.py` (3-5): code accesses `.get()` on a SQLAlchemy `Row` (should use `Row._mapping` or a dict conversion); one method returns an unawaited coroutine subscripted directly.
+- `tests/unit/services/test_provider_status_service.py` (3-5/3-2 boundary): imports `_REGISTRY` from `app.adapters.registry` — that name doesn't exist (registry's private dict is `_registry`, lowercase) — likely a stale import from before a rename.
+- `tests/unit/adapters/tts/test_mock_adapter.py` (2-4/3-3 boundary): `MockTts` methods (`available`, `synthesize`) appear to be `async def` when the adapter base/tests expect sync, or vice versa — coroutines returned instead of results.
+- `tests/unit/test_event_envelope.py` + `state_machine.py` (1-4/1-5 boundary): `ProjectStateMachine.transition()` signature mismatch with what the event-envelope tests call it with; a test also expects `EDGES` to have an `.edges` attribute (looks like EDGES was expected to be an object, not a plain dict, in that test file — reconcile which shape is canonical, this file's `EDGES: dict[...]` predates that test).
+- `tests/unit/test_health.py`: `asyncpg` not installed in the dev environment — either add it to `pyproject.toml` deps or confirm it's already there and only missing from this sandbox's installed packages.
+
+None of this blocks other unrelated tasks (4.x, 5.x, 6.x etc. don't import these modules), so the run should continue in parallel rather than stopping for it — flagged here per `rules/autonomy-policy.md` async-escalation guidance. Whichever agent resumes 3-2/3-3/3-4/3-5/1-5 should treat this list as its starting DoD checklist rather than re-discovering it.
 
 ## Follow-up required from worker-B (not done in this reconciliation pass)
 
