@@ -35,7 +35,7 @@ class TestRegistryLookup:
 class TestDemoAdapter:
     @pytest.mark.asyncio
     async def test_available_with_key(self) -> None:
-        assert DemoLLM(settings=_settings()).available() is True
+        assert await DemoLLM(settings=_settings()).available() is True
 
     @pytest.mark.asyncio
     async def test_call_structured_returns_dict(self) -> None:
