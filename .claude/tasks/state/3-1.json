@@ -1,6 +1,6 @@
 {
   "task_id": "3-1",
-  "status": "not-started",
+  "status": "done",
   "branch": "feat/3-1-adapter-base-registry-config-layer",
   "current_step": 0,
   "steps": [
@@ -13,8 +13,10 @@
     { "id": 7, "name": "mypy strict + docs/CONFIGURATION.md entry", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
     { "id": 8, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
   ],
-  "decisions": [],
+  "decisions": [
+    "2026-07-17 reconciliation: merged to main (base.py, registry.py present, commits 217d7db/b33faf1/56d32e3). Marking done."
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-17T00:00:00+07:00"
 }

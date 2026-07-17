@@ -14,8 +14,10 @@
     { "id": 8, "name": "Nightly @external smoke marker", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
     { "id": 9, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
   ],
-  "decisions": [],
-  "blocked_reason": null,
+  "decisions": [
+    "2026-07-17 reconciliation: main's backend/app/adapters/llm/ is empty (__init__.py only). Real adapters (groq.py, mock.py, ollama.py, openrouter.py, helpers.py) exist only in worker-B's unpushed worktree (.claude/worktrees/agent-a3b47cc427c4448c4, branch worktree-agent-a3b47cc427c4448c4). No feat/3-3 branch exists. Blocked pending worker-B splitting/pushing that work."
+  ],
+  "blocked_reason": "Real implementation exists only in worker-B's unpushed worktree (branch worktree-agent-a3b47cc427c4448c4); needs to be split onto a dedicated feat/3-3-llm-adapters branch and pushed before this task can be verified/merged.",
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-17T00:00:00+07:00"
 }

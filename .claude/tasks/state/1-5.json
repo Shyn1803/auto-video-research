@@ -1,18 +1,20 @@
 {
   "task_id": "1-5",
-  "status": "not-started",
+  "status": "in-progress",
   "branch": "feat/1-5-versioning-engine",
-  "current_step": 0,
+  "current_step": 2,
   "steps": [
-    {"id": 1, "name": "step_versions table + migration", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 2, "name": "create() / current() service methods", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 1, "name": "step_versions table + migration", "status": "done", "attempts": 1, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "create() / current() service methods", "status": "done", "attempts": 1, "last_error": null, "commit_sha": null},
     {"id": 3, "name": "restore() with cascade-stale", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 4, "name": "Regenerate parent-tracking (BR-5) + compare()", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 5, "name": "API §3 endpoints + api-spec update", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 6, "name": "Wire up tests — property test cascade + all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
   ],
-  "decisions": [],
+  "decisions": [
+    "2026-07-17 reconciliation: main's backend/app/services/versioning_service.py is a 1-line stub. The real implementation (versions API router ~116 lines, backend/app/schemas/version.py ~39 lines, versioning_service.py ~160 lines, commits 5f73294 + c8956d8) is pushed to origin/feat/1-5-versioning-engine but NOT merged into main. Remaining work: merge that branch into main, verify steps 3-6 (restore cascade, compare(), API §3 docs, tests)."
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-17T00:00:00+07:00"
 }

@@ -1,167 +1,108 @@
-"""Admin user management endpoints (admin only)."""
+"""Admin user management endpoints — CRUD with safety guards (BR-1, BR-2, BR-3)."""
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from sqlalchemy import select
 
 from app.core.deps import require_role
-from app.core.security import hash_password, validate_password
+from app.core.security import hash_password
 from app.models.user import User
+from app.services.token_service import TokenService
 from app.services.user_admin_service import UserAdminService
 
-router = APIRouter(tags=["users"])
+router = APIRouter(tags=["admin-users"])
+
+_tokens = TokenService(secret="")  # placeholder, only used for revoke tokens
 
 
-# -- schemas ---------------------------------------------------------------
-
-class CreateUserBody(BaseModel):
-	email: EmailStr
-	display_name: str
-	password: str  # temp password
-	role: str = "creator"
+class UserCreateReq(BaseModel):
+    email: str
+    display_name: str
+    password: str
+    role: str = "creator"
 
 
-class UpdateRoleBody(BaseModel):
-	role: str
+class UserRoleUpdate(BaseModel):
+    role: str
 
 
-class UserOut(BaseModel):
-	id: str
-	email: str
-	display_name: str
-	role: str
-	is_active: bool
-	must_change_password: bool
-	created_at: str
-	updated_at: str
-
-	@classmethod
-	def from_model(cls, u: User) -> "UserOut":
-		return cls(
-			id=str(u.id),
-			email=u.email,
-			display_name=u.display_name,
-			role=u.role,
-			is_active=u.is_active,
-			must_change_password=u.must_change_password,
-			created_at=u.created_at.isoformat(),
-			updated_at=u.updated_at.isoformat(),
-		)
+class UserLockUpdate(BaseModel):
+    is_active: bool
 
 
-class ListResponse(BaseModel):
-	items: list[UserOut]
-	total: int
-	page: int
-	size: int
+class UserAdminOut(BaseModel):
+    id: UUID
+    email: str
+    display_name: str
+    role: str
+    is_active: bool
+    must_change_password: bool
 
 
-class ChangePasswordBody(BaseModel):
-	new_password: str
+def _to_out(user: User) -> UserAdminOut:
+    return UserAdminOut(
+        id=user.id,
+        email=user.email,
+        display_name=user.display_name,
+        role=user.role,
+        is_active=user.is_active,
+        must_change_password=user.must_change_password,
+    )
 
 
-# -- endpoints -------------------------------------------------------------
-
-@router.post("/users", status_code=status.HTTP_201_CREATED)
-async def create_user(
-	req: Request,
-	body: CreateUserBody,
-	_admin: User = Depends(require_role("admin")),
-) -> UserOut:
-	async with req.app.state.database.session() as session:
-		svc = UserAdminService(session, str(_admin.id))
-		user = await svc.create_user(
-			email=str(body.email),
-			display_name=body.display_name,
-			temp_password=body.password,
-			role=body.role,
-		)
-		return UserOut.from_model(user)
+@router.get("/users", response_model=list[UserAdminOut])
+async def list_users(req: Request, _auth=Depends(require_role("admin"))) -> list[UserAdminOut]:
+    async with req.app.state.database.session() as session:
+        svc = UserAdminService(db=session, token_service=_tokens)
+        users = await svc.list()
+        await session.commit()
+    return [_to_out(u) for u in users]
 
 
-@router.get("/users")
-async def list_users(
-	req: Request,
-	page: int = 1,
-	size: int = 20,
-	_admin: User = Depends(require_role("admin")),
-) -> ListResponse:
-	async with req.app.state.database.session() as session:
-		svc = UserAdminService(session, str(_admin.id))
-		items, total = await svc.list_users(page=page, size=size)
-		return ListResponse(
-			items=[UserOut.from_model(u) for u in items],
-			total=total, page=page, size=size,
-		)
+@router.post("/users", response_model=UserAdminOut, status_code=status.HTTP_201_CREATED)
+async def create_user(req: Request, body: UserCreateReq, _auth=Depends(require_role("admin"))) -> UserAdminOut:
+    async with req.app.state.database.session() as session:
+        svc = UserAdminService(db=session, token_service=_tokens)
+        user = await svc.create(
+            email=body.email,
+            display_name=body.display_name,
+            role=body.role,
+            temp_password=body.password,
+        )
+        await session.commit()
+    return _to_out(user)
 
 
-@router.patch("/users/{user_id}")
-async def update_user_role(
-	req: Request,
-	user_id: str,
-	body: UpdateRoleBody,
-	_admin: User = Depends(require_role("admin")),
-) -> UserOut:
-	async with req.app.state.database.session() as session:
-		svc = UserAdminService(session, str(_admin.id))
-		user = await svc.update_role(user_id, body.role)
-		return UserOut.from_model(user)
+@router.patch("/users/{user_id}", response_model=UserAdminOut)
+async def update_role(
+    req: Request,
+    user_id: UUID,
+    body: UserRoleUpdate,
+    actor=Depends(require_role("admin")),
+) -> UserAdminOut:
+    async with req.app.state.database.session() as session:
+        svc = UserAdminService(db=session, token_service=_tokens)
+        user = await svc.set_role(user_id, actor_id=actor.id, new_role=body.role)
+        await session.commit()
+    return _to_out(user)
 
 
-@router.post("/users/{user_id}/lock")
-async def lock_user(
-	req: Request,
-	user_id: str,
-	_admin: User = Depends(require_role("admin")),
-) -> UserOut:
-	async with req.app.state.database.session() as session:
-		svc = UserAdminService(session, str(_admin.id))
-		user = await svc.lock_user(user_id)
-		return UserOut.from_model(user)
-
-
-@router.post("/users/{user_id}/unlock")
-async def unlock_user(
-	req: Request,
-	user_id: str,
-	_admin: User = Depends(require_role("admin")),
-) -> UserOut:
-	async with req.app.state.database.session() as session:
-		svc = UserAdminService(session, str(_admin.id))
-		user = await svc.unlock_user(user_id)
-		return UserOut.from_model(user)
-
-
-@router.post("/auth/change-password")
-async def change_password(
-	req: Request,
-	body: ChangePasswordBody,
-	user: User = Depends(get_current_user),
-) -> dict[str, str]:
-	"""Change the current user's password (clears must_change_password flag)."""
-	try:
-		validate_password(body.new_password)
-	except ValueError as exc:
-		raise HTTPException(
-			status_code=status.HTTP_400_BAD_REQUEST,
-			detail=str(exc),
-		) from exc
-	async with req.app.state.database.session() as session:
-		result = await session.execute(
-			select(User).where(User.id == user.id),
-		)
-		db_user = result.scalar_one_or_none()
-		if db_user is None:
-			raise HTTPException(
-				status_code=status.HTTP_404_NOT_FOUND,
-				detail="user not found",
-			)
-		db_user.password_hash = hash_password(body.new_password)
-		db_user.must_change_password = False
-		db_user.updated_at = datetime.now(UTC)
-		await session.flush()
-	return {"detail": "password changed"}
+@router.patch("/users/{user_id}/lock", response_model=UserAdminOut)
+async def lock_unlock(
+    req: Request,
+    user_id: UUID,
+    body: UserLockUpdate,
+    actor=Depends(require_role("admin")),
+) -> UserAdminOut:
+    async with req.app.state.database.session() as session:
+        svc = UserAdminService(db=session, token_service=_tokens)
+        if body.is_active:
+            user = await svc.unlock(user_id)
+        else:
+            user = await svc.lock(user_id, actor_id=actor.id)
+        await session.commit()
+    return _to_out(user)

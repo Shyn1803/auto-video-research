@@ -1,208 +1,127 @@
-"""Admin user lifecycle — create, list, role change, lock/unlock.
-
-Business rules enforced at the service layer (BR-1: no self-lock/demote;
-BR-2: lock revokes all refresh tokens; BR-3: always >= 1 active admin).
-"""
+"""Admin user management — CRUD with safety guards (BR-1, BR-2, BR-3)."""
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from datetime import UTC, datetime
+import logging
+from uuid import UUID
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select, update
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import hash_password, validate_password
-from app.models.refresh_token import RefreshToken
+from app.core.security import validate_password
 from app.models.user import User
+from app.services.token_service import TokenService
 
-ALLOWED_ROLES: tuple[str, ...] = ("admin", "creator")
-_MIN_PASSWORD_LENGTH: int = 10
+logger = logging.getLogger(__name__)
 
 
 class UserAdminService:
-	"""Service for admin-only user management."""
+    """Admin CRUD for users.
 
-	def __init__(self, session: AsyncSession, acting_user_id: str) -> None:
-		self._session = session
-		self._acting_user_id = acting_user_id
+    BR-1: Cannot lock/demote self.
+    BR-2: Locking a user revokes all refresh tokens immediately.
+    BR-3: Must always have >= 1 active admin — operations that would drop to 0 rejected.
+    """
 
-	# -- internal helpers ----------------------------------------------------
+    def __init__(self, db: AsyncSession, token_service: TokenService | None = None) -> None:
+        self._db = db
+        self._tokens = token_service or TokenService(secret="")
 
-	async def _count_active_admins(self) -> int:
-		result = await self._session.execute(
-			select(func.count())
-			.select_from(User)
-			.where(User.role == "admin")
-			.where(User.is_active.is_(True)),
-		)
-		return result.scalar_one()
+    async def list(self, *, include_locked: bool = True) -> list[User]:
+        q = select(User)
+        if not include_locked:
+            q = q.where(User.is_active.is_(True))
+        result = await self._db.execute(q.order_by(User.created_at.desc()))
+        return list(result.scalars().all())
 
-	async def _ensure_acting_user(self) -> User:
-		result = await self._session.execute(
-			select(User).where(User.id == self._acting_user_id),
-		)
-		user = result.scalar_one_or_none()
-		if user is None:
-			raise HTTPException(
-				status_code=status.HTTP_401_UNAUTHORIZED,
-				detail="acting user not found",
-			)
-		return user
+    async def create(self, *, email: str, display_name: str, role: str, temp_password: str) -> User:
+        from app.core.security import hash_password
 
-	def _assert_not_self(self, target_id: str, action: str) -> None:
-		if target_id == self._acting_user_id:
-			raise HTTPException(
-				status_code=status.HTTP_409_CONFLICT,
-				detail=f"cannot {action} yourself",
-			)
+        try:
+            validate_password(temp_password)
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        existing = await self._db.execute(select(User).where(User.email == email))
+        if existing.scalar_one_or_none() is not None:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="email already exists")
 
-	async def _ensure_last_admin(self, target_id: str) -> None:
-		self._assert_not_self(target_id, "deactivate/demote")
-		count = await self._count_active_admins()
-		if count <= 1:
-			raise HTTPException(
-				status_code=status.HTTP_409_CONFLICT,
-				detail="at least one active admin is required",
-			)
+        user = User(
+            email=email,
+            display_name=display_name,
+            role=role,
+            password_hash=hash_password(temp_password),
+            must_change_password=True,
+        )
+        self._db.add(user)
+        await self._db.flush()
+        return user
 
-	async def _revoke_all_refresh_tokens(self, user_id: str) -> None:
-		now = datetime.now(UTC)
-		await self._session.execute(
-			update(RefreshToken)
-			.where(RefreshToken.user_id == user_id)
-			.where(RefreshToken.revoked_at.is_(None))
-			.values(revoked_at=now),
-		)
+    async def set_role(self, user_id: UUID, actor_id: UUID, new_role: str) -> User:
+        if user_id == actor_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot change your own role",
+            )
+        # BR-3: changing away from admin — check we're not the last one
+        user = await self._get(user_id)
+        if user.role == "admin" and new_role != "admin":
+            active_admins = await self._count_active_admins(exclude=user_id)
+            if active_admins == 0:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Cannot demote the last active admin. Promote another user first.",
+                )
+        user.role = new_role
+        await self._db.flush()
+        return user
 
-	# -- public API ----------------------------------------------------------
+    async def lock(self, user_id: UUID, actor_id: UUID) -> User:
+        if user_id == actor_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot lock yourself",
+            )
+        user = await self._get(user_id)
+        if not user.is_active:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already locked")
+        # BR-3: locking an admin — are they the last?
+        if user.role == "admin":
+            active_admins = await self._count_active_admins(exclude=user_id)
+            if active_admins == 0:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Cannot lock the last active admin. Promote another user first.",
+                )
+        user.is_active = False
+        # BR-2: revoke all refresh tokens immediately
+        revoked = await self._tokens.revoke_all_for_user(self._db, user_id)
+        logger.info("locked user %s, revoked %d tokens", user_id, revoked)
+        await self._db.flush()
+        return user
 
-	async def create_user(
-		self,
-		*,
-		email: str,
-		display_name: str,
-		temp_password: str,
-		role: str = "creator",
-	) -> User:
-		"""Create a user with a temp password that must be changed on first login."""
-		if role not in ALLOWED_ROLES:
-			raise HTTPException(
-				status_code=status.HTTP_400_BAD_REQUEST,
-				detail=f"role must be one of {ALLOWED_ROLES}",
-			)
-		try:
-			validate_password(temp_password)
-		except ValueError as exc:
-			raise HTTPException(
-				status_code=status.HTTP_400_BAD_REQUEST,
-				detail=str(exc),
-			) from exc
+    async def unlock(self, user_id: UUID) -> User:
+        user = await self._get(user_id)
+        user.is_active = True
+        await self._db.flush()
+        return user
 
-		existing = await self._session.scalar(
-			select(User).where(User.email == email),
-		)
-		if existing is not None:
-			raise HTTPException(
-				status_code=status.HTTP_409_CONFLICT,
-				detail="email already exists",
-			)
+    async def force_password_reset(self, user_id: UUID) -> None:
+        """Set must_change_password so next login requires a new password."""
+        await self._db.execute(
+            update(User).where(User.id == user_id).values(must_change_password=True)
+        )
+        await self._db.flush()
 
-		user = User(
-			email=email,
-			password_hash=hash_password(temp_password),
-			display_name=display_name,
-			role=role,
-			is_active=True,
-			must_change_password=True,
-		)
-		self._session.add(user)
-		await self._session.flush()
-		return user
+    async def _get(self, user_id: UUID) -> User:
+        result = await self._db.execute(select(User).where(User.id == user_id))
+        user = result.scalar_one_or_none()
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        return user
 
-	async def list_users(
-		self, page: int = 1, size: int = 20
-	) -> tuple[Sequence[User], int]:
-		page = max(page, 1)
-		size = max(min(size, 100), 1)
-		total_result = await self._session.execute(
-			select(func.count()).select_from(User),
-		)
-		total = total_result.scalar_one()
-
-		result = await self._session.execute(
-			select(User)
-			.order_by(User.created_at.desc())
-			.offset((page - 1) * size)
-			.limit(size),
-		)
-		items = result.scalars().all()
-		return items, total
-
-	async def update_role(self, user_id: str, new_role: str) -> User:
-		"""Change a users role; rejects invalid role or demoting the last admin."""
-		await self._ensure_last_admin(user_id)
-		if new_role not in ALLOWED_ROLES:
-			raise HTTPException(
-				status_code=status.HTTP_400_BAD_REQUEST,
-				detail=f"role must be one of {ALLOWED_ROLES}",
-			)
-		result = await self._session.execute(
-			select(User).where(User.id == user_id),
-		)
-		user = result.scalar_one_or_none()
-		if user is None:
-			raise HTTPException(
-				status_code=status.HTTP_404_NOT_FOUND,
-				detail="user not found",
-			)
-		self._assert_not_self(user_id, "demote")
-		user.role = new_role
-		user.updated_at = datetime.now(UTC)
-		await self._session.flush()
-		return user
-
-	async def lock_user(self, user_id: str) -> User:
-		"""Lock a user; revokes all refresh tokens immediately."""
-		await self._ensure_last_admin(user_id)
-		result = await self._session.execute(
-			select(User).where(User.id == user_id),
-		)
-		user = result.scalar_one_or_none()
-		if user is None:
-			raise HTTPException(
-				status_code=status.HTTP_404_NOT_FOUND,
-				detail="user not found",
-			)
-		if not user.is_active:
-			raise HTTPException(
-				status_code=status.HTTP_409_CONFLICT,
-				detail="user is already locked",
-			)
-		user.is_active = False
-		user.updated_at = datetime.now(UTC)
-		await self._revoke_all_refresh_tokens(user_id)
-		await self._session.flush()
-		return user
-
-	async def unlock_user(self, user_id: str) -> User:
-		"""Re-enable a locked user."""
-		result = await self._session.execute(
-			select(User).where(User.id == user_id),
-		)
-		user = result.scalar_one_or_none()
-		if user is None:
-			raise HTTPException(
-				status_code=status.HTTP_404_NOT_FOUND,
-				detail="user not found",
-			)
-		if user.is_active:
-			raise HTTPException(
-				status_code=status.HTTP_409_CONFLICT,
-				detail="user is already active",
-			)
-		user.is_active = True
-		user.updated_at = datetime.now(UTC)
-		await self._session.flush()
-		return user
+    async def _count_active_admins(self, exclude: UUID) -> int:
+        result = await self._db.execute(
+            select(User).where(User.role == "admin", User.is_active.is_(True), User.id != exclude)
+        )
+        return len(result.scalars().all())

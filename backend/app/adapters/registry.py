@@ -40,6 +40,11 @@ def _register(
     _registry[key] = cls
 
 
+def unregister(capability: str, name: str) -> None:
+    """Remove a (capability, name) registration — test cleanup only."""
+    _registry.pop((capability, name), None)
+
+
 def register_llm(
     name: str,
 ) -> Callable[[type[LLMAdapter]], type[LLMAdapter]]:

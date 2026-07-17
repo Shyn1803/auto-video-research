@@ -10,8 +10,10 @@
     { "id": 4, "name": "Wire segments into SceneRenderer props preparation", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
     { "id": 5, "name": "Wire up tests + property test + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
   ],
-  "decisions": [],
+  "decisions": [
+    "2026-07-17 reconciliation: confirmed not-started. Only the Subtitle.tsx display primitive (delivered as part of 2-2) exists on main; no timestamp-segmentation algorithm, @remotion/captions evaluation, or wiring into SceneRenderer props found on main, any local branch, or origin/feat/2-5-subtitle-tu-timestamps."
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-17T00:00:00+07:00"
 }

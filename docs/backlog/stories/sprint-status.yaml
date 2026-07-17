@@ -45,41 +45,47 @@
 #   Never let a task's status here go backwards (see workflow notes above).
 
 generated: 2026-07-12
-last_updated: 2026-07-13
+last_updated: 2026-07-17
 project: AI Content Research & Video Automation Platform
 project_key: NOKEY
 tracking_system: file-system
 story_location: docs/backlog/stories
 
+# 2026-07-17 reconciliation pass: statuses below were corrected against actual git history
+# (git branch -a, git diff main...<branch> --stat per branch, plus worker-B's unpushed
+# worktree branch worktree-agent-a3b47cc427c4448c4) — see .claude/tasks/state/RUN-STATUS.md
+# for the full per-task rationale and branch references. This file was previously stale
+# (most of epic 1-3 still showed "backlog" despite substantial merged work on main).
+
 development_status:
   # Epic 1 — Nền tảng: repo, auth, project, state machine, versioning, người dùng (25đ, tuần 1-3)
   epic-1: in-progress
   1-1-khoi-tao-monorepo-moi-truong-dev: done
-  1-2-auth-jwt-rbac: backlog
-  1-3-project-crud-dashboard-nhom-vong-doi: backlog
-  1-4-state-machine-status-history: backlog
-  1-5-versioning-engine: backlog
-  1-6-event-bus-noi-bo-sse: backlog
-  1-7-quan-ly-nguoi-dung-admin: backlog
+  1-2-auth-jwt-rbac: done
+  1-3-project-crud-dashboard-nhom-vong-doi: in-progress   # service merged to main; API+UI on unmerged local branch feat/1-3-project-crud-dashboard-nhom-vong-doi
+  1-4-state-machine-status-history: done
+  1-5-versioning-engine: in-progress   # main has stub only; real impl on unmerged origin/feat/1-5-versioning-engine
+  1-6-event-bus-noi-bo-sse: done
+  1-7-quan-ly-nguoi-dung-admin: in-progress   # backend done on main; API router uncommitted, frontend UI missing
   epic-1-retrospective: optional
 
   # Epic 2 — Scene JSON + Remotion + TTS + 11 layout (26đ, tuần 1-3, 2.6: tuần 4-6)
-  epic-2: backlog
+  epic-2: in-progress
   2-1-scene-json-schema-v1: done
   2-2-remotion-base-layer: done
-  2-3-remotion-player-preview: in-progress
-  2-4-tts-adapter-edge-tts: backlog
-  2-5-subtitle-tu-timestamps: backlog
-  2-6-layout-class-du-lieu-cau-truc: backlog
+  2-3-remotion-player-preview: done
+  2-4-tts-adapter-edge-tts: done   # merged via 3-1 bundle commit 56d32e3
+  2-5-subtitle-tu-timestamps: backlog   # no timestamp-segmentation work found anywhere
+  2-6-layout-class-du-lieu-cau-truc: done   # bundled in 10-2
   epic-2-retrospective: optional
 
   # Epic 3 — Provider framework (18đ, tuần 3-5)
-  epic-3: backlog
-  3-1-adapter-base-registry-config-layer: backlog
-  3-2-chain-router-failover-allow-paid: backlog
-  3-3-llm-adapters: backlog
-  3-4-api-key-management: backlog
-  3-5-cost-tracking-daily-cap-man-providers: backlog
+  epic-3: in-progress
+  3-1-adapter-base-registry-config-layer: done
+  3-2-chain-router-failover-allow-paid: done
+  3-3-llm-adapters: in-progress   # real work only in worker-B's unpushed worktree, no feat/3-3 branch yet
+  3-4-api-key-management: in-progress   # real work only in worker-B's unpushed worktree
+  3-5-cost-tracking-daily-cap-man-providers: in-progress   # real work only in worker-B's unpushed worktree
   epic-3-retrospective: optional
 
   # Epic 4 — Pipeline AI + Layout Engine core + entry script (33đ, tuần 5-8)
@@ -95,8 +101,8 @@ development_status:
   epic-4-retrospective: optional
 
   # Epic 5 — Workspace UI (editor/review/running/version/drawer) (28đ, tuần 4-8)
-  epic-5: backlog
-  5-1-project-workspace-topbar-stepper: backlog
+  epic-5: in-progress
+  5-1-project-workspace-topbar-stepper: in-progress   # real work only in worker-B's unpushed worktree, no feat/5-1 branch yet
   5-2-edit-controls: backlog
   5-3-assetpicker: backlog
   5-4-scene-ops: backlog

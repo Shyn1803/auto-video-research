@@ -15,7 +15,7 @@ import logging
 import os
 from typing import Any
 
-from app.adapters.base import ProviderError, ProviderSettings
+from app.adapters.base import LLMAdapter, ProviderError, ProviderSettings
 from app.adapters.registry import register_llm
 
 logger = logging.getLogger("avr.llm.bge_m3")
