@@ -73,7 +73,7 @@ class TokenService:
         await session.flush()
         return rt
 
-        async def revoke_all_for_user(self, session: AsyncSession, user_id: UUID) -> int:
+    async def revoke_all_for_user(self, session: AsyncSession, user_id: UUID) -> int:
         """Revoke every non-revoked refresh token for a user. Returns count revoked."""
         now = datetime.now(timezone.utc)
         result = await session.execute(
@@ -84,7 +84,7 @@ class TokenService:
         )
         return result.rowcount or 0
 
-async def rotate_refresh(
+    async def rotate_refresh(
         self,
         session: AsyncSession,
         raw_token: str,
