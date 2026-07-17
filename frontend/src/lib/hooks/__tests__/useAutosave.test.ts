@@ -9,10 +9,9 @@
  *  5. value never lost on rapid edits
  */
 
+import { describe, expect, it } from "vitest";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { useAutosave } from "@/lib/hooks/useAutosave";
-
-const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 describe("useAutosave", () => {
   it("starts as saved with initial value", () => {
@@ -59,9 +58,9 @@ describe("useAutosave", () => {
     const { result } = renderHook(() =>
       useAutosave({
         save: async () => {
-          const err = new Error("422") as unknown as {
-            response: { status: 422; data: { detail: { title: "Bắt buộc" } } };
-          };
+          const err = Object.assign(new Error("422"), {
+            response: { status: 422, data: { detail: { title: "Bắt buộc" } } },
+          });
           throw err;
         },
         debounceMs: 50,
@@ -77,22 +76,31 @@ describe("useAutosave", () => {
     expect(errors.title).toBe("Bắt buộc");
   });
 
-  it("network error → retries with back-off up to 5 attempts", async () => {
-    let attempts = 0;
-    const { result } = renderHook(() =>
-      useAutosave({
-        save: async () => {
-          attempts++;
-          throw new Error("ECONNREFUSED");
-        },
-        debounceMs: 50,
-        initialValue: { body: "x" },
-      }),
-    );
-    act(() => result.current.setValue({ body: "x" }));
-    // wait enough for retries × back-off: 1s + 2s + 4s + 8s + 16s
-    await act(async () => await delay(32000));
-    expect(attempts).toBeGreaterThanOrEqual(5);
-    expect(result.current.retryCount).toBeGreaterThanOrEqual(4);
-  });
+  it(
+    "network error → retries with back-off up to 5 attempts",
+    async () => {
+      let attempts = 0;
+      const { result } = renderHook(() =>
+        useAutosave({
+          save: async () => {
+            attempts++;
+            throw new Error("ECONNREFUSED");
+          },
+          debounceMs: 50,
+          initialValue: { body: "x" },
+        }),
+      );
+      act(() => result.current.setValue({ body: "x" }));
+      // Real-time wait for retries × back-off: 1s + 2s + 4s + 8s + 16s (~31s).
+      // Fake timers aren't used here because the hook reads `navigator.onLine`
+      // and schedules via plain `setTimeout` chains across multiple effects —
+      // real time keeps this test honest about the actual BR-3 behavior.
+      await waitFor(() => expect(attempts).toBeGreaterThanOrEqual(5), {
+        timeout: 33000,
+        interval: 250,
+      });
+      expect(result.current.retryCount).toBeGreaterThanOrEqual(4);
+    },
+    35000,
+  );
 });

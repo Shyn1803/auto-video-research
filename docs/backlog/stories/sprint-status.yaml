@@ -75,7 +75,7 @@ development_status:
   2-2-remotion-base-layer: done
   2-3-remotion-player-preview: done
   2-4-tts-adapter-edge-tts: done   # merged via 3-1 bundle commit 56d32e3
-  2-5-subtitle-tu-timestamps: backlog   # no timestamp-segmentation work found anywhere
+  2-5-subtitle-tu-timestamps: done   # 2026-07-17: merged to main — custom segmentation algorithm + line-style Subtitle component + SceneRenderer wiring, 49/49 tests green
   2-6-layout-class-du-lieu-cau-truc: done   # bundled in 10-2
   epic-2-retrospective: optional
 
@@ -102,8 +102,8 @@ development_status:
 
   # Epic 5 — Workspace UI (editor/review/running/version/drawer) (28đ, tuần 4-8)
   epic-5: in-progress
-  5-1-project-workspace-topbar-stepper: in-progress   # real work only in worker-B's unpushed worktree, no feat/5-1 branch yet
-  5-2-edit-controls: backlog
+  5-1-project-workspace-topbar-stepper: done   # re-verified 2026-07-17, fixed real bugs, added scenes API, done
+  5-2-edit-controls: in-progress
   5-3-assetpicker: backlog
   5-4-scene-ops: backlog
   5-5-man-hoan-thien: backlog

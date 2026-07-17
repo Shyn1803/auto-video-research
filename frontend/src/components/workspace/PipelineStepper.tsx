@@ -86,7 +86,12 @@ function Pill({
   return (
     <button
       type="button"
-      disabled={locked}
+      // Deliberately NOT the native `disabled` attribute: disabled elements
+      // don't fire hover/focus events in browsers, which would silently
+      // break the BR-2 tooltip (found via a failing hover test — see
+      // memory/project-memory.md). `aria-disabled` + blocking the click
+      // handler gives the same non-interactive semantics without losing
+      // hover/focus.
       aria-disabled={locked || undefined}
       aria-current={isCurrent ? "step" : undefined}
       onClick={() => {

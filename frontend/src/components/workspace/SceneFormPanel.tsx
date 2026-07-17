@@ -12,27 +12,43 @@
 
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useWorkspace, type SceneRow } from "@/lib/workspace-context";
 import { useAutosave } from "@/lib/hooks/useAutosave";
-import { SchemaField } from "@/lib/schema-form/generate";
+import { SchemaField, type JsonSchema } from "@/lib/schema-form/generate";
+import { StaleConfirmDialog } from "@/components/workspace/StaleConfirmDialog";
+
+interface SceneFormValue {
+  title: string;
+  body: string;
+  layout_cls: string;
+  duration_ms: number;
+  sticky: boolean;
+  extra_tags: string[];
+}
+
+const EMPTY_FORM_VALUE: SceneFormValue = {
+  title: "",
+  body: "",
+  layout_cls: "",
+  duration_ms: 6000,
+  sticky: false,
+  extra_tags: [],
+};
 
 /* ── schema fixture — mirrors the committed scene-1.0.0.json (2-1) ─ */
-const SCENE_SCHEMA = useMemo(
-  () => ({
-    type: "object",
-    properties: {
-      title:     { type: "string" as const, title: "Tiêu đề", minLength: 80 },
-      body:      { type: "string" as const, title: "Lời đọc (voice-over)", minLength: 500 },
-      layout_cls:{ type: "string" as const, title: "Bố cục" },
-      duration_ms:{ type: "integer" as const, title: "Thời lượng (ms)" },
-      sticky:    { type: "boolean" as const, title: "Ghim màn" },
-      extra_tags:{ type: "array" as const, title: "Tags thêm" },
-    },
-    required: ["title", "body"],
-  }),
-  [],
-);
+const SCENE_SCHEMA: JsonSchema = {
+  type: "object",
+  properties: {
+    title:      { type: "string", title: "Tiêu đề", minLength: 80 },
+    body:       { type: "string", title: "Lời đọc (voice-over)", minLength: 500 },
+    layout_cls: { type: "string", title: "Bố cục" },
+    duration_ms:{ type: "integer", title: "Thời lượng (ms)" },
+    sticky:     { type: "boolean", title: "Ghim màn" },
+    extra_tags: { type: "array", title: "Tags thêm" },
+  },
+  required: ["title", "body"],
+};
 
 export function SceneFormPanel() {
   const { state, dispatch } = useWorkspace();
@@ -43,7 +59,7 @@ export function SceneFormPanel() {
 
   /* --- autosave per scene (debounce 1s, offline safe) ---- */
   const onSave = useCallback(
-    async (value: Record<string, unknown>) => {
+    async (value: SceneFormValue) => {
       // In 5-1 the save is a placeholder — 5-2 wires the real PUT /api/scenes/{id}
       // The contract change (POST scenes/{id}/approve) lives in Step 6.
       console.log("[SceneFormPanel] autosave", value);
@@ -52,27 +68,20 @@ export function SceneFormPanel() {
     [],
   );
 
-  const { value, setValue, status, manuallySave } = useAutosave({
+  const { value, setValue, status, manuallySave } = useAutosave<SceneFormValue>({
     save: onSave,
     debounceMs: 1000,
     initialValue: scene
-      ? {
-          title: scene.title,
-          body: "",
-          layout_cls: scene.layoutClass,
-          duration_ms: 6000,
-          sticky: false,
-          extra_tags: [],
-        }
-      : {},
+      ? { ...EMPTY_FORM_VALUE, title: scene.title, layout_cls: scene.layoutClass }
+      : EMPTY_FORM_VALUE,
   });
 
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleFieldChange = useCallback(
     (path: string[], next: unknown) => {
-      setValue((prev: Record<string, unknown>) => {
-        const copy = { ...prev };
+      setValue((prev: SceneFormValue) => {
+        const copy: Record<string, unknown> = { ...prev };
         let cur: Record<string, unknown> = copy;
         for (let i = 0; i < path.length - 1; i++) {
           const k = path[i];
@@ -88,7 +97,7 @@ export function SceneFormPanel() {
           return n;
         });
         dispatch({ type: "SET_UNSAVED", v: true });
-        return copy;
+        return copy as unknown as SceneFormValue;
       });
     },
     [dispatch, setValue],
@@ -193,14 +202,27 @@ function SaveBadge({
 }
 
 function EditFromHereButton() {
-  const { dispatch } = useWorkspace();
+  const { state, dispatch } = useWorkspace();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   return (
-    <button
-      type="button"
-      onClick={() => dispatch({ type: "SET_READONLY", v: false })}
-      className="ml-auto rounded-lg border border-border bg-card px-3 py-1.5 text-sm transition-colors hover:bg-muted"
-    >
-      Sửa lại từ đây
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={() => setConfirmOpen(true)}
+        className="ml-auto rounded-lg border border-border bg-card px-3 py-1.5 text-sm transition-colors hover:bg-muted"
+      >
+        Sửa lại từ đây
+      </button>
+      <StaleConfirmDialog
+        open={confirmOpen}
+        fromIndex={state.currentStation}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          setConfirmOpen(false);
+          dispatch({ type: "SET_READONLY", v: false });
+        }}
+      />
+    </>
   );
 }

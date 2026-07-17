@@ -11,7 +11,7 @@
 
 import { useRouter } from "next/navigation";
 import { useWorkspace, STATIONS } from "@/lib/workspace-context";
-import { StatusBadge } from "./ui/status-badge";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 function projectStatusKind(status: string) {
   switch (status) {
