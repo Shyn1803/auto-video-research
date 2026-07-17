@@ -44,14 +44,19 @@ class KeyService:
         async with self._session_factory() as session:
             return await session.get(ApiKey, key_id)
 
-    async def get_plaintext(self, key: ApiKey) -> str:
+    def get_plaintext(self, key: ApiKey) -> str:
         """Decrypt and return plaintext string.
+
+        Not async: decrypt() is pure in-memory Fernet decryption, no I/O --
+        callers (app/api/admin/api_keys.py) call this without awaiting.
 
         Raises RuntimeError on bad ciphertext (should never happen for valid rows).
         """
         try:
             return decrypt(key.key_encrypted)
-        except InvalidToken:
+        except (InvalidToken, ValueError):
+            # crypto.decrypt() re-wraps InvalidToken as ValueError -- catch both
+            # so a malformed/corrupted ciphertext always surfaces this RuntimeError.
             logger.error("api_key.get_plaintext bad ciphertext id=%s", key.id)
             raise RuntimeError("stored ciphertext is invalid — re-enter this key") from None
 
@@ -96,7 +101,7 @@ class KeyService:
             row = await session.get(ApiKey, key_id)
             if row is None:
                 return 0
-            row.usage_count = ApiKey.usage_count + 1
+            row.usage_count = row.usage_count + 1
             row.last_used_at = datetime.now(UTC)
             await session.commit()
             return int(row.usage_count)

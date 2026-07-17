@@ -15,11 +15,15 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field, field_validator
 
+from app.adapters.base import ProviderSettings
+from app.adapters.registry import get_adapter_class
 from app.api.deps import require_role
+from app.core.config import get_settings
 from app.core.crypto import mask
 from app.core.exceptions import AllProvidersFailed
 from app.models.api_key import ApiKey
 from app.models.user import User
+from app.services.api_key_service import KeyService
 
 logger = logging.getLogger("avr.admin.api_keys")
 
@@ -70,7 +74,6 @@ def _get_session(request: Request):
 
 
 def _row_to_response(row: ApiKey, plaintext: str | None = None) -> ApiKeyResponse:
-    from app.services.api_key_service import KeyService  # local import avoids circular
     svc = KeyService(None)  # no factory needed for to_response
     data = svc.to_response(row, plaintext)
     return ApiKeyResponse(**data)
@@ -93,15 +96,10 @@ async def create_key(
 
     Save the request correlation for audit logging.
     """
-    from app.core.config import get_settings
-
     settings = get_settings()
 
     # Step A — lightweight validation via adapter's available() check.
     # We resolve the chain to see if this provider is registered.
-    from app.adapters.registry import get_adapter_class
-    from app.adapters.base import ProviderSettings
-
     cls = get_adapter_class(body.provider, body.provider)
     if cls is None:
         raise HTTPException(
@@ -140,9 +138,8 @@ async def create_key(
         )
 
     # Step B — persist encrypted.
-    from app.services.api_key_service import KeyService
 
-    svc = KeyService(_get_session(request))
+    svc = KeyService(lambda: _get_session(request))
     row = await svc.create(
         provider=body.provider,
         label=body.label,
@@ -166,9 +163,8 @@ async def list_keys(
     current_user: User = Depends(require_role("admin")),
 ):
     """List all keys — response contains only masked values (BR-1)."""
-    from app.services.api_key_service import KeyService
 
-    svc = KeyService(_get_session(request))
+    svc = KeyService(lambda: _get_session(request))
     rows = await svc.list_by_provider()
     return [_row_to_response(r) for r in rows]
 
@@ -180,9 +176,8 @@ async def get_key(
     current_user: User = Depends(require_role("admin")),
 ):
     """Detail view — still masked, never plaintext (BR-1)."""
-    from app.services.api_key_service import KeyService
 
-    svc = KeyService(_get_session(request))
+    svc = KeyService(lambda: _get_session(request))
     row = await svc.get_by_id(key_id)
     if row is None:
         raise HTTPException(status_code=404, detail="api key not found")
@@ -199,9 +194,8 @@ async def update_label(
     current_user: User = Depends(require_role("admin")),
 ):
     """Update only the label; the encrypted key is untouched."""
-    from app.services.api_key_service import KeyService
 
-    svc = KeyService(_get_session(request))
+    svc = KeyService(lambda: _get_session(request))
     row = await svc.get_by_id(key_id)
     if row is None:
         raise HTTPException(status_code=404, detail="api key not found")
@@ -228,12 +222,9 @@ async def delete_key(
     chain, the response carries a ``warning`` field describing what breaks.
     Caller confirms delete via a separate action or frontend dialog.
     """
-    from app.core.config import get_settings
-
     settings = get_settings()
-    from app.services.api_key_service import KeyService
 
-    svc = KeyService(_get_session(request))
+    svc = KeyService(lambda: _get_session(request))
     row = await svc.get_by_id(key_id)
     if row is None:
         raise HTTPException(status_code=404, detail="api key not found")
@@ -286,9 +277,8 @@ async def confirm_delete(
     Client must have first called DELETE, received the warning, shown it
     to the user, and now calls POST to confirm.
     """
-    from app.services.api_key_service import KeyService
 
-    svc = KeyService(_get_session(request))
+    svc = KeyService(lambda: _get_session(request))
     row = await svc.get_by_id(key_id)
     if row is None:
         raise HTTPException(status_code=404, detail="api key not found")

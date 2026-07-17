@@ -1,7 +1,7 @@
 {
   "task_id": "3-3",
-  "status": "not-started",
-  "branch": "feat/3-3-llm-adapters",
+  "status": "in-progress",
+  "branch": "feat/3-3-llm-adapter-async-await-fix",
   "current_step": 0,
   "steps": [
     { "id": 1, "name": "Ollama adapter (local, free, always-available baseline)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
@@ -15,9 +15,11 @@
     { "id": 9, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
   ],
   "decisions": [
-    "2026-07-17 reconciliation: main's backend/app/adapters/llm/ is empty (__init__.py only). Real adapters (groq.py, mock.py, ollama.py, openrouter.py, helpers.py) exist only in worker-B's unpushed worktree (.claude/worktrees/agent-a3b47cc427c4448c4, branch worktree-agent-a3b47cc427c4448c4). No feat/3-3 branch exists. Blocked pending worker-B splitting/pushing that work."
+    "2026-07-17 reconciliation: main's backend/app/adapters/llm/ is empty (__init__.py only). Real adapters (groq.py, mock.py, ollama.py, openrouter.py, helpers.py) exist only in worker-B's unpushed worktree (.claude/worktrees/agent-a3b47cc427c4448c4, branch worktree-agent-a3b47cc427c4448c4). No feat/3-3 branch exists. Blocked pending worker-B splitting/pushing that work.",
+    "2026-07-17 (later): by the time this session started, the adapter code (llm + tts) was already merged into main by an earlier reconciliation pass -- this state file was stale. Fixed tests/unit/adapters/tts/test_mock_adapter.py (branch feat/3-3-mock-tts-async-fix, commit 8729577): MockTts.available/synthesize are async per TTSAdapter's real abstract contract (matches edge_tts.py), so kept them async and fixed the TEST to await instead of weakening the interface; also fixed a real MockTts bug where __init__ wiped MockTts.override on every construction, silently defeating the override-staging mechanism the docstring describes. Same missing-await pattern also affected sibling LLM adapter tests (test_demo.py, test_gemini.py, test_groq.py, test_openrouter.py TestAvailable classes) -- fixed those too (branch feat/3-3-llm-adapter-async-await-fix, commit 9767ceb) since it's the same root-cause class of bug within this task's own file set.",
+    "NOT fixed (out of narrow assigned scope for this session, flagged for follow-up): tests/unit/adapters/llm/test_gemini.py::TestBuildGeminiBody (3 failures) -- _build_gemini_body() has a real schema-translation bug, response schema's 'properties'/'description' stripping doesn't match what the test expects; tests/unit/adapters/llm/test_embedding.py (5 failures) -- bge_m3 'sentence_transformers not installed' env gap, a float32 vs float64 precision assertion, a gemini_embedding HTTP 400 in the respx mock, and 4 cosine-similarity-below-threshold failures that look like a real embedding/similarity-scoring bug, not an environment issue. These need a dedicated pass."
   ],
-  "blocked_reason": "Real implementation exists only in worker-B's unpushed worktree (branch worktree-agent-a3b47cc427c4448c4); needs to be split onto a dedicated feat/3-3-llm-adapters branch and pushed before this task can be verified/merged.",
+  "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-17T00:00:00+07:00"
+  "updated_at": "2026-07-17T00:20:00+07:00"
 }
