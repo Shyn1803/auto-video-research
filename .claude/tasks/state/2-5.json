@@ -1,17 +1,22 @@
 {
   "task_id": "2-5",
-  "status": "not-started",
+  "status": "done",
   "branch": "feat/2-5-subtitle-tu-timestamps",
-  "current_step": 0,
+  "current_step": 5,
   "steps": [
-    { "id": 1, "name": "Evaluate @remotion/captions against scene-json-schema §3.6 constraints", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 2, "name": "Custom segmentation algorithm (only if @remotion/captions doesn't fit)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 3, "name": "Subtitle line style component + enabled/disabled (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 4, "name": "Wire segments into SceneRenderer props preparation", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 5, "name": "Wire up tests + property test + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+    { "id": 1, "name": "Evaluate @remotion/captions against scene-json-schema §3.6 constraints", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "eb6c5ad" },
+    { "id": 2, "name": "Custom segmentation algorithm (only if @remotion/captions doesn't fit)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "5184289" },
+    { "id": 3, "name": "Subtitle line style component + enabled/disabled (BR-3)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "24ebb46" },
+    { "id": 4, "name": "Wire segments into SceneRenderer props preparation", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "0c2d300" },
+    { "id": 5, "name": "Wire up tests + property test + verify all Acceptance Criteria", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "a8b9ad2" }
   ],
-  "decisions": [],
+  "decisions": [
+    "@remotion/captions rejected: duration-window grouping has no hook for BR-1's number+unit cluster rule (see packages/remotion-templates/spike-captions-eval.md)",
+    "Custom segmentTimestamps.ts algorithm covers BR-1/BR-2/BR-4 with a two-pass greedy-group + short-segment-merge approach; property-tested for no text loss",
+    "SceneRenderer.tsx's SceneProps type hand-extended with voice/subtitle fields matching backend/app/schemas/scene.py field names exactly, since no generated TS type exists yet for the full Scene model (schema.ts only emits a runtime zod validator) — documented in prepareSubtitleProps.ts as a known gap, not fixed here (out of scope for 2-5)",
+    "Discovered packages/remotion-templates node_modules was effectively empty in this worktree (remotion, zod-from-json-schema unresolved) — ran npm install to unblock the full test suite; this was a pre-existing environment gap, not introduced by 2-5, and fixed 3 previously-failing test files (scene-renderer.test.ts, schema.fixtures.test.ts) as a side effect"
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-17T16:46:00+07:00"
 }

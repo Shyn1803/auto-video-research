@@ -19,7 +19,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 | 2-2 | ✅ done | 8 | feat/2-2-remotion-base-layer | — |
 | 2-3 | ✅ done | 7 | feat/2-3-remotion-player-preview | — |
 | 2-4 | ✅ done | 4 | feat/2-4-tts-adapter-edge-tts | In 3-1 commit (56d32e3) |
-| 2-5 | ⬜ not-started | — | feat/2-5-subtitle-tu-timestamps | — |
+| 2-5 | ✅ done | 3 | feat/2-5-subtitle-tu-timestamps | segmentTimestamps.ts + Subtitle.tsx + prepareSubtitleProps wired into SceneRenderer |
 | 2-6 | ✅ done | 7 | feat/2-6-layout-class-du-lieu | In 10-2 bundle |
 | 3-1 | ✅ done | 8 | feat/3-1-adapter-base-registry-config-layer | — |
 | 3-2 | ✅ done | 6 | feat/3-2-chain-router-failover-allow-paid | — |
