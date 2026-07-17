@@ -19,7 +19,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 | 2-2 | ✅ done | 8 | feat/2-2-remotion-base-layer | — |
 | 2-3 | ✅ done | 7 | feat/2-3-remotion-player-preview | — |
 | 2-4 | ✅ done | 4 | feat/2-4-tts-adapter-edge-tts | Merged to main via 3-1 bundle commit 56d32e3 |
-| 2-5 | ⬜ not-started | — | feat/2-5-subtitle-tu-timestamps | Only the Subtitle.tsx display primitive (from 2-2) exists; no timestamp-segmentation algorithm found on main, local branch, or origin branch |
+| 2-5 | ✅ done | 5 | feat/2-5-subtitle-tu-timestamps | Merged to main 2026-07-17. Built from scratch: evaluated `@remotion/captions` (rejected — time-window grouping only, no BR-1 number+unit awareness), custom `segmentTimestamps.ts` (BR-1/2/4), `Subtitle.tsx` line-style + enabled/disabled (BR-3), wired into `SceneRenderer` via useMemo. 49/49 vitest green incl. no-text-lost property test. |
 | 2-6 | ✅ done | 7 | feat/2-6-layout-class-du-lieu | In 10-2 bundle |
 | 3-1 | ✅ done | 8 | feat/3-1-adapter-base-registry-config-layer | — |
 | 3-2 | ✅ done | 6 | feat/3-2-chain-router-failover-allow-paid | Merged (core/router.py 413 lines on main) |

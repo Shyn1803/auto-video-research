@@ -75,7 +75,7 @@ development_status:
   2-2-remotion-base-layer: done
   2-3-remotion-player-preview: done
   2-4-tts-adapter-edge-tts: done   # merged via 3-1 bundle commit 56d32e3
-  2-5-subtitle-tu-timestamps: backlog   # no timestamp-segmentation work found anywhere
+  2-5-subtitle-tu-timestamps: done   # 2026-07-17: merged to main — custom segmentation algorithm + line-style Subtitle component + SceneRenderer wiring, 49/49 tests green
   2-6-layout-class-du-lieu-cau-truc: done   # bundled in 10-2
   epic-2-retrospective: optional
 
