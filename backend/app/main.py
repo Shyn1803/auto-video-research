@@ -10,6 +10,7 @@ from app.api.admin.api_keys import router as admin_api_keys_router
 from app.api.admin.providers import router as admin_providers_router
 from app.api.admin.costs import router as admin_costs_router
 from app.api.health import router as health_router
+from app.api.projects import router as projects_router
 from app.api.users import router as users_router
 from app.core.config import Settings, get_settings
 from app.core.database import Database
@@ -35,6 +36,7 @@ def create_app() -> FastAPI:
     app.include_router(auth_router)
     app.include_router(health_router)
     app.include_router(users_router)
+    app.include_router(projects_router)
     app.include_router(admin_api_keys_router)
     app.include_router(admin_providers_router)
     app.include_router(admin_costs_router)
