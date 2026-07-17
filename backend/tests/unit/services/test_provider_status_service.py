@@ -13,7 +13,7 @@ import pytest
 
 os.environ.setdefault(
     "FERNET_MASTER_KEY",
-    "zQmXJvKpL3nR7sT9wY2aB5cD8fG1hJ4kM6nP0qR2tU5vW8xA=",
+    "bWkOQves7E-CwMRpcjtZjEMlEcshdrUJYomTouLwLVc=",
 )
 
 from app.services.provider_status_service import (

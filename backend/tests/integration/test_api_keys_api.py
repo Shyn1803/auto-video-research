@@ -20,7 +20,7 @@ from app.main import create_app
 
 os.environ.setdefault(
     "FERNET_MASTER_KEY",
-    "zQmXJvKpL3nR7sT9wY2aB5cD8fG1hJ4kM6nP0qR2tU5vW8xA=",
+    "bWkOQves7E-CwMRpcjtZjEMlEcshdrUJYomTouLwLVc=",
 )
 
 
@@ -209,8 +209,12 @@ def _plaintext_substring(key: str, max_len: int = 12) -> str:
 
 class TestAC5DeleteLastKeyWarning:
 
-    @patch("app.api.admin.api_keys.get_settings")
     def _make_svc_with_last_key(self, provider: str, in_chain: bool, mock_settings):
+        # NOTE: not itself @patch-decorated -- each *caller* test method already
+        # patches app.api.admin.api_keys.get_settings and passes its own mock in
+        # via mock_settings=. Double-decorating this helper too caused pytest.mock
+        # to auto-inject a second positional mock, producing "got multiple values
+        # for argument 'mock_settings'".
         from app.services.api_key_service import KeyService
         settings = MagicMock()
         if in_chain:

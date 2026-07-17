@@ -14,9 +14,10 @@
     { "id": 8, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
   ],
   "decisions": [
-    "2026-07-17 reconciliation: merged to main (backend/app/core/router.py, 413 lines, chain/failover logic present). Marking done."
+    "2026-07-17 reconciliation: merged to main (backend/app/core/router.py, 413 lines, chain/failover logic present). Marking done.",
+    "2026-07-17 (later): full pytest run revealed ProviderRouter.__init__() didn't accept the settings= kwarg tests/unit/core/test_router.py expects, plus router.py referenced undefined module-level helpers _cache_key/_now_iso (test file also used _cache_key without importing it). Fixed via feat/3-2-router-settings-fix (branch name deviates from feat/3-2-chain-router-failover-allow-paid because that branch was a stale pre-merge snapshot, ~166 files diverged from main -- reused a differently-named branch rather than resetting/deleting a branch this session didn't create). Also found and fixed a real AC5 gap: router.call() never invoked adapter.available() as a health pre-flight, so HealthBoomAdapter's simulated health-check crash never reached the circuit breaker; added a pre-flight check before the method-invocation try block that trips the circuit and re-raises on an unexpected exception (kept out of the generic retry catch-all per rules/error-handling.md). All 9 tests/unit/core/test_router.py cases pass; fast-forward-merged into origin/main at 5f143d6."
   ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-17T00:00:00+07:00"
+  "updated_at": "2026-07-17T00:10:00+07:00"
 }
