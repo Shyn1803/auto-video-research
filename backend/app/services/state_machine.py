@@ -9,9 +9,13 @@ import logging
 from collections.abc import MutableMapping
 from enum import StrEnum
 
-from app.events.bus import publish
-from app.events.schemas import project_status
 from app.services.state_machine_edges import EDGES, TransitionError, validate
+
+# NOTE: app.events (bus/schemas) is imported lazily inside _emit(), not at
+# module level — app/events/__init__.py imports EDGES/ProjectStatus back
+# from this module, so an eager import here is a circular-import footgun
+# (breaks any `import app.services.state_machine` done before `app.events`
+# has been imported once). See postmortems/ for the 2026-07-17 audit note.
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +109,9 @@ class ProjectStateMachine:
               correlation_id: str, actor: str | None,
               reason: str | None) -> None:
         try:
+            from app.events.bus import publish
+            from app.events.schemas import project_status
+
             publish(
                 "project.status",
                 project_status(

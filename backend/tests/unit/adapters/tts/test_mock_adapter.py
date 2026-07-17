@@ -37,7 +37,9 @@ class MockTts(TTSAdapter):
     def __init__(self, settings=None):
         self._settings = settings
         MockTts.calls = []
-        MockTts.override = {}
+        # NOTE: do NOT reset MockTts.override here -- callers stage an override
+        # (MockTts.override[key] = result) *before* constructing the adapter;
+        # wiping it in __init__ silently defeated the whole override mechanism.
 
     async def available(self) -> bool:
         return True
@@ -59,47 +61,61 @@ class MockTts(TTSAdapter):
 
 
 class TestMockTts:
-    def test_returns_deterministic_result(self):
+    """MockTts implements the async TTSAdapter contract (available/synthesize
+    are ``async def`` per app.adapters.tts.base.TTSAdapter, matching the real
+    edge_tts adapter) -- so every call here must be awaited, same as router.py
+    does against any real adapter."""
+
+    @pytest.mark.asyncio
+    async def test_returns_deterministic_result(self):
         adapter = MockTts()
         req = TTSRequest(text="abc", voice_id="x", speed=1.0)
-        r1 = adapter.synthesize(req)
-        r2 = adapter.synthesize(req)
+        r1 = await adapter.synthesize(req)
+        r2 = await adapter.synthesize(req)
         assert r1.audio_bytes == r2.audio_bytes
         assert r1.cache_key == r2.cache_key
 
-    def test_records_calls(self):
+    @pytest.mark.asyncio
+    async def test_records_calls(self):
         adapter = MockTts()
-        r1 = adapter.synthesize(TTSRequest(text="h1", voice_id="v", speed=1.0))
-        r2 = adapter.synthesize(TTSRequest(text="h2", voice_id="v", speed=1.0))
+        r1 = await adapter.synthesize(TTSRequest(text="h1", voice_id="v", speed=1.0))
+        r2 = await adapter.synthesize(TTSRequest(text="h2", voice_id="v", speed=1.0))
         assert len(MockTts.calls) == 2
         assert MockTts.calls[0].text == "h1"
         assert MockTts.calls[1].text == "h2"
         assert r1.cache_key != r2.cache_key
 
-    def test_override_replace_result(self):
+    @pytest.mark.asyncio
+    async def test_override_replace_result(self):
+        # Overrides are keyed by the *real* content-addressed cache_key (per
+        # the class docstring), not an arbitrary label -- compute it the same
+        # way synthesize() does before staging the override.
+        req = TTSRequest(text="override_key", voice_id="v", speed=1.0)
+        real_key = req.cache_key(MockTts.name)
         custom = TTSResult(
             audio_bytes=b"CUSTOM",
             duration_ms=500,
             word_timestamps=[],
-            cache_key="override_key",
+            cache_key=real_key,
         )
-        MockTts.override = {"override_key": custom}
+        MockTts.override = {real_key: custom}
         adapter = MockTts()
-        req = TTSRequest(text="override_key", voice_id="v", speed=1.0)
-        result = adapter.synthesize(req)
+        result = await adapter.synthesize(req)
         assert result.audio_bytes == b"CUSTOM"
         assert result.duration_ms == 500
         MockTts.override = {}
 
-    def test_available_true(self):
-        assert MockTts().available() is True
+    @pytest.mark.asyncio
+    async def test_available_true(self):
+        assert await MockTts().available() is True
 
     def test_registers_as_free(self):
         assert MockTts.is_paid is False
         assert MockTts.name == "mock_tts"
 
-    def test_different_requests_get_different_keys(self):
+    @pytest.mark.asyncio
+    async def test_different_requests_get_different_keys(self):
         adapter = MockTts()
-        r1 = adapter.synthesize(TTSRequest(text="a", voice_id="v", speed=1.0))
-        r2 = adapter.synthesize(TTSRequest(text="b", voice_id="v", speed=1.0))
+        r1 = await adapter.synthesize(TTSRequest(text="a", voice_id="v", speed=1.0))
+        r2 = await adapter.synthesize(TTSRequest(text="b", voice_id="v", speed=1.0))
         assert r1.cache_key != r2.cache_key

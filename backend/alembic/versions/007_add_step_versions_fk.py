@@ -23,6 +23,7 @@ def upgrade() -> None:
         "projects",
         ["project_id"],
         ["id"],
+        ondelete="CASCADE",
     )
 
 

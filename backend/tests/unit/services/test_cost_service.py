@@ -10,7 +10,7 @@ import pytest
 
 os.environ.setdefault(
     "FERNET_MASTER_KEY",
-    "zQmXJvKpL3nR7sT9wY2aB5cD8fG1hJ4kM6nP0qR2tU5vW8xA=",
+    "bWkOQves7E-CwMRpcjtZjEMlEcshdrUJYomTouLwLVc=",
 )
 
 from app.services.cost_service import (
@@ -22,23 +22,25 @@ from app.services.cost_service import (
 
 
 def _session_factory(rows: list[dict] | None = None):
-    """Create a mock session factory that returns seeded rows from query()."""
+    """Create a mock session factory that returns seeded rows from query().
+
+    Real SQLAlchemy: ``await session.execute(stmt)`` is the only awaited call
+    -- the returned Result's ``.all()`` / ``.one_or_none()`` are plain sync
+    methods (not coroutines), so those must be MagicMock, not AsyncMock.
+    """
     rows = rows or []
+
+    execute_result = MagicMock()
+    execute_result.all = MagicMock(return_value=rows)
+    # today_total()'s query selects a single scalar sum -- represent as a
+    # one-column row tuple, same shape (await session.execute(stmt)).one_or_none()
+    # would actually return.
+    execute_result.one_or_none = MagicMock(
+        return_value=(sum(getattr(r, "cost", 0.0) for r in rows),)
+    )
 
     session = MagicMock()
     session.commit = AsyncMock()
-
-    scalars_result = MagicMock()
-    # scalars_result.all() returns the rows
-    scalars_result.all = AsyncMock(return_value=rows)
-    scalars_result.one_or_none = AsyncMock(return_value=rows[0] if rows else None)
-
-    execute_result = MagicMock()
-    execute_result.scalars = MagicMock(return_value=scalars_result)
-    execute_result.one_or_none = AsyncMock(
-        return_value=(sum(r.get("cost", 0.0) for r in rows),)
-    )
-
     session.execute = AsyncMock(return_value=execute_result)
 
     cm = MagicMock()
@@ -48,7 +50,14 @@ def _session_factory(rows: list[dict] | None = None):
 
 
 class Row:
-    """Light row mimic matching what the SQL query produces."""
+    """Light row mimic matching what the SQL query produces.
+
+    CostService.query() reads ``.grp/.cnt/.ti/.to/.cost`` (matching the
+    ``.label(...)`` names in the SELECT); today_by_provider() reads
+    ``.provider/.calls/.cost`` (no aliasing there, raw column names). Same
+    fixture doubles for both call shapes here, so it exposes both attribute
+    sets rather than forcing every test to build two different row shapes.
+    """
 
     def __init__(self, grp, cnt, tok_in, tok_out, cost):
         self.grp = grp
@@ -56,6 +65,11 @@ class Row:
         self.tok_in = tok_in
         self.tok_out = tok_out
         self.cost = cost
+        # aliases matching CostService's actual attribute access:
+        self.ti = tok_in
+        self.to = tok_out
+        self.provider = grp
+        self.calls = cnt
 
 
 # ── test data factories ────────────────────────────────────────────────────────
@@ -88,7 +102,7 @@ async def test_ac4_group_by_task_matches_seeded_totals():
 
     cm, _ = _session_factory(rows=grouped_rows)
 
-    svc = CostService(session_factory=cm)
+    svc = CostService(session_factory=lambda: cm)
     buckets = await svc.query(group_by="task", days=30)
 
     # Total days of seeded rows must sum to 3+2+2 = 7 calls
@@ -110,7 +124,7 @@ async def test_group_by_provider_returns_buckets():
     ]
     cm, _ = _session_factory(rows=grouped_rows)
 
-    svc = CostService(session_factory=cm)
+    svc = CostService(session_factory=lambda: cm)
     buckets = await svc.query(group_by="provider", days=30)
 
     names = {b.group_key for b in buckets}
@@ -125,7 +139,7 @@ async def test_group_by_provider_returns_buckets():
 async def test_group_by_invalid_raises_value_error():
     """Invalid group_by value raises ValueError with list of valid options."""
     cm, _ = _session_factory(rows=[])
-    svc = CostService(session_factory=cm)
+    svc = CostService(session_factory=lambda: cm)
     with pytest.raises(ValueError, match="invalid group_by"):
         await svc.query(group_by="not_a_dimension")
 
@@ -139,7 +153,7 @@ def test_valid_group_by_values_exhaustive():
 async def test_today_total_zero_when_no_rows():
     """today_total() returns 0.0 when no usage rows exist for today."""
     cm, _ = _session_factory(rows=[])
-    svc = CostService(session_factory=cm)
+    svc = CostService(session_factory=lambda: cm)
     total = await svc.today_total()
     assert total == 0.0
 
@@ -153,7 +167,7 @@ async def test_today_by_provider_formats_correctly():
     ]
     cm, _ = _session_factory(rows=grouped_rows)
 
-    svc = CostService(session_factory=cm)
+    svc = CostService(session_factory=lambda: cm)
     rows = await svc.today_by_provider()
 
     assert len(rows) == 2

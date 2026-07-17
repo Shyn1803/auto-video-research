@@ -56,15 +56,17 @@ class TestRegistryLookup:
 
 class TestAvailable:
 
-    def test_available_true_with_key(self) -> None:
+    @pytest.mark.asyncio
+    async def test_available_true_with_key(self) -> None:
         s = _settings()
-        assert GeminiLLM(settings=s).available() is True
+        assert await GeminiLLM(settings=s).available() is True
 
-    def test_available_false_without_key(self) -> None:
+    @pytest.mark.asyncio
+    async def test_available_false_without_key(self) -> None:
         s = ProviderSettings(
             provider_name="gemini", api_key="", extra={"gemini_model": "flash"}
         )
-        assert GeminiLLM(settings=s).available() is False
+        assert await GeminiLLM(settings=s).available() is False
 
 
 # ── call_structured() — happy path ────────────────────────────────────────────

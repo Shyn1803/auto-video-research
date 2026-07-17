@@ -15,7 +15,7 @@ import pytest
 
 from app.adapters.base import BaseAdapter, ProviderError, ProviderSettings
 from app.adapters.registry import register_llm, get_adapter_class
-from app.core.router import ProviderRouter, CACHE_TTL_S, CIRCUIT_BREAKER_S
+from app.core.router import ProviderRouter, CACHE_TTL_S, CIRCUIT_BREAKER_S, _cache_key
 
 
 # ── fake settings (no .env loading) ─────────────────────────────────────────
