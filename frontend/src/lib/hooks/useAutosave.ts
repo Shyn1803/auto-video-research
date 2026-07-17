@@ -28,7 +28,7 @@ interface UseAutosaveOptions<T> {
 
 interface UseAutosaveReturn<T> {
   value: T;
-  setValue: (v: T) => void;
+  setValue: (next: T | ((prev: T) => T)) => void;
   status: "saved" | "saving" | "error" | "offline";
   retryCount: number;
   manuallySave: () => Promise<void>;
@@ -45,7 +45,7 @@ export function useAutosave<T>({
     useState<UseAutosaveReturn<T>["status"]>("saved");
   const [retryCount, _setRetryCount] = useState(0);
   const dirtyRef = useRef(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const retryRef = useRef(0);
   const latestValueRef = useRef<T>(value);
   const onlineRef = useRef(navigator.onLine);

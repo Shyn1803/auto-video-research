@@ -83,9 +83,9 @@ development_status:
   epic-3: in-progress
   3-1-adapter-base-registry-config-layer: done
   3-2-chain-router-failover-allow-paid: done
-  3-3-llm-adapters: in-progress   # real work only in worker-B's unpushed worktree, no feat/3-3 branch yet
-  3-4-api-key-management: in-progress   # real work only in worker-B's unpushed worktree
-  3-5-cost-tracking-daily-cap-man-providers: in-progress   # real work only in worker-B's unpushed worktree
+  3-3-llm-adapters: in-progress   # merged to main; async/await + MockTts bugs fixed 2026-07-17, but test_gemini.py schema-building + test_embedding.py cosine/model gaps remain
+  3-4-api-key-management: in-progress   # merged to main; Fernet key + mask() + session-factory + module-import bugs fixed 2026-07-17, but Step 7 (Admin UI) unverified and one RBAC integration test blocked on a shared conftest.py gap
+  3-5-cost-tracking-daily-cap-man-providers: in-progress   # merged to main; cost_service.py + provider_status_service.py test bugs fixed 2026-07-17, but cost_guard.py/cap_guard.py (Step 2) have zero test coverage and Step 6 (Admin UI) unverified
   epic-3-retrospective: optional
 
   # Epic 4 — Pipeline AI + Layout Engine core + entry script (33đ, tuần 5-8)
@@ -102,8 +102,8 @@ development_status:
 
   # Epic 5 — Workspace UI (editor/review/running/version/drawer) (28đ, tuần 4-8)
   epic-5: in-progress
-  5-1-project-workspace-topbar-stepper: in-progress   # real work only in worker-B's unpushed worktree, no feat/5-1 branch yet
-  5-2-edit-controls: backlog
+  5-1-project-workspace-topbar-stepper: done   # re-verified 2026-07-17, fixed real bugs, added scenes API, done
+  5-2-edit-controls: in-progress
   5-3-assetpicker: backlog
   5-4-scene-ops: backlog
   5-5-man-hoan-thien: backlog

@@ -27,6 +27,32 @@ from app.services.provider_status_service import (
 )
 
 
+class _FakeSettings:
+    """MagicMock can't have __getattr__ assigned onto an instance (it's an
+    unsupported magic method per unittest.mock) -- use a tiny real class
+    instead so any unmodeled attribute access still resolves to ""."""
+
+    def __init__(self, allow_paid: bool = False) -> None:
+        self.allow_paid = allow_paid
+
+    def __getattr__(self, name: str) -> str:
+        return ""
+
+
+
+class _FakeSettings:
+    """MagicMock can't have __getattr__ assigned onto an instance (it's an
+    unsupported magic method per unittest.mock) -- use a tiny real class
+    instead so any unmodeled attribute access still resolves to ""."""
+
+    def __init__(self, allow_paid: bool = False) -> None:
+        self.allow_paid = allow_paid
+
+    def __getattr__(self, name: str) -> str:
+        return ""
+
+
+
 # ── Badge label tests ──────────────────────────────────────────────────────────
 
 
@@ -59,9 +85,7 @@ async def test_ac1_zero_keys_scenario():
     original_init = ProviderRouter.__init__
 
     def _fake_init(self):
-        self._settings = MagicMock()
-        self._settings.allow_paid = False
-        self._settings.__getattr__ = lambda _, n: ""
+        self._settings = _FakeSettings(allow_paid=False)
         self._availability = {}
         self._circuit_open_until = {}
         self._cb_event_sent = set()
@@ -99,7 +123,7 @@ async def test_ac1_paid_blocked_scenario():
     from app.adapters.base import BaseAdapter
     from app.adapters.registry import (
         register_llm,
-        _REGISTRY,
+        _registry,
     )
 
     unique_name = "_test_ac1_paidblock_llm"
@@ -110,14 +134,12 @@ async def test_ac1_paid_blocked_scenario():
         async def available(self):
             return True
 
-    register_llm(unique_name, _PaidBlock)
+    register_llm(unique_name)(_PaidBlock)
 
     original_init = ProviderRouter.__init__
 
     def _fake_init(self):
-        self._settings = MagicMock()
-        self._settings.allow_paid = False
-        self._settings.__getattr__ = lambda _, n: ""
+        self._settings = _FakeSettings(allow_paid=False)
         self._availability = {}
         self._circuit_open_until = {}
         self._cb_event_sent = set()
@@ -149,7 +171,7 @@ async def test_ac1_paid_blocked_scenario():
         ProviderRouter.__init__ = original_init  # type: ignore
         del ProviderRouter.get_chain  # type: ignore
         del ProviderRouter.available_providers  # type: ignore
-        _REGISTRY.pop(("llm", unique_name), None)
+        _registry.pop(("llm", unique_name), None)
 
     matching = [e for e in entries if e.provider == unique_name]
     assert matching, f"expected {unique_name} in matrix; got {[e.provider for e in entries]}"
@@ -164,7 +186,7 @@ async def test_ac1_active_scenario():
     import app.core.router as _router_mod
     from app.core.router import ProviderRouter
     from app.adapters.base import BaseAdapter
-    from app.adapters.registry import register_llm, _REGISTRY
+    from app.adapters.registry import register_llm, _registry
 
     unique_name = "_test_ac1_active_llm"
 
@@ -174,14 +196,12 @@ async def test_ac1_active_scenario():
         async def available(self):
             return True
 
-    register_llm(unique_name, _Active)
+    register_llm(unique_name)(_Active)
 
     original_init = ProviderRouter.__init__
 
     def _fake_init(self):
-        self._settings = MagicMock()
-        self._settings.allow_paid = True
-        self._settings.__getattr__ = lambda _, n: ""
+        self._settings = _FakeSettings(allow_paid=True)
         self._availability = {}
         self._circuit_open_until = {}
         self._cb_event_sent = set()
@@ -207,7 +227,7 @@ async def test_ac1_active_scenario():
         ProviderRouter.__init__ = original_init  # type: ignore
         del ProviderRouter.get_chain  # type: ignore
         del ProviderRouter.available_providers  # type: ignore
-        _REGISTRY.pop(("llm", unique_name), None)
+        _registry.pop(("llm", unique_name), None)
 
     matching = [e for e in entries if e.provider == unique_name]
     assert matching, f"expected {unique_name} in matrix"
@@ -225,7 +245,7 @@ async def test_ac3_health_check_directly_reflects_adapter_state():
     import app.core.router as _router_mod
     from app.core.router import ProviderRouter
     from app.adapters.base import BaseAdapter
-    from app.adapters.registry import register_llm, _REGISTRY
+    from app.adapters.registry import register_llm, _registry
 
     unique_name = "_test_ac3_llm"
 
@@ -235,7 +255,7 @@ async def test_ac3_health_check_directly_reflects_adapter_state():
         async def available(self):
             return True
 
-    register_llm(unique_name, _AC3)
+    register_llm(unique_name)(_AC3)
 
     original_init = ProviderRouter.__init__
     original_check_health = ProviderRouter.check_health
@@ -243,9 +263,7 @@ async def test_ac3_health_check_directly_reflects_adapter_state():
     state = {"ok": True}
 
     def _fake_init(self):
-        self._settings = MagicMock()
-        self._settings.allow_paid = True
-        self._settings.__getattr__ = lambda _, n: ""
+        self._settings = _FakeSettings(allow_paid=True)
         self._availability = {}
         self._circuit_open_until = {}
         self._cb_event_sent = set()
@@ -284,4 +302,4 @@ async def test_ac3_health_check_directly_reflects_adapter_state():
         ProviderRouter.__init__ = original_init  # type: ignore
         ProviderRouter.check_health = original_check_health  # type: ignore
         del ProviderRouter.get_chain  # type: ignore
-        _REGISTRY.pop(("llm", unique_name), None)
+        _registry.pop(("llm", unique_name), None)

@@ -10,20 +10,25 @@
  *      with zero FE code changes.
  */
 
-type JsonSchema =
-  | { type: "string"; enum?: string[]; title?: string; description?: string }
-  | { type: "number"; title?: string; description?: string }
-  | { type: "integer"; title?: string; description?: string }
-  | { type: "boolean"; title?: string; description?: string }
-  | { type: "array"; items?: JsonSchema; title?: string }
-  | { type: "object"; properties?: Record<string, JsonSchema>; required?: string[] }
-  | {
-      oneOf?: JsonSchema[];
-      anyOf?: JsonSchema[];
-      title?: string;
-      description?: string;
-    }
-  | { type?: string; title?: string; description?: string };
+/**
+ * A JSON Schema subset used by the form generator. Deliberately a flat
+ * optional-fields interface (not a discriminated union) — real JSON Schema
+ * documents legally mix keywords (e.g. `oneOf` alongside `title`), and every
+ * branch below only ever reads fields via `schema.type === "..."` narrowing,
+ * never relies on excess-property checks.
+ */
+export interface JsonSchema {
+  type?: "string" | "number" | "integer" | "boolean" | "array" | "object";
+  enum?: string[];
+  title?: string;
+  description?: string;
+  items?: JsonSchema;
+  properties?: Record<string, JsonSchema>;
+  required?: string[];
+  oneOf?: JsonSchema[];
+  anyOf?: JsonSchema[];
+  minLength?: number;
+}
 
 export interface SchemaFieldProps {
   path: string[];
@@ -74,9 +79,7 @@ export function SchemaField({
   }
 
   if (schema.type === "string") {
-    const isMultiline =
-      (schema as { minLength?: number }).minLength &&
-      (schema as { minLength?: number }).minLength! > 80;
+    const isMultiline = !!(schema.minLength && schema.minLength > 80);
 
     if (isMultiline) {
       return (
