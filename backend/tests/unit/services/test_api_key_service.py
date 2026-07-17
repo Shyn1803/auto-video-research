@@ -11,7 +11,7 @@ import pytest
 # FERNET_MASTER_KEY must be set before any import of app.core.crypto
 os.environ.setdefault(
     "FERNET_MASTER_KEY",
-    "zQmXJvKpL3nR7sT9wY2aB5cD8fG1hJ4kM6nP0qR2tU5vW8xA=",
+    "bWkOQves7E-CwMRpcjtZjEMlEcshdrUJYomTouLwLVc=",
 )
 
 from app.core.crypto import decrypt, encrypt, mask  # noqa: E402
@@ -104,7 +104,7 @@ class TestCRUD:
         session = MagicMock()
         session.flush = AsyncMock()
         session.commit = AsyncMock()
-        session.refresh = MagicMock()
+        session.refresh = AsyncMock()
         session.add = MagicMock()
 
         svc = KeyService(lambda: _session_cm(session))
@@ -125,7 +125,7 @@ class TestCRUD:
         session = MagicMock()
         session.flush = AsyncMock()
         session.commit = AsyncMock()
-        session.refresh = MagicMock()
+        session.refresh = AsyncMock()
         session.add = MagicMock()
 
         svc = KeyService(lambda: _session_cm(session))
@@ -141,7 +141,7 @@ class TestCRUD:
     async def test_get_by_id_found(self):
         row = _make_row()
         session = MagicMock()
-        session.get = MagicMock(return_value=row)
+        session.get = AsyncMock(return_value=row)
 
         svc = KeyService(lambda: _session_cm(session))
         result = await svc.get_by_id(row.id)
@@ -150,7 +150,7 @@ class TestCRUD:
     @pytest.mark.asyncio
     async def test_get_by_id_not_found(self):
         session = MagicMock()
-        session.get = MagicMock(return_value=None)
+        session.get = AsyncMock(return_value=None)
 
         svc = KeyService(lambda: _session_cm(session))
         result = await svc.get_by_id("nonexistent-id")
@@ -160,8 +160,8 @@ class TestCRUD:
     async def test_delete_existing(self):
         row = _make_row()
         session = MagicMock()
-        session.get = MagicMock(return_value=row)
-        session.delete = MagicMock()
+        session.get = AsyncMock(return_value=row)
+        session.delete = AsyncMock()
         session.commit = AsyncMock()
 
         svc = KeyService(lambda: _session_cm(session))
@@ -173,7 +173,7 @@ class TestCRUD:
     @pytest.mark.asyncio
     async def test_delete_missing_returns_none(self):
         session = MagicMock()
-        session.get = MagicMock(return_value=None)
+        session.get = AsyncMock(return_value=None)
 
         svc = KeyService(lambda: _session_cm(session))
         result = await svc.delete("nonexistent")
@@ -214,7 +214,7 @@ class TestExhaustion:
     async def test_mark_exhausted_sets_fields(self):
         row = _make_row(status="active", exhausted_until=None)
         session = MagicMock()
-        session.get = MagicMock(return_value=row)
+        session.get = AsyncMock(return_value=row)
         session.commit = AsyncMock()
 
         svc = KeyService(lambda: _session_cm(session))
@@ -229,7 +229,7 @@ class TestExhaustion:
     async def test_mark_exhausted_defaults_to_midnight_utc(self):
         row = _make_row(status="active", exhausted_until=None)
         session = MagicMock()
-        session.get = MagicMock(return_value=row)
+        session.get = AsyncMock(return_value=row)
         session.commit = AsyncMock()
 
         svc = KeyService(lambda: _session_cm(session))
@@ -249,13 +249,11 @@ class TestExhaustion:
         )
         session = MagicMock()
 
-        async def _execute(stmt, *a, **kw):
-            r = MagicMock()
-            r.scalars.return_value.all.return_value = [exhausted_row]
-            r.scalar_one_or_none.return_value = None
-            return r
-
-        session.execute = _execute
+        scalars_result = MagicMock()
+        scalars_result.all.return_value = [exhausted_row]
+        # service calls `await session.scalars(stmt)` (SQLAlchemy 2.0 async API),
+        # not session.execute -- mock that method directly.
+        session.scalars = AsyncMock(return_value=scalars_result)
         session.commit = AsyncMock()
 
         svc = KeyService(lambda: _session_cm(session))
@@ -274,7 +272,7 @@ class TestTrackUsage:
     async def test_increments_counter(self):
         row = _make_row(usage_count=5)
         session = MagicMock()
-        session.get = MagicMock(return_value=row)
+        session.get = AsyncMock(return_value=row)
         session.commit = AsyncMock()
 
         svc = KeyService(lambda: _session_cm(session))
@@ -287,11 +285,11 @@ class TestTrackUsage:
     async def test_track_usage_sets_last_used_at(self):
         row = _make_row(last_used_at=None)
         session = MagicMock()
-        session.get = MagicMock(return_value=row)
+        session.get = AsyncMock(return_value=row)
         session.commit = AsyncMock()
 
         svc = KeyService(lambda: _session_cm(session))
-        svc.track_usage(row.id)
+        await svc.track_usage(row.id)
 
         assert row.last_used_at is not None
 
@@ -306,12 +304,10 @@ class TestListByProvider:
         rows = [_make_row(provider="gemini"), _make_row(provider="gemini")]
         session = MagicMock()
 
-        async def _execute(stmt, *a, **kw):
-            r = MagicMock()
-            r.scalars.return_value.all.return_value = rows
-            return r
-
-        session.execute = _execute
+        scalars_result = MagicMock()
+        scalars_result.all.return_value = rows
+        # service calls `await session.scalars(stmt)`, not session.execute.
+        session.scalars = AsyncMock(return_value=scalars_result)
 
         svc = KeyService(lambda: _session_cm(session))
         result = await svc.list_by_provider()
@@ -321,19 +317,21 @@ class TestListByProvider:
     async def test_list_filter_by_provider(self):
         gemini_rows = [_make_row(provider="gemini")]
         groq_rows = [_make_row(provider="groq")]
-        call_count = [0]
 
-        async def _execute(stmt, *a, **kw):
+        async def _scalars(stmt, *a, **kw):
             r = MagicMock()
-            q = str(stmt)
+            # Plain str(stmt) renders bound params as placeholders, not their
+            # literal values -- compile with literal_binds to see "gemini" in
+            # the rendered SQL text.
+            q = str(stmt.compile(compile_kwargs={"literal_binds": True}))
             if "gemini" in q:
-                r.scalars.return_value.all.return_value = gemini_rows
+                r.all.return_value = gemini_rows
             else:
-                r.scalars.return_value.all.return_value = groq_rows
+                r.all.return_value = groq_rows
             return r
 
         session = MagicMock()
-        session.execute = _execute
+        session.scalars = _scalars
 
         svc = KeyService(lambda: _session_cm(session))
         result = await svc.list_by_provider("gemini")
