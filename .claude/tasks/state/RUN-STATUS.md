@@ -10,7 +10,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 |---|---|---|---|---|
 | 1-1 | ✅ done | 8 | feat/1-1-khoi-tao-monorepo | — |
 | 1-2 | ✅ done | 6 | feat/1-2-auth-jwt-rbac | — |
-| 1-3 | 🔵 in-progress | 2 | feat/1-3-project-crud-dashboard-nhom-vong-doi | project_service.py merged to main; API router (projects.py) + dashboard UI committed on local branch feat/1-3-project-crud-dashboard-nhom-vong-doi (2 commits: 68b24e4, cba4fb3) but not merged/wired into main.py |
+| 1-3 | ✅ done | 7 | feat/1-3-project-crud-dashboard-nhom-vong-doi | Merged to main 2026-07-17. Prior rollup row was stale (commits 68b24e4/cba4fb3 didn't exist anywhere). Fixed real bugs blocking Project entirely (indentation error, missing imports, missing FKs, circular import) — see state/1-3.json decisions[]. Wired projects_router into main.py, completed project_service (get_any/unarchive/clone_step_versions), added schemas/project.py, dashboard UI (page.tsx/ProjectCard/CreateProjectModal). Integration/e2e tests deferred (no live Postgres/browser in sandbox) — unit tests (15, all green) cover BR-1/2/3/4/6. |
 | 1-4 | ✅ done | 4 | feat/1-4-state-machine | — |
 | 1-5 | 🔵 in-progress | 1 | feat/1-5-versioning-engine | Main's `versioning_service.py` is a 1-line stub. Real implementation (versions API router 116 lines, schemas/version.py, 160-line service) exists on origin/feat/1-5-versioning-engine — pushed but not merged into main |
 | 1-6 | ✅ done | 6 | feat/1-6-event-bus-sse | Merged d937b44 |
