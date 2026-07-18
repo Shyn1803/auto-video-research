@@ -45,6 +45,30 @@ class VersioningService:
         await self._db.flush()
         return sv
 
+    async def manual_edit(
+        self, *, project_id: UUID, step: str, content: dict, actor: str
+    ) -> StepVersion:
+        """PUT .../versions/current (task 4-5 Step 8) -- a manual edit of
+        the current version. Still insert-only (BR-1): creates a new
+        version whose `parent_version` is the version being edited, with
+        `created_by=actor` (e.g. "user:<id>") so it's distinguishable from
+        an LLM-generated version in the version list/diff UI. This is the
+        version a subsequent regenerate should chain from (AC5 lineage).
+        """
+        current, _all_stale = await self.current(project_id, step)
+        if current is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"no current version for step {step!r} to edit",
+            )
+        return await self.create(
+            project_id=project_id,
+            step=step,
+            content=content,
+            actor=actor,
+            parent_version=current.version,
+        )
+
     async def current(self, project_id: UUID, step: str) -> tuple[StepVersion | None, bool]:
         result = await self._db.execute(
             select(StepVersion)

@@ -12,5 +12,6 @@ from app.models.project import Project as Project
 from app.models.refresh_token import RefreshToken as RefreshToken
 from app.models.scene_approval import SceneApproval as SceneApproval
 from app.models.status_history import StatusHistory as StatusHistory
+from app.models.step_approval import StepApproval as StepApproval
 from app.models.step_version import StepVersion as StepVersion
 from app.models.user import User as User

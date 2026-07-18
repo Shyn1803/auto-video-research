@@ -48,3 +48,18 @@ class CompareResponse(BaseModel):
     changed: list[dict] | None = None
     v1_content: dict | None = None
     v2_content: dict | None = None
+
+
+class ManualEditRequest(BaseModel):
+    """PUT .../versions/current body (task 4-5 Step 8) -- a manual edit is
+    still insert-only under the hood (BR-1); this is not a real UPDATE."""
+
+    content: dict
+
+
+class ApproveResponse(BaseModel):
+    step: str
+    version: int
+    approved: bool
+    approved_at: str | None
+    approved_by: str | None

@@ -17,14 +17,17 @@ from app.models.project import Project
 from app.models.step_version import StepVersion
 from app.models.user import User
 from app.schemas.version import (
+    ApproveResponse,
     CompareResponse,
     CurrentResponse,
+    ManualEditRequest,
     RestoreResponse,
     VersionCreate,
     VersionListResponse,
     VersionOut,
 )
 from app.services.state_machine import ProjectStatus
+from app.services.step_approval_service import StepApprovalService
 from app.services.versioning_service import VersioningService
 
 router = APIRouter(tags=["versions"])
@@ -142,6 +145,63 @@ async def restore_version(
         )
         await db.commit()
         return RestoreResponse(restored=_out(target), staled_steps=staled)
+
+
+@router.put(
+    "/projects/{project_id}/steps/{step}/versions/current",
+    response_model=VersionOut,
+    status_code=status.HTTP_201_CREATED,
+)
+async def manual_edit_current_version(
+    request: Request,
+    project_id: str,
+    step: str,
+    body: ManualEditRequest,
+    user: User = Depends(get_current_user),
+) -> VersionOut:
+    """Task 4-5 Step 8 (AC5): sửa tay bản hiện hành. Still insert-only
+    under the hood (BR-1) -- creates a new version whose `parent_version`
+    is the version being edited, `created_by="user:{user_id}"`."""
+    async with request.app.state.database.session() as db:
+        proj = await _get_project(db, project_id, user.id)
+        svc = VersioningService(db)
+        sv = await svc.manual_edit(
+            project_id=proj.id,
+            step=step,
+            content=body.content,
+            actor=f"user:{user.id}",
+        )
+        await db.commit()
+        return _out(sv)
+
+
+@router.post(
+    "/projects/{project_id}/steps/{step}/approve",
+    response_model=ApproveResponse,
+)
+async def approve_step(
+    request: Request,
+    project_id: str,
+    step: str,
+    user: User = Depends(get_current_user),
+) -> ApproveResponse:
+    """Task 4-5 Step 8: 2 sub-step approvals (outline/script) -- approves
+    the current version of *step*. 400 if *step* isn't approvable here,
+    404 if no version exists, 409 if the current version is stale."""
+    async with request.app.state.database.session() as db:
+        proj = await _get_project(db, project_id, user.id)
+        svc = StepApprovalService(db)
+        approval = await svc.approve(
+            project_id=proj.id, step=step, actor=f"user:{user.id}"
+        )
+        await db.commit()
+        return ApproveResponse(
+            step=approval.step,
+            version=approval.version,
+            approved=approval.approved,
+            approved_at=approval.approved_at.isoformat() if approval.approved_at else None,
+            approved_by=approval.approved_by,
+        )
 
 
 @router.get(
