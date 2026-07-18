@@ -17,7 +17,7 @@
 
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useWorkspace } from "@/lib/workspace-context";
 import { SceneSidebar } from "@/components/workspace/SceneSidebar";
 import { SceneFormPanel } from "@/components/workspace/SceneFormPanel";
@@ -57,6 +57,14 @@ const DUMMY_SCENE = {
 
 export default function ScenesPage() {
   const { state, dispatch } = useWorkspace();
+
+  // Task 5-9: the Scenes station's VersionSwitcher operates on the
+  // "scene_set" versioning step specifically (not "storyboard", the other
+  // half of this station per STATION_VERSIONING_STEPS) — this page is the
+  // one place that knows which sub-step it actually edits.
+  useEffect(() => {
+    dispatch({ type: "SET_VERSIONING_STEP", step: "scene_set" });
+  }, [dispatch]);
 
   // In 5-1: bootstrap from local fixture — real GET/PUT wires in 5-2
   const scenes = useMemo(
