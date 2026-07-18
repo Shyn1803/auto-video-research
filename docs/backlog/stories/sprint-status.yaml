@@ -109,7 +109,7 @@ development_status:
   5-5-man-hoan-thien: backlog
   5-6-man-nghien-cuu: ready-for-dev
   5-7-man-noi-dung: backlog
-  5-8-runningstate-component: in-progress
+  5-8-runningstate-component: done  # 2026-07-18 cfb6480, 40 vitest green, e2e scaffold committed
   5-9-versionswitcher-so-sanh-history: backlog
   5-10-projectdrawer: backlog
   epic-5-retrospective: optional
