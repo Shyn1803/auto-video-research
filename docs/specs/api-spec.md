@@ -85,7 +85,10 @@
 | Method | Path | Mô tả |
 |---|---|---|
 | GET 🅞 | `/projects/{id}/claims` | `[{id, claim_text, claim_type, verdict, evidence:[{source_id, quote, supports}]}]` + `overall_verdict` |
-| POST 🅞 | `/projects/{id}/claims/{cid}/override` | `{verdict, reason}` — human override, ghi status_history |
+| POST 🅞 | `/projects/{id}/claims/{cid}/override` | `{verdict, reason}` — human override, ghi audit (không xoá evidence, BR-3) → response `{claim, overall_verdict, affected_claims: [claim_id]}` (task 4-4, contract change) |
+| PATCH 🅞 | `/projects/{id}/sources/{sid}` | `{pinned?, disabled?}` — disable/xoá source kích hoạt tính lại verdict mọi claim có evidence từ nó, đồng bộ cùng response → `{source, overall_verdict, affected_claims: [claim_id]}` (task 4-4 BR-5, contract change — bổ sung so với §4's `{pinned?, disabled?}` gốc) |
+
+Task 4-4 contract change: `override` và source `disable` giờ trả thêm `overall_verdict` (verdict tổng của project sau khi tính lại) và `affected_claims` (danh sách `claim_id` có verdict thay đổi bởi thao tác này) — cả hai tính lại **đồng bộ trong cùng request** (BR-3/BR-5), không phải một job nền riêng.
 
 # 6. Scenes & Storyboard (FR-07/08/09/10)
 
