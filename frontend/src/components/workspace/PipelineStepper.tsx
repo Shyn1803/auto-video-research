@@ -40,6 +40,24 @@ function iconFor(status: StepStatus): string {
   }
 }
 
+/**
+ * Task 5-8 AC-2 (stepper half): "●%" badge for a backgrounded run. Same
+ * BR-1 rule as RunningState -- `pct === null` renders a plain indeterminate
+ * ● (no fabricated number), `0 < pct <= 100` renders "●NN%".
+ */
+function RunningBadge({ pct }: { pct: number | null }) {
+  const isDeterminate = typeof pct === "number" && pct > 0 && pct <= 100;
+  return (
+    <span
+      aria-label={isDeterminate ? `Đang chạy ngầm ${pct}%` : "Đang chạy ngầm"}
+      className={`ml-1 text-xs ${isDeterminate ? "" : "motion-safe:animate-pulse"}`}
+    >
+      ●{isDeterminate ? pct : ""}
+      {isDeterminate ? "%" : ""}
+    </span>
+  );
+}
+
 /* ── single station pill ────────────────────────────── */
 
 interface PillProps {
@@ -51,6 +69,8 @@ interface PillProps {
   warnings: string[];
   onSelect: (idx: number) => void;
   onOpenDone: (idx: number) => void;
+  /** Non-null when this station has a run backgrounded via RunningState's "Chạy ngầm". */
+  runningPct?: number | null;
 }
 
 function Pill({
@@ -62,8 +82,10 @@ function Pill({
   warnings,
   onSelect,
   onOpenDone,
+  runningPct,
 }: PillProps) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const isBackgrounded = runningPct !== undefined;
 
   if (status === "current") {
     return (
@@ -77,6 +99,7 @@ function Pill({
       >
         <span aria-hidden="true">{iconFor(status)}</span>
         <span>{station.label}</span>
+        {isBackgrounded && <RunningBadge pct={runningPct ?? null} />}
       </div>
     );
   }
@@ -120,6 +143,7 @@ function Pill({
     >
       <span aria-hidden="true">{iconFor(status)}</span>
       <span>{station.label}</span>
+      {isBackgrounded && <RunningBadge pct={runningPct ?? null} />}
 
       {/* tooltip for done-warning or locked */}
       {tooltipOpen && (status === "done-warning" || locked) && (
@@ -153,9 +177,16 @@ function Pill({
 
 interface PipelineStepperProps {
   className?: string;
+  /**
+   * Task 5-8 AC-2 (stepper half): set when the current station's run has
+   * been backgrounded via RunningState's "Chạy ngầm" — shows a live ●%/
+   * indeterminate badge on that station's pill. `pct: null` = no real
+   * fraction yet (BR-1 parity with RunningState/ProjectProgressCard).
+   */
+  backgroundRun?: { stationIndex: number; pct: number | null } | null;
 }
 
-export default function PipelineStepper({ className }: PipelineStepperProps) {
+export default function PipelineStepper({ className, backgroundRun }: PipelineStepperProps) {
   const { state, dispatch } = useWorkspace();
   const readonly = state.readonly;
 
@@ -202,6 +233,7 @@ export default function PipelineStepper({ className }: PipelineStepperProps) {
           warnings={stationWarnings}
           onSelect={handleStationClick}
           onOpenDone={handleOpenDoneStation}
+          runningPct={backgroundRun?.stationIndex === idx ? backgroundRun.pct : undefined}
         />
       ))}
     </nav>

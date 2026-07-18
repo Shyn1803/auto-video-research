@@ -8,13 +8,17 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 /**
  * Pipeline run event received over SSE.
  *
- * Matches the two canonical event types emitted by the backend:
+ * Matches the canonical event types emitted by the backend:
  * - ``project.status``  payload: { project_id, from_state, to_state, actor?, reason? }
  * - ``step.progress``   payload: { project_id, run_id, step, pct, message? }
+ * - ``run.cancelled``   payload: { project_id, run_id, step } — task 4-7
+ *   (see `backend/app/events/schemas.py::run_cancelled`,
+ *   `docs/specs/event-catalog.md`); RunningStateCancel's BR-4 "wait for the
+ *   real event before showing cancelled" depends on this being observable.
  */
 export interface PipelineEvent {
   event_id: string;
-  event_type: "project.status" | "step.progress";
+  event_type: "project.status" | "step.progress" | "run.cancelled";
   schema_version: string;
   occurred_at: string;
   correlation_id: string;
@@ -127,7 +131,7 @@ export function useEventStream({ projectId, runId, onEvent }: UseEventStreamOpti
       const effectiveRunId = runIdRef.current;
 
       const onMessage: SseMessageHandler = (data) => {
-        const ev = data as PipelineEvent;
+        const ev = data as unknown as PipelineEvent;
         if (isMounted.current) {
           setLastEvent(ev);
           onEventRef.current?.(ev);

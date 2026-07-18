@@ -71,6 +71,31 @@ describe("PipelineStepper", () => {
     expect(screen.getByText("Nghiên cứu")).toBeInTheDocument();
   });
 
+  it("shows an indeterminate ● badge on the backgrounded station when pct is null (task 5-8 AC-2, BR-1 parity)", () => {
+    render(
+      <WorkspaceProvider
+        projectId="p1"
+        initialState={{ stationStates: ["done", "done", "current", "locked", "locked"] }}
+      >
+        <PipelineStepper backgroundRun={{ stationIndex: 2, pct: null }} />
+      </WorkspaceProvider>,
+    );
+    const badge = screen.getByLabelText("Đang chạy ngầm");
+    expect(badge).toBeInTheDocument();
+  });
+
+  it("shows a determinate ●NN% badge on the backgrounded station when a real pct is given", () => {
+    render(
+      <WorkspaceProvider
+        projectId="p1"
+        initialState={{ stationStates: ["done", "done", "current", "locked", "locked"] }}
+      >
+        <PipelineStepper backgroundRun={{ stationIndex: 2, pct: 42 }} />
+      </WorkspaceProvider>,
+    );
+    expect(screen.getByLabelText("Đang chạy ngầm 42%")).toBeInTheDocument();
+  });
+
   it("keyboard: current station is focusable and Enter re-selects it", () => {
     renderStepper({ stationStates: ["done", "done", "current", "locked", "locked"] });
     const current = screen.getByText("Phân cảnh").closest("div[aria-current='step']")!;
