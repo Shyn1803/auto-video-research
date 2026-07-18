@@ -35,7 +35,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 | 4-7 | ⬜ not-started | — | feat/4-7-dieu-khien-run | — |
 | 4-8 | ⬜ not-started | — | feat/4-8-diem-vao-co-san | — |
 | 5-1 | ✅ done | 8 | feat/5-1-project-workspace-topbar-stepper | Re-verified 2026-07-17 (later): workspace UI was already on main (d37a9ab) but had real bugs (Rules-of-Hooks violation, wrong import path, default/named export mismatch, Next 15 `params` Promise, dead zustand file, disabled-attribute hover bug) and zero backend (no scenes API at all). Fixed all, added scenes API + approve endpoint + tests, fixed repo-wide broken vitest config, verified via real dev server |
-| 5-2 | ⬜ not-started | — | feat/5-2-edit-controls | — |
+| 5-2 | ✅ done | 6 | feat/5-2-edit-controls | Merged to main 2026-07-18 (27e72dd): TextControl+BoldButton (BR-4), ColorPicker+wcag-contrast (BR-2), AnimationControl (type+delay with explicit ←/→ handling since happy-dom doesn't natively step range inputs), LayoutDryRunDialog (BR-1), VoicePanel+stale-audio badge (BR-3), Playwright e2e edit-controls.spec.ts + real-browser verification. Shared scene lib created: constants.ts, layout-constraints.ts, fixture.ts, layout-names.ts, types.ts. |
 | 5-3 | ⬜ not-started | — | feat/5-3-assetpicker | — |
 | 5-4 | ⬜ not-started | — | feat/5-4-scene-ops | — |
 | 5-5 | ⬜ not-started | — | feat/5-5-man-hoan-thien | — |

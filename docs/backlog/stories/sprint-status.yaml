@@ -103,7 +103,7 @@ development_status:
   # Epic 5 — Workspace UI (editor/review/running/version/drawer) (28đ, tuần 4-8)
   epic-5: in-progress
   5-1-project-workspace-topbar-stepper: done   # re-verified 2026-07-17, fixed real bugs, added scenes API, done
-  5-2-edit-controls: in-progress
+  5-2-edit-controls: done
   5-3-assetpicker: backlog
   5-4-scene-ops: backlog
   5-5-man-hoan-thien: backlog

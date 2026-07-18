@@ -41,7 +41,7 @@ None yet — no code exists to accrue debt in. Watch for: Constraint Resolver v1
 - Populate `.claude/context/dependencies.md` with real `pyproject.toml`/`package.json` contents once they exist.
 - Revisit `.claude/` for duplication/drift after the first few real PRs — this bootstrap was generated without real code to validate against.
 
-## Completed Milestones
+- 2026-07-18: Task 5-2 (Edit Controls) merged to main (27e72dd). All 6 steps done: TextControl+BoldButton (BR-4), ColorPicker+wcag-contrast (BR-2), AnimationControl (type+delay slider with explicit ArrowLeft/ArrowRight keydown handling because happy-dom doesn't natively step range inputs), LayoutDryRunDialog (BR-1 constraint violation dialog), VoicePanel+stale-audio badge (BR-3), Playwright e2e edit-controls.spec.ts + real-browser verification. New shared scene lib created: constants.ts, layout-constraints.ts, fixture.ts, layout-names.ts, types.ts. wcag-contrast npm lib added for BR-2. Frontend component tests co-located as __tests__/ dirs (matching 5-1 precedent, not the task file's inferred frontend/tests/unit path).
 
 - 2026-07-10: `docs/` handoff package complete (SRS v3.0, ARCHITECTURE, CONFIGURATION, full backlog, design system + wireframe).
 - 2026-07-11 to 12: Layout Engine architecture pivot (Gamma-style, AI-never-chooses-layout) designed, self-audited, and fully propagated across docs. Remotion runtime-integration deep-dive completed (dev-time skills vs. runtime boundary, Scene/Video composition split).
