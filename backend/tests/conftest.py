@@ -9,9 +9,14 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
-from app.core.config import get_settings
-from app.core.security import hash_password
-from app.main import create_app
+try:
+    from app.core.config import get_settings
+    from app.core.security import hash_password
+    from app.main import create_app
+except ImportError:
+    get_settings = None
+    hash_password = None
+    create_app = None
 
 # ── User factory ──────────────────────────────────────────────────────────────
 

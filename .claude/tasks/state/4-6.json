@@ -1,10 +1,10 @@
 {
   "task_id": "4-6",
-  "status": "not-started",
+  "status": "in-progress",
   "branch": "feat/4-6-semantic-storyboard-layout-engine-core",
-  "current_step": 0,
+  "current_step": 1,
   "steps": [
-    {"id": 1, "name": "Semantic Storyboard prompt + Scene Tree schema, no layout fields, parse-fail-loud (BR-1, BR-6)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 1, "name": "Semantic Storyboard prompt + Scene Tree schema, no layout fields, parse-fail-loud (BR-1, BR-6)", "status": "in-progress", "attempts": 1, "last_error": null, "commit_sha": null},
     {"id": 2, "name": "narration==voice_over reconciliation check, deterministic (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 3, "name": "Semantic Analysis pass (deterministic, no LLM)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 4, "name": "Layout Classifier - versioned rule table, deterministic (BR-3, BR-7)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
@@ -19,6 +19,6 @@
   ],
   "decisions": [],
   "blocked_reason": null,
-  "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "opened_at": "2026-07-18T00:00:00+07:00",
+  "updated_at": "2026-07-18T00:00:00+07:00"
 }

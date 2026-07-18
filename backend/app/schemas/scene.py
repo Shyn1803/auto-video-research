@@ -166,10 +166,11 @@ class MotionTrack(ContractModel):
 
 
 class MotionPlan(ContractModel):
-    """Deterministic output of the motion planner."""
+    """Deterministic output of the motion planner (pass-1 estimated timing)."""
 
     tracks: list[MotionTrack] = Field(default_factory=list)
-    transition_out: Transition
+    transition_out_type: str = Field(default="fade", min_length=1)
+    transition_out_duration_ms: int = Field(default=500, ge=200, le=1500)
 
 
 class Scene(ContractModel):
