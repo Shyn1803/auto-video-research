@@ -41,7 +41,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 | 5-5 | ⬜ not-started | — | feat/5-5-man-hoan-thien | — |
 | 5-6 | ⬜ not-started | — | feat/5-6-man-nghien-cuu | ready-for-dev in sprint-status.yaml |
 | 5-7 | ⬜ not-started | — | feat/5-7-man-noi-dung | — |
-| 5-8 | ⬜ not-started | — | feat/5-8-runningstate-component | — |
+| 5-8 | ✅ done | 6 | feat/5-8-runningstate-component | Merged 2026-07-18 (cfb6480): RunningState + RunningStateError + RunningStateCancel + RunningStateOverlay + ProjectProgressCard, 40 vitest tests green, e2e scaffold (running-state.spec.ts) with localStorage fixture injection awaiting backend SSE wiring from 5-6/5-7. fireEvent.click pattern chosen over native .click() due to React 19 + happy-dom synchronous assert timing. |
 | 5-9 | ⬜ not-started | — | feat/5-9-versionswitcher | — |
 | 5-10 | ⬜ not-started | — | feat/5-10-projectdrawer | — |
 | 6-1 | ⬜ not-started | — | feat/6-1-node-produce | — |

@@ -1,18 +1,20 @@
 {
   "task_id": "5-8",
-  "status": "not-started",
+  "status": "done",
   "branch": "feat/5-8-runningstate-component",
-  "current_step": 0,
+  "current_step": 6,
   "steps": [
-    {"id": 1, "name": "RunningState core, real SSE message + elapsed + indeterminate progress (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 2, "name": "Chay ngam (background) + dashboard progress card", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "Error state, chain-exhausted vs generic (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 4, "name": "Cancel flow, confirm >30s + dang huy sub-state (BR-3, BR-4, consumes 4-7)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 5, "name": "Integrate into every Duyet to AI-step transition + stepper background indicator", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+    {"id": 1, "name": "RunningState core, real SSE message + elapsed + indeterminate progress (BR-1)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "61097b9"},
+    {"id": 2, "name": "Chay ngam (background) + dashboard progress card", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "ab70012"},
+    {"id": 3, "name": "Error state, chain-exhausted vs generic (BR-2)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "8169e31"},
+    {"id": 4, "name": "Cancel flow, confirm >30s + dang huy sub-state (BR-3, BR-4, consumes 4-7)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "7e874d4"},
+    {"id": 5, "name": "Integrate into every Duyet to AI-step transition + stepper background indicator", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "467a1da"},
+    {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "cfb6480"}
   ],
-  "decisions": [],
+  "decisions": [
+    "Reconciled 2026-07-18: worktree state file (.claude/worktrees/agent-a09b2ab057df95bcf/.claude/tasks/state/5-8.json) was already done; main worktree .claude/tasks/state/5-8.json was stale (not-started). Synced."
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-18T00:00:00+07:00"
 }
