@@ -240,9 +240,21 @@ def _split_sentences(text: str) -> list[str]:
     return [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", text) if s.strip()]
 
 
+# High-frequency function/connector words that coincidentally recur across
+# unrelated Vietnamese sentences (negation, linking, generic nouns) -- a
+# single shared word like this is not evidence a sentence is "about" a
+# claim; see check_warn_claim_disclosure's overlap-count-2 rule below,
+# which this list backs by keeping obviously-generic words out of the
+# keyword set in the first place.
+_DISCLOSURE_STOPWORDS = {
+    "không", "hoàn", "toàn", "liên", "quan", "dung", "điều", "được",
+    "trong", "những", "cũng", "rằng", "hơn", "này", "cho", "với",
+}
+
+
 def _keywords(text: str, *, min_len: int = 4) -> set[str]:
     words = "".join(ch if ch.isalnum() else " " for ch in text.lower()).split()
-    return {w for w in words if len(w) >= min_len}
+    return {w for w in words if len(w) >= min_len and w not in _DISCLOSURE_STOPWORDS}
 
 
 def check_warn_claim_disclosure(
@@ -251,6 +263,11 @@ def check_warn_claim_disclosure(
     """For each WARN claim whose keywords show up in a script sentence,
     that sentence must contain DISCLOSURE_PHRASE -- returns one warning
     per claim that was used without the disclosure actually present.
+
+    "Shows up" requires at least 2 overlapping distinctive keywords (or
+    all of them, if the claim has fewer than 2 to begin with) -- a single
+    shared word is too weak a signal on its own (see _DISCLOSURE_STOPWORDS
+    above for the common-word cases this is guarding against).
     """
     warnings: list[ContentWarning] = []
     sentences = _split_sentences(voice_over)
@@ -260,9 +277,11 @@ def check_warn_claim_disclosure(
         claim_keywords = _keywords(claim_text)
         if not claim_keywords:
             continue
+        overlap_threshold = min(2, len(claim_keywords))
 
         used_sentences = [
-            s for s in sentences if _keywords(s) & claim_keywords
+            s for s in sentences
+            if len(_keywords(s) & claim_keywords) >= overlap_threshold
         ]
         if not used_sentences:
             continue  # claim not used in the script at all -- nothing to flag
