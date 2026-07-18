@@ -148,6 +148,14 @@ class Settings(BaseSettings):
     crawl_respect_robots: bool = True
     crawl_cache_ttl_days: int = 30
 
+    # Ranking (Task 4-4, "Decisions already locked" defaults)
+    ranking_weight_recency: float = 0.3
+    ranking_weight_relevance: float = 0.3
+    ranking_weight_trust: float = 0.25
+    ranking_weight_confirm: float = 0.15
+    similarity_threshold: float = 0.92
+    max_sources_per_project: int = 20
+
     # Image / asset
     sd_url: str = ""
     sd_model: str = "flux1-schnell"
