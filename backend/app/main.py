@@ -11,6 +11,7 @@ from app.api.admin.costs import router as admin_costs_router
 from app.api.admin.prompts import router as admin_prompts_router
 from app.api.admin.providers import router as admin_providers_router
 from app.api.auth import router as auth_router
+from app.api.claims import router as claims_router
 from app.api.health import router as health_router
 from app.api.projects import router as projects_router
 from app.api.runs import router as runs_router
@@ -69,6 +70,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_prompts_router)
     app.include_router(runs_router)
     app.include_router(scenes_router)
+    app.include_router(claims_router)
     return app
 
 
