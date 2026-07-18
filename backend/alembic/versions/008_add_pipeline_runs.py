@@ -1,10 +1,14 @@
-"""006_add_pipeline_runs
+"""008_add_pipeline_runs
 
 Add pipeline_runs table -- Task 4-1 (LangGraph skeleton + checkpoint +
 human gate). Lightweight index row per run; the full LangGraph checkpoint
 (graph position, PipelineState) lives in the langgraph-checkpoint-postgres
 library's own tables, created at app startup via app/pipeline/checkpoint.py
 (langgraph owns that schema, not alembic -- see Task 4-1 Step 2 note).
+
+Renumbered from 006 to 008 during the merge into main: 006 and 007 were
+already taken by 3-4/5-1-adjacent work (006_add_scene_approvals,
+007_add_step_versions_fk) that landed on main while this branch was open.
 
 Epic 4, task 4-1.
 """
@@ -14,8 +18,8 @@ from typing import Sequence
 from alembic import op
 import sqlalchemy as sa
 
-revision: str = "006_add_pipeline_runs"
-down_revision: str = "005_add_llm_usage_partitioned"
+revision: str = "008_add_pipeline_runs"
+down_revision: str = "007_add_step_versions_fk"
 depends_on: Sequence[str] | None = None
 
 

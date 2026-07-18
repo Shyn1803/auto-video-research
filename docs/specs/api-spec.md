@@ -57,15 +57,17 @@
 
 ---
 
-# 3. Versions (mục 6 SRS)
+# 3. Versions (mục 6 SRS) — implemented task 1-5
 
 | Method | Path | Mô tả |
 |---|---|---|
 | GET 🅞 | `/projects/{id}/steps/{step}/versions` | List `{version, parent_version, stale, created_by, created_at}` |
-| GET 🅞 | `/projects/{id}/steps/{step}/versions/{v}` | Content đầy đủ |
-| PUT 🅞 | `/projects/{id}/steps/{step}/versions` | User save chỉnh sửa → **tạo version mới** (body = content; server tự đánh số) |
-| POST 🅞 | `.../versions/{v}/restore` | Đặt v làm hiện hành; các step sau đánh dấu stale → response liệt kê step bị stale |
-| GET 🅞 | `.../versions/compare?from=1&to=3` | Diff: text unified diff (outline/script) hoặc scene-level `{added[], removed[], changed[]}` |
+| GET 🅞 | `/projects/{id}/steps/{step}/current` | Current = max(version) WHERE NOT stale; nếu mọi version stale → max(version) + `all_stale: true` (BR-4) |
+| POST 🅞 | `/projects/{id}/steps/{step}/versions` | `{content, parent_version?, actor?}` → **tạo version mới** (insert-only, BR-1; server tự đánh số version); `parent_version` cho phép regenerate-sau-khi-sửa-tay track đúng bản user đã sửa (BR-5) |
+| POST 🅞 | `.../versions/{v}/restore` | Đặt v làm hiện hành; các step **sau** đánh dấu stale theo thứ tự (BR-3, không tự đánh dấu chính step vừa restore) → response `{restored, staled_steps: []}`. 404 nếu version không tồn tại; 409 nếu project đang ở trạng thái đang chạy (`RESEARCHING`/`PRODUCING`/`RENDERING`/`PUBLISHING`) |
+| GET 🅞 | `.../versions/compare?from=1&to=3` | Diff: text unified diff (`outline`/`script`) hoặc `{type:"scene_set", added[], removed[], changed:[{scene_id, fields[]}]}` (`storyboard`/`scene_set`). 400 nếu `from`/`to` khác step |
+
+**Contract change note (task 1-5):** so với bản trước, endpoint tạo version đổi từ `PUT /versions` (không rõ actor/parent) sang `POST /versions` với body `{content, parent_version?, actor?}` — khớp với BR-5 (regenerate sau sửa tay cần track `parent_version`); thêm endpoint `GET .../current` tách riêng khỏi list (BR-4 cần trả `all_stale`); response `restore` xác nhận field `staled_steps`.
 
 ---
 
@@ -89,8 +91,9 @@
 
 | Method | Path | Mô tả |
 |---|---|---|
-| GET 🅞 | `/projects/{id}/scenes?version=latest` | Scene list (đầy đủ Scene JSON) |
-| PUT 🅞 | `/projects/{id}/scenes/{scene_id}` | Body = Scene JSON → validate (422 chi tiết) → set dirty, tạo scene_set version mới (autosave debounce phía FE) |
+| GET 🅞 | `/projects/{id}/scenes?version=latest` | Scene list (đầy đủ Scene JSON), mỗi scene kèm field `approved: bool` (task 5-1) |
+| PUT 🅞 | `/projects/{id}/scenes/{scene_id}` | Body = Scene JSON → validate (422 chi tiết, `detail.field_path`) → set dirty, tạo scene_set version mới (autosave debounce phía FE). Sửa một cảnh đã duyệt sẽ tự động bỏ duyệt cảnh đó (task 5-1) |
+| POST 🅞 | `/projects/{id}/scenes/{scene_id}/approve` | (task 5-1, FR-09) Duyệt từng cảnh — **không phải theo cả bước** (quyết định đã chốt). `approved` lưu tách khỏi Scene JSON contract (không phải field trong `app/schemas/scene.py`) vì đây là trạng thái workflow UI, không phải nội dung render — xem `app/models/scene_approval.py`. → `{scene_id, approved: true, approved_at}` |
 | POST 🅞 | `/projects/{id}/scenes` | `{after_scene_number, layout}` → scene mới từ template rỗng |
 | DELETE 🅞 | `/projects/{id}/scenes/{scene_id}` | |
 | POST 🅞 | `/projects/{id}/scenes/{scene_id}/duplicate` | |

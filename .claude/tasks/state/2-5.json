@@ -1,19 +1,24 @@
 {
   "task_id": "2-5",
-  "status": "not-started",
+  "status": "done",
   "branch": "feat/2-5-subtitle-tu-timestamps",
-  "current_step": 0,
+  "current_step": 5,
   "steps": [
-    { "id": 1, "name": "Evaluate @remotion/captions against scene-json-schema §3.6 constraints", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 2, "name": "Custom segmentation algorithm (only if @remotion/captions doesn't fit)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 3, "name": "Subtitle line style component + enabled/disabled (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 4, "name": "Wire segments into SceneRenderer props preparation", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 5, "name": "Wire up tests + property test + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+    { "id": 1, "name": "Evaluate @remotion/captions against scene-json-schema §3.6 constraints", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "f11556d (decision recorded in code comment + here, no throwaway spike file needed)" },
+    { "id": 2, "name": "Custom segmentation algorithm (only if @remotion/captions doesn't fit)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "f11556d" },
+    { "id": 3, "name": "Subtitle line style component + enabled/disabled (BR-3)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "f11556d" },
+    { "id": 4, "name": "Wire segments into SceneRenderer props preparation", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "f11556d" },
+    { "id": 5, "name": "Wire up tests + property test + verify all Acceptance Criteria", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "f11556d (49/49 vitest green in packages/remotion-templates, incl. the mandatory no-text-lost property test)" }
   ],
   "decisions": [
-    "2026-07-17 reconciliation: confirmed not-started. Only the Subtitle.tsx display primitive (delivered as part of 2-2) exists on main; no timestamp-segmentation algorithm, @remotion/captions evaluation, or wiring into SceneRenderer props found on main, any local branch, or origin/feat/2-5-subtitle-tu-timestamps."
+    "Step 1: invoked /remotion-captions skill (mandatory per dev-guide.md §2.1) before writing any code. `createTikTokStyleCaptions()` groups tokens purely by a `combineTokensWithinMilliseconds` time window — it has no character-length limit and no linguistic concept of a Vietnamese number+unit cluster. A numeral and its following unit word ('92,5' + 'phần' + 'trăm') would only stay in the same caption page by coincidence of timing, not because the package understands BR-1's constraint. Concluded: doesn't fit, proceeded with a custom algorithm (Step 2) as the task's Scope anticipated. Skipped writing a disposable spike script since the mismatch is structural/documented in @remotion/captions' own API (time-window grouping only), not something that needed empirical disproof — recorded the reasoning directly in packages/remotion-templates/src/subtitle/segmentTimestamps.ts's module docstring instead of a throwaway file.",
+    "Segmentation implemented as a pure function (packages/remotion-templates/src/subtitle/segmentTimestamps.ts) operating on the canonical `{word, start_ms, end_ms}` shape from docs/specs/scene-json-schema.md §3.4 (voice.audio.timestamps) — not the raw internal edge_tts.py adapter shape (`{word, start, end}` in ticks), which is a separate, already-existing conversion boundary owned by task 2-4, not this task.",
+    "'Props preparation' (per the task's Step 4 file-location note) turned out to not need a separate backend service: no backend/app/services/scene_props.py or equivalent exists anywhere yet (checked — 2-2/2-3 never built one), and frontend's ScenePlayer.tsx already forwards the whole scene object as Remotion Player inputProps generically. So segmentation is computed inside SceneRenderer itself via useMemo(() => segmentTimestamps(...), [timestamps]) — this satisfies spec §3.4's 'generated at props-preparation time, not stored in Scene JSON' without inventing a new backend layer speculatively (rules/architecture.md: don't pre-split services before a measured need).",
+    "Subtitle.tsx's actual render decision (BR-3 enabled/disabled, active-segment lookup) was extracted into a pure exported helper `resolveSubtitleRenderState()` so it's unit-testable without a Remotion render/DOM context — this package's existing test suite (scene-renderer.test.ts) only tests pure logic, no React Testing Library or jsdom is set up, so this follows the established convention rather than adding new test infra for one component.",
+    "Found (not fixed, out of scope): frontend/vitest.config.ts imports '@vitejs/plugin-react' which isn't listed in frontend/package.json — `npm run test` in frontend/ fails at config-load time regardless of what's being tested. Pre-existing, unrelated to 2-5 (didn't touch vitest.config.ts or frontend deps) — flagged in memory/project-memory.md.",
+    "No docs/ contract change needed — consumed the already-documented voice.audio.timestamps/subtitle shape from scene-json-schema.md §3.4 as-is, added no new Scene JSON fields."
   ],
   "blocked_reason": null,
-  "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-17T00:00:00+07:00"
+  "opened_at": "2026-07-17T14:00:00+07:00",
+  "updated_at": "2026-07-17T14:00:00+07:00"
 }

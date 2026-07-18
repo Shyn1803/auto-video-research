@@ -152,4 +152,4 @@ def _parse_embed_response(raw: dict[str, Any]) -> Any:
             f"gemini_embedding: unexpected response shape: {exc}. Raw: {raw!r:.200}",
             retryable=True,
         ) from exc
-    return _np.array(values, dtype="float32")
+    return _np.array(values, dtype="float64")

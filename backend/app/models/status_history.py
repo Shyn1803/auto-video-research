@@ -35,7 +35,7 @@ class StatusHistory(Base):
     )
     project_id: Mapped[str] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("projects.id"),
+        ForeignKey("projects.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )

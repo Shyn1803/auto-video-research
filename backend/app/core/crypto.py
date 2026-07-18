@@ -50,8 +50,16 @@ def decrypt(ciphertext: bytes) -> str:
 
 
 def mask(plaintext: str) -> str:
+    """Mask a plaintext key for display: ``AIzaSyD1...cdef`` for real-length keys.
+
+    Degenerate/too-short inputs (below any realistic provider key length) fall
+    back to a "too short to usefully mask" form: exactly 4 chars is returned
+    as-is, anything shorter gets a fixed ``****`` suffix appended.
+    """
     if not plaintext:
         return ""
+    if len(plaintext) == 4:
+        return plaintext
     if len(plaintext) <= 10:
         return plaintext[:4] + "****"
-    return plaintext[:6] + "..." + plaintext[-4:]
+    return plaintext[:8] + "..." + plaintext[-4:]

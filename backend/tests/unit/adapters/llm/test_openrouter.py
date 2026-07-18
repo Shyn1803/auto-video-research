@@ -78,16 +78,19 @@ class TestFreeModelFilter:
 
 
 class TestAvailable:
-    def test_free_available_with_key(self) -> None:
-        assert OpenRouterFreeLLM(settings=_s()).available() is True
+    @pytest.mark.asyncio
+    async def test_free_available_with_key(self) -> None:
+        assert await OpenRouterFreeLLM(settings=_s()).available() is True
 
-    def test_paid_available_with_key(self) -> None:
-        assert OpenRouterPaidLLM(settings=_s("openrouter_paid")).available() is True
+    @pytest.mark.asyncio
+    async def test_paid_available_with_key(self) -> None:
+        assert await OpenRouterPaidLLM(settings=_s("openrouter_paid")).available() is True
 
-    def test_paid_not_available_without_key(self) -> None:
+    @pytest.mark.asyncio
+    async def test_paid_not_available_without_key(self) -> None:
         s = ProviderSettings(
             provider_name="openrouter_paid",
             api_key="",
             extra={"openrouter_paid_model": "anthropic/claude-sonnet-5"},
         )
-        assert OpenRouterPaidLLM(settings=s).available() is False
+        assert await OpenRouterPaidLLM(settings=s).available() is False

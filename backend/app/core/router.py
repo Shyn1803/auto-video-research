@@ -19,6 +19,7 @@ import time
 from abc import ABC
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from typing import Any
 
 from app.adapters.base import BaseAdapter, ProviderError, ProviderSettings
@@ -69,6 +70,15 @@ class AvailabilityEntry:
     reason: str = ""
 
 
+def _cache_key(capability: str, name: str) -> str:
+    """Composite key for the availability cache / circuit-breaker maps."""
+    return f"{capability}:{name}"
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
 @dataclass
 class UsageRecord:
     provider_name: str = ""
@@ -89,12 +99,13 @@ class UsageRecord:
 
 
 def _load_adapter(
-    capability: str, name: str
+    capability: str, name: str, settings: Any = None
 ) -> BaseAdapter | None:
     """Instantiate an adapter with ProviderSettings carrying capability-specific config."""
-    from app.core.config import get_settings
+    if settings is None:
+        from app.core.config import get_settings
 
-    settings = get_settings()
+        settings = get_settings()
     cls = get_adapter_class(capability, name)
     if cls is None:
         return None
@@ -146,10 +157,12 @@ def _load_adapter(
 class ProviderRouter:
     """Resolves an env-declared provider chain and walks it with failover."""
 
-    def __init__(self) -> None:
-        from app.core.config import get_settings
+    def __init__(self, settings: Any = None) -> None:
+        if settings is None:
+            from app.core.config import get_settings
 
-        self._settings = get_settings()
+            settings = get_settings()
+        self._settings = settings
         self._availability: dict[str, AvailabilityEntry] = {}
         self._circuit_open_until: dict[str, float] = {}
         self._cb_event_sent: set[str] = set()
@@ -224,7 +237,7 @@ class ProviderRouter:
             if cls in seen_cls:
                 continue
             seen_cls.add(cls)
-            adapter = _load_adapter(capability, name)
+            adapter = _load_adapter(capability, name, self._settings)
             if adapter is None:
                 continue
             if not self._paid_allowed(adapter):
@@ -262,7 +275,7 @@ class ProviderRouter:
             allow = getattr(self._settings, "allow_paid", False)
             if not allow:
                 for name in get_registered(capability):
-                    a = _load_adapter(capability, name)
+                    a = _load_adapter(capability, name, self._settings)
                     if a and a.is_paid:
                         blocked_paid.append(name)
             raise AllProvidersFailed(
@@ -289,6 +302,20 @@ class ProviderRouter:
             to_provider = (
                 providers[idx + 1].name if idx + 1 < len(providers) else "<none>"
             )
+            # BR-5: probe health before use -- a crash here is an unexpected
+            # infra/adapter fault (not a normal ProviderError/Timeout), so it
+            # trips the circuit and propagates immediately rather than being
+            # folded into the retryable-failover path below (rules/error-
+            # handling.md: don't swallow an unexpected exception to stay green).
+            try:
+                healthy = await adapter.available()
+            except Exception as health_exc:
+                self._trip_circuit(capability, provider_name, str(health_exc))
+                raise
+            if not healthy:
+                self._trip_circuit(capability, provider_name, "unavailable")
+                continue
+
             try:
                 fn: Callable[..., Any] = getattr(adapter, method)
                 t0 = time.monotonic()
@@ -428,7 +455,7 @@ class ProviderRouter:
 
         Updates availability cache and trips circuit breaker on failure.
         """
-        adapter = _load_adapter(capability, provider_name)
+        adapter = _load_adapter(capability, provider_name, self._settings)
         if adapter is None:
             return False
         key = _cache_key(capability, provider_name)
