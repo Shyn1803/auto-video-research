@@ -1,0 +1,30 @@
+{
+  "description": "Task 4-4 AC1 -- 2 independent sources disagreeing on a release date. Reused by 5-6 (Research/Review UI), 7-2 (Mode 1 auto pipeline), and end-to-end tests -- treat as a long-lived asset, don't inline a copy elsewhere.",
+  "topic": "AI model release date discrepancy",
+  "script_or_summary": "Model X was released on January 15 2026, bringing major improvements to reasoning benchmarks.",
+  "sources": [
+    {
+      "id": "s1",
+      "url": "https://vendor-official.example.com/blog/model-x-release",
+      "provider": "rss",
+      "trusted": true,
+      "partial_content": false,
+      "content": "We are pleased to announce that Model X was released on January 15 2026, our biggest update this year."
+    },
+    {
+      "id": "s2",
+      "url": "https://independent-news.example.com/articles/model-x",
+      "provider": "hn_algolia",
+      "trusted": false,
+      "partial_content": false,
+      "content": "According to our sources, Model X was actually released on January 20 2026, five days later than the vendor first claimed."
+    }
+  ],
+  "expected": {
+    "claim_text": "Model X was released on January 15 2026",
+    "claim_type": "release_date",
+    "verdict": "FAIL",
+    "overall_verdict": "FAIL",
+    "project_status_after": "NEED_REVIEW"
+  }
+}

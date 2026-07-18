@@ -60,11 +60,15 @@ async def run_factcheck(
     """
     from app.services.state_machine import ProjectStateMachine
 
-    raw_claims = await extract_claims(session, router, script_or_summary, topic, correlation_id=correlation_id)
+    raw_claims = await extract_claims(
+        session, router, script_or_summary, topic, correlation_id=correlation_id
+    )
 
     verified: list[dict[str, Any]] = []
     for raw in raw_claims:
-        result = await verify_claim(session, router, raw["claim_text"], sources, correlation_id=correlation_id)
+        result = await verify_claim(
+            session, router, raw["claim_text"], sources, correlation_id=correlation_id
+        )
         verified.append({**raw, **result})
 
     overall = compute_overall_verdict([c["verdict"] for c in verified])

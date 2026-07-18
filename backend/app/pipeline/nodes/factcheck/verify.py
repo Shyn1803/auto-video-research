@@ -83,7 +83,11 @@ async def verify_claim(
         {
             "claim_text": claim_text,
             "evidence_json": [
-                {"source_id": e["source_id"], "quote": e["quote"], "source_trusted": e["source_trusted"]}
+                {
+                    "source_id": e["source_id"],
+                    "quote": e["quote"],
+                    "source_trusted": e["source_trusted"],
+                }
                 for e in evidence
             ],
         },
