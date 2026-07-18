@@ -43,7 +43,13 @@ _MAGNITUDE_WORDS: dict[str, int] = {
     "triệu": _MILLION_UNIT,
 }
 
-_NUMBER_TOKEN_RE = re.compile(r"\d+(?:[.,]\d+)?")
+# Negative lookbehind/lookahead on letters so a digit embedded in an
+# alphanumeric token -- e.g. the "1" in a "[s1]" source citation -- is
+# never mistaken for a real number in the text (real bug found in task
+# 4-5 Step 9's own integration test: outline text always carries [source_id]
+# citations per BR-1/AC1, and those digits must never enter the compared
+# number sets).
+_NUMBER_TOKEN_RE = re.compile(r"(?<![a-zA-Z])\d+(?:[.,]\d+)?(?![a-zA-Z])")
 
 
 def _parse_integer_words(words: list[str]) -> int | None:
