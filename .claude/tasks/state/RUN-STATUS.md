@@ -36,7 +36,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 | 4-8 | ⬜ not-started | — | feat/4-8-diem-vao-co-san | — |
 | 5-1 | ✅ done | 8 | feat/5-1-project-workspace-topbar-stepper | Re-verified 2026-07-17 (later): workspace UI was already on main (d37a9ab) but had real bugs (Rules-of-Hooks violation, wrong import path, default/named export mismatch, Next 15 `params` Promise, dead zustand file, disabled-attribute hover bug) and zero backend (no scenes API at all). Fixed all, added scenes API + approve endpoint + tests, fixed repo-wide broken vitest config, verified via real dev server |
 | 5-2 | ⬜ not-started | — | feat/5-2-edit-controls | — |
-| 5-3 | ⬜ not-started | — | feat/5-3-assetpicker | — |
+| 5-3 | 🔄 in-progress (step 1/6 done) | 3 | feat/5-3-assetpicker | Step 1 done (`c953024`): `GET /assets/stock-status`, `GET /assets/search`, `POST /assets/upload`, `POST /assets/fetch-stock` + `assets` table/migration 012 + Pexels/Pixabay/Unsplash/minio adapters (none existed before this task). Fixed pre-existing bug: `ProviderRouter.get_chain("asset_stock")` derived `ASSET_STOCK_CHAIN` but config field is `asset_chain`/`ASSET_CHAIN` — special-cased in router.py. Added AC4 raw-asset-URL-host allowlist rejection (422) at `scene_service.update_scene`, wired via new `app/core/asset_allowlist.py`. 11 new tests in `test_assets.py`, full suite 338 passed/20 failed (pre-existing failures, unrelated — confirmed via stash diff: baseline was 334/24 before this branch). Steps 2-6 (frontend modal/tabs/e2e) not yet started. |
 | 5-4 | ⬜ not-started | — | feat/5-4-scene-ops | — |
 | 5-5 | ⬜ not-started | — | feat/5-5-man-hoan-thien | — |
 | 5-6 | ⬜ not-started | — | feat/5-6-man-nghien-cuu | ready-for-dev in sprint-status.yaml |

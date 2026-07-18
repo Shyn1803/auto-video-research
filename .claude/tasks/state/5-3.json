@@ -1,18 +1,21 @@
 {
   "task_id": "5-3",
-  "status": "not-started",
+  "status": "in-progress",
   "branch": "feat/5-3-assetpicker",
-  "current_step": 0,
+  "current_step": 2,
   "steps": [
-    {"id": 1, "name": "Backend asset endpoints (contract change)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 1, "name": "Backend asset endpoints (contract change)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "c953024"},
     {"id": 2, "name": "AssetPicker modal shell, 3 tabs", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 3, "name": "Stock search tab, license badge BR-1/BR-3", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 4, "name": "Stock selection to Asset Worker fetch to assign (BR-4, security)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 5, "name": "Upload tab, dedupe + validation", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
   ],
-  "decisions": [],
+  "decisions": [
+    {"at_step": 1, "decision": "Fixed pre-existing bug: ProviderRouter.get_chain('asset_stock') derived env var ASSET_STOCK_CHAIN but Settings field is asset_chain (env ASSET_CHAIN) -- special-cased capability->field mapping in router.py so asset_stock resolves ASSET_CHAIN. Needed for /assets/search to route at all.", "why": "reversible/locally-scoped bugfix, blocks 5-3 Step 1 otherwise"},
+    {"at_step": 1, "decision": "No asset_stock provider adapters (pexels/pixabay/unsplash) existed yet (assetstock/ dir was empty placeholder) despite being referenced by 3-2's router and 3-5's provider-status matrix. Implemented minimal Pexels/Pixabay/Unsplash adapters + a minio StorageAdapter in this task since 5-3 cannot function without them and no other task in sprint-status.yaml owns them (9-3-voice-asset-worker is backlog and is about voice/asset *worker*, not stock adapters).", "why": "scope technically belongs to 3-x/9-x but blocks 5-3 entirely; kept minimal (search/available + upload) rather than full feature set"}
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-18T00:00:00+07:00"
 }
