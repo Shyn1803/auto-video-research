@@ -1,21 +1,29 @@
 {
   "task_id": "5-3",
-  "status": "in-progress",
+  "status": "done",
   "branch": "feat/5-3-assetpicker",
-  "current_step": 2,
+  "current_step": 6,
   "steps": [
     {"id": 1, "name": "Backend asset endpoints (contract change)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "c953024"},
-    {"id": 2, "name": "AssetPicker modal shell, 3 tabs", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "Stock search tab, license badge BR-1/BR-3", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 4, "name": "Stock selection to Asset Worker fetch to assign (BR-4, security)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 5, "name": "Upload tab, dedupe + validation", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+    {"id": 2, "name": "AssetPicker modal shell, 3 tabs", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "84577b6"},
+    {"id": 3, "name": "Stock search tab, license badge BR-1/BR-3", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "761082e"},
+    {"id": 4, "name": "Stock selection to Asset Worker fetch to assign (BR-4, security)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "6cd175f"},
+    {"id": 5, "name": "Upload tab, dedupe + validation", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "3cc32d2"},
+    {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "8b61044"}
   ],
   "decisions": [
     {"at_step": 1, "decision": "Fixed pre-existing bug: ProviderRouter.get_chain('asset_stock') derived env var ASSET_STOCK_CHAIN but Settings field is asset_chain (env ASSET_CHAIN) -- special-cased capability->field mapping in router.py so asset_stock resolves ASSET_CHAIN. Needed for /assets/search to route at all.", "why": "reversible/locally-scoped bugfix, blocks 5-3 Step 1 otherwise"},
     {"at_step": 1, "decision": "No asset_stock provider adapters (pexels/pixabay/unsplash) existed yet (assetstock/ dir was empty placeholder) despite being referenced by 3-2's router and 3-5's provider-status matrix. Implemented minimal Pexels/Pixabay/Unsplash adapters + a minio StorageAdapter in this task since 5-3 cannot function without them and no other task in sprint-status.yaml owns them (9-3-voice-asset-worker is backlog and is about voice/asset *worker*, not stock adapters).", "why": "scope technically belongs to 3-x/9-x but blocks 5-3 entirely; kept minimal (search/available + upload) rather than full feature set"}
+    {"at_step": 4, "decision": "No separate app/workers/asset_worker.py process was created. The 'Asset Worker downloads stock image server-side' responsibility (BR-4) is implemented synchronously inside AssetService.fetch_stock (httpx GET -> MinIO upload -> Asset row), invoked directly from the new POST /assets/fetch-stock endpoint. Per rules/architecture.md ADR #1 ('tách theo đo đạc, không tách trước') there is no queue/worker infra (NATS) in this Phase-1 monolith yet, and BR-4's actual requirement (render/preview never fetches external URLs; the one-time fetch happens server-side, not client-side) is satisfied without a separate process. If/when 9-3 (voice/asset worker) introduces a real async job queue, this logic can move there unchanged (AssetService is already the single call site).", "why": "avoids speculative service-splitting per existing architecture rule; BR-4 semantics fully met synchronously"},
+    {"at_step": 2, "decision": "frontend/package.json had no 'typecheck' script and node_modules had never been installed in this worktree, so `pnpm --filter frontend typecheck` (also no pnpm workspace exists -- ran `npx tsc --noEmit` instead) had literally never been exercised. Added the script + ran `npm install`. Doing so surfaced 15 pre-existing type errors in files this task never touches (admin/api-keys page, admin/users page, scene-player test RefObject mocks, useEventStream.ts cast, e2e login.spec.ts implicit-any params) -- none in AssetPicker/AssetPickerTabs/lib/api/assets.ts. Did not fix those 15 (out of scope, risk of colliding with other concurrently-running agents' files e.g. scene-player/admin) -- logged as an Open Question in project-memory instead.", "why": "reversible/locally-scoped (added a script, ran npm install); the 15 pre-existing errors are a separate, wider cleanup not owned by 5-3"}
   ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-18T00:00:00+07:00"
+  "updated_at": "2026-07-18T08:00:00+07:00",
+  "retrospective": {
+    "what_changed": "AssetPicker (3-tab modal: project assets / upload / stock search) + backend asset endpoints, assets table, stock/storage provider adapters, and SSRF/allowlist defense-in-depth on raw scene asset URLs.",
+    "learned_not_already_written_down": "ProviderRouter.get_chain() derives the env var name from the capability string, which silently breaks whenever a capability's registry name and its Settings/env field name diverge (asset_stock vs ASSET_CHAIN) -- no test caught it because no asset_stock adapters existed yet to exercise the path. Filed as an Open Question + fixed via a small override map.",
+    "filed_to": "memory/project-memory.md Open Questions (3 new entries: router env-var mismatch, missing asset_stock/storage adapters, pre-existing 15 tsc errors surfaced by first-ever npm install + typecheck script) + Completed Milestones entry.",
+    "done": true
+  }
 }
