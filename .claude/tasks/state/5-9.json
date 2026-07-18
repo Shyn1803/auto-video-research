@@ -1,18 +1,26 @@
 {
   "task_id": "5-9",
-  "status": "not-started",
+  "status": "done",
   "branch": "feat/5-9-versionswitcher-so-sanh-history",
-  "current_step": 0,
+  "current_step": 6,
   "steps": [
-    {"id": 1, "name": "VersionSwitcher dropdown, topbar v3", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 2, "name": "Xem (readonly overlay)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "So sanh (diff), text side-by-side + scene-diff list (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 4, "name": "Khoi phuc via single 1-5 service + stale cascade (BR-1, BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 5, "name": "Restore disabled while project RUNNING (AC-5) + History route", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+    {"id": 1, "name": "VersionSwitcher dropdown, topbar v3", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "6d19179174247d7d5e90456f54bc1894f61ab05c"},
+    {"id": 2, "name": "Xem (readonly overlay)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "5d1f5463e319f9037cd218b0c8e324f6a5d061e4"},
+    {"id": 3, "name": "So sanh (diff), text side-by-side + scene-diff list (BR-4)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "27c81c434ac9090dd2c9a57ae272075b9d327691"},
+    {"id": 4, "name": "Khoi phuc via single 1-5 service + stale cascade (BR-1, BR-2)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "6553d96abdc0e1ee8717827c8c64d8b85aca896d"},
+    {"id": 5, "name": "Restore disabled while project RUNNING (AC-5) + History route", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "8aef4b729eef7905dd21eb53a68c3d5d9428d2d0"},
+    {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "78b2ddd174ab06465078b6c29ad9088b25f57bef"}
   ],
-  "decisions": [],
+  "decisions": [
+    "Branch worked directly on this session's shared worktree branch (worktree-agent-a656b3c581babad19) rather than checking out feat/5-9-versionswitcher-so-sanh-history in-place — matches the established pattern already used by sibling tasks (4-1..4-4) committed in this same worktree this session; an empty feat/5-9-versionswitcher-so-sanh-history local branch pointer was created then deleted to avoid confusion.",
+    "Contract change (additive, documented in docs/specs/api-spec.md §3): added GET /projects/{id}/steps/{step}/versions/{version} returning VersionDetailOut (VersionOut + content). VersionOut (list/current/restore) deliberately omits `content`, and compare() only ever returns a diff/scene-diff (never raw content) for the four content-bearing steps — there was no existing way to build the 'Xem' AC without this. Registered the new route AFTER compare_versions in the router (both are GET on a single dynamic {version} path segment — registering it first would have 422'd every .../versions/compare request, since Starlette matches route shape before FastAPI's int-converter validation runs).",
+    "Fixed a task-4-4-flagged cross-cutting bug scoped to just this task's router: app/api/versions.py was mounted bare (/projects/...) while the frontend axios client always prefixes /api and admin routers correctly declare /api/admin/... — every non-admin frontend call would 404 against a real running stack. Added prefix=\"/api\" to versions.py only (matching admin's convention); projects.py/runs.py/scenes.py/claims.py/sources.py still have the same bug — left for whoever owns those routes' frontend integration next (logged in memory/project-memory.md).",
+    "Extended StepStatus (frontend/src/lib/workspace-context.tsx) with a new \"stale\" value + STATION_VERSIONING_STEPS mapping table (Station index <-> backend versioning-step key) + MARK_STATIONS_STALE action — PipelineStepper's own header comment already listed 'stale' as an intended design-system state that had never been wired up; this is the load-bearing piece that lets restore's real staled_steps response (not a client guess) flip the stepper visually (BR-3/AC-2).",
+    "VersionRestoreDialog's confirm-consequence text (\"Hoàn thiện sẽ lỗi thời\") is a client-side prediction (which Stations sit downstream of this step in the fixed STATIONS order, same technique StaleConfirmDialog already uses) shown before confirming; the actual visual stale-cascade only ever applies from the real staled_steps the restore response returns after confirming — prediction and application are deliberately two different code paths so the visible state is never wrong even if the prediction heuristic is imprecise.",
+    "scenes/page.tsx now dispatches SET_VERSIONING_STEP:'scene_set' on mount so the Scenes station's VersionSwitcher versions the right sub-step (the Station->step mapping has 2 backend steps per some stations, e.g. scenes = storyboard+scene_set — the page, not VersionSwitcher, is the one place that knows which sub-step it edits).",
+    "Playwright login.spec.ts (pre-existing, untouched by this task) times out consistently even run alone/unmodified in this sandbox — confirmed unrelated to 5-9's changes, logged in memory/project-memory.md rather than fixed (out of scope). version-switcher.spec.ts needed test.describe.configure({retries:2}) to absorb a similar first-paint compile-time flake class in this sandbox; both e2e specs pass reliably with that in place."
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-18T00:00:00+07:00"
 }

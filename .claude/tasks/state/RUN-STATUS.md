@@ -42,7 +42,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 | 5-6 | ⬜ not-started | — | feat/5-6-man-nghien-cuu | ready-for-dev in sprint-status.yaml |
 | 5-7 | ⬜ not-started | — | feat/5-7-man-noi-dung | — |
 | 5-8 | ⬜ not-started | — | feat/5-8-runningstate-component | — |
-| 5-9 | ⬜ not-started | — | feat/5-9-versionswitcher | — |
+| 5-9 | ✅ done | 6 | feat/5-9-versionswitcher-so-sanh-history | Built on this session's shared worktree branch (worktree-agent-a656b3c581babad19), not a separate checked-out feat/* branch — matches sibling tasks 4-1..4-4 in this same worktree. VersionSwitcher dropdown (list+stale badge+tooltip+empty-state), readonly Xem overlay, So sánh (text side-by-side + scene-diff list, BR-4 prefix+color a11y), Khôi phục via the single 1-5 service + real staled_steps-driven stale cascade (new `StepStatus="stale"` + `STATION_VERSIONING_STEPS` mapping on PipelineStepper), restore disabled while RUNNING (AC-5), History audit route. Contract change (additive): `GET .../versions/{version}` returning content, since VersionOut/compare never expose raw content for the 4 content-bearing steps — see api-spec.md §3 + state/5-9.json decisions. Also fixed the 4-4-flagged cross-cutting bug for just this router: added `prefix="/api"` (projects/runs/scenes/claims/sources still need the same fix). 48/48 frontend vitest + 13/13 backend pytest (versioning) + 2/2 new Playwright e2e green; pre-existing unrelated login.spec.ts flake confirmed (fails alone, untouched by this task) and logged rather than fixed. |
 | 5-10 | ⬜ not-started | — | feat/5-10-projectdrawer | — |
 | 6-1 | ⬜ not-started | — | feat/6-1-node-produce | — |
 | 6-2 | ⬜ not-started | — | feat/6-2-render-orchestrator | — |
