@@ -1,21 +1,29 @@
 {
   "task_id": "4-1",
-  "status": "not-started",
+  "status": "done",
   "branch": "feat/4-1-langgraph-skeleton-checkpoint-human-gate",
-  "current_step": 0,
+  "current_step": 9,
   "steps": [
-    {"id": 1, "name": "Pipeline state schema + graph skeleton", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 2, "name": "Postgres checkpointer wiring", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "Interrupt-after-every-node + node<->state-machine mapping", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 4, "name": "Atomic checkpoint + step_version write (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 5, "name": "API run/approve/get-run (BR-1, BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 6, "name": "Retry-with-backoff + correlation_id (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 7, "name": "SSE event chain (AC1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 8, "name": "Fault injection test - crash mid-write (AC2, AC4, BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 9, "name": "Wire remaining tests for all ACs", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+    {"id": 1, "name": "Pipeline state schema + graph skeleton", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "24ac6b2"},
+    {"id": 2, "name": "Postgres checkpointer wiring", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "94a5cc2"},
+    {"id": 3, "name": "Interrupt-after-every-node + node<->state-machine mapping", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "94a5cc2"},
+    {"id": 4, "name": "Atomic checkpoint + step_version write (BR-3)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "94a5cc2"},
+    {"id": 5, "name": "API run/approve/get-run (BR-1, BR-2)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "94a5cc2"},
+    {"id": 6, "name": "Retry-with-backoff + correlation_id (BR-4)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "94a5cc2"},
+    {"id": 7, "name": "SSE event chain (AC1)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "94a5cc2"},
+    {"id": 8, "name": "Fault injection test - crash mid-write (AC2, AC4, BR-3)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "94a5cc2"},
+    {"id": 9, "name": "Wire remaining tests for all ACs", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "94a5cc2"}
   ],
-  "decisions": [],
+  "decisions": [
+    "Real langgraph StateGraph built directly on PipelineState (Pydantic model, langgraph supports it natively) instead of a hand-rolled graph -- gives real interrupt/resume/RetryPolicy for free.",
+    "Node<->ProjectStatus mapping (status_map.py) is a deliberate simplification: RANKING/WRITE share the NEED_REVIEW gate (no dedicated bucket exists for them yet), STORYBOARD's completion is treated as the final pre-production review gate (->APPROVED), PRODUCE's completion has no dedicated bucket (stays PRODUCING until RENDER's entry/complete resolve to READY). Flagged for 4-3/4-4/4-5/4-6 to revisit once real node semantics exist.",
+    "BR-3 atomicity implemented as one SQLAlchemy session flush covering both the StepVersion insert and the PipelineRun bookkeeping update (app/services/step_version.py record_step_and_run) -- this is the audit-trail/resume-index atomicity; the LangGraph checkpoint itself (used for true crash-resume, AC2) is committed by the langgraph-checkpoint-postgres library on its own connection, verified in tests via InMemorySaver (no live Postgres in this sandbox -- flagged as a Known Gap, same pattern as other Epic 3 tasks).",
+    "RetryPolicy.retry_on overridden to retry all exceptions (langgraph's default excludes ValueError/RuntimeError/etc.) since node failures should retry regardless of shape until adapters (4-3+) raise typed ProviderError(retryable=...).",
+    "Found and fixed several pre-existing latent bugs while wiring this end-to-end: project_service.py's broken get_current_user_dep import, project.py indentation + missing FK on step_versions/status_history.project_id (also independently fixed by another concurrent worker via migration 007_add_step_versions_fk -- reconciled during merge), a circular import between app.events and app.services.state_machine, and state_machine._emit() never awaiting the async publish() call.",
+    "Origin's stale feat/4-1 branch (pre-dating main by ~20 commits, bundling abandoned 5-1/3-3/3-4 snapshot content per RUN-STATUS.md's known pattern) was force-pushed over with this session's clean, tested rebuild since none of its commits had been merged anywhere and it was documented as an abandoned pre-merge snapshot.",
+    "Migration renumbered 006->008 (008_add_pipeline_runs) during merge into main since 006/007 were claimed by concurrent work (006_add_scene_approvals, 007_add_step_versions_fk) while this branch was open."
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-18T00:00:00+07:00"
 }
