@@ -16,6 +16,7 @@ from app.api.health import router as health_router
 from app.api.projects import router as projects_router
 from app.api.runs import router as runs_router
 from app.api.scenes import router as scenes_router
+from app.api.sources import router as sources_router
 from app.api.users import router as users_router
 from app.api.versions import router as versions_router
 from app.core.config import Settings, get_settings
@@ -70,6 +71,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_prompts_router)
     app.include_router(runs_router)
     app.include_router(scenes_router)
+    app.include_router(sources_router)
     app.include_router(claims_router)
     return app
 
