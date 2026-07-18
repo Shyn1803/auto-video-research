@@ -1,10 +1,10 @@
 {
   "task_id": "4-7",
-  "status": "not-started",
+  "status": "in-progress",
   "branch": "feat/4-7-dieu-khien-run-huy-ngam-resume",
-  "current_step": 0,
+  "current_step": 2,
   "steps": [
-    {"id": 1, "name": "RUNNING->CANCELLED state machine edge (+previous_status)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 1, "name": "RUNNING->CANCELLED state machine edge (+previous_status)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "7263bff"},
     {"id": 2, "name": "POST runs/{id}/cancel - best-effort abort after current node (BR-1, BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 3, "name": "Cost/usage preserved, versions preserved (BR-2, BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 4, "name": "run.cancelled event + event-catalog update", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
@@ -13,8 +13,14 @@
     {"id": 7, "name": "Dashboard/RunningState UI wiring (AC4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 8, "name": "Wire remaining tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
   ],
-  "decisions": [],
+  "decisions": [
+    {
+      "at_step": 1,
+      "decision": "Task text says \"extend 1-4's matrix\" but ProjectStatus (app/services/state_machine.py, projects.status) has no RUNNING/CANCELLED value -- those are PipelineRun.status values (app/pipeline/state.py RunStatus, migration 008's ck_pipeline_runs_status CHECK). Added a separate app/services/run_state_machine.py instead of touching state_machine_edges.py, with tests at backend/tests/unit/services/test_run_state_machine.py (task text suggested backend/tests/unit/state_machine/test_transitions.py, which doesn't match this repo's actual test layout -- no tests/unit/state_machine/ directory exists for 1-4 either).",
+      "why": "reversible/locally-scoped per autonomy-policy.md; avoids conflating two independently-versioned status columns"
+    }
+  ],
   "blocked_reason": null,
-  "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "opened_at": "2026-07-18T00:00:00+07:00",
+  "updated_at": "2026-07-18T00:00:00+07:00"
 }
