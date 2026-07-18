@@ -13,7 +13,7 @@ compiled graph to continue.
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
@@ -146,7 +146,7 @@ class RunService:
         except RunTransitionError as exc:
             raise RunConflictError(str(exc)) from exc
 
-        run.cancel_requested_at = datetime.now(timezone.utc)
+        run.cancel_requested_at = datetime.now(UTC)
         self._session.add(run)
         await self._session.flush()
         return run
