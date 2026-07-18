@@ -97,11 +97,11 @@ describe("StockSearchTab — BR-4: server-side fetch on select", () => {
         height: "1080",
       },
     ]);
-    let resolveFetch: (v: unknown) => void = () => {};
+    let resolveFetch: (v: Awaited<ReturnType<typeof assetsApi.fetchStockAsset>>) => void = () => {};
     mockedApi.fetchStockAsset.mockReturnValue(
       new Promise((resolve) => {
         resolveFetch = resolve;
-      }) as ReturnType<typeof assetsApi.fetchStockAsset>,
+      }),
     );
 
     const onSelected = vi.fn();
