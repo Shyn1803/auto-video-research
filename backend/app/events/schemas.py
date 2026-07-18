@@ -42,6 +42,14 @@ class StepProgressPayload(BaseModel):
     message: str | None = None
 
 
+class RunCancelledPayload(BaseModel):
+    """Task 4-7 Step 4 -- see docs/specs/event-catalog.md's EVENTS table."""
+
+    project_id: str
+    run_id: str
+    step: str
+
+
 def project_status(
     project_id: str,
     from_state: str,
@@ -80,5 +88,22 @@ def step_progress(
             step=step,
             pct=pct,
             message=message,
+        ).model_dump(),
+    )
+
+
+def run_cancelled(
+    project_id: str,
+    run_id: str,
+    step: str,
+    correlation_id: str,
+) -> EventEnvelope:
+    return EventEnvelope(
+        event_type="run.cancelled",
+        correlation_id=correlation_id,
+        payload=RunCancelledPayload(
+            project_id=project_id,
+            run_id=run_id,
+            step=step,
         ).model_dump(),
     )

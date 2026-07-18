@@ -13,13 +13,14 @@ compiled graph to continue.
 from __future__ import annotations
 
 import logging
+from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
 
 from sqlalchemy import select
 
 from app.events.bus import publish
-from app.events.schemas import step_progress
+from app.events.schemas import run_cancelled, step_progress
 from app.models.pipeline_run import ACTIVE_RUN_STATUSES, PipelineRun
 from app.pipeline.graph import build_graph
 from app.pipeline.nodes.base import complete_node
@@ -29,13 +30,15 @@ from app.pipeline.status_map import (
     NODE_ENTRY_STATUS,
     next_node,
 )
+from app.services.run_state_machine import RunTransitionError, validate_cancel_edge
 from app.services.state_machine import ProjectStateMachine
 
 logger = logging.getLogger(__name__)
 
 
 class RunConflictError(Exception):
-    """Raised for BR-1 (already-active run) / BR-2 (approve wrong node)."""
+    """Raised for BR-1 (already-active run) / BR-2 (approve wrong node) /
+    BR-4 (cancel on a non-active run, Task 4-7)."""
 
 
 class RunService:
@@ -62,13 +65,41 @@ class RunService:
         )
         return result.scalar_one_or_none()
 
+    async def _last_cancelled_run(self, project_id: Any) -> PipelineRun | None:
+        """Task 4-7 Step 5 -- most recent CANCELLED run for a project, if any."""
+        result = await self._session.execute(
+            select(PipelineRun)
+            .where(
+                PipelineRun.project_id == project_id,
+                PipelineRun.status == RunStatus.CANCELLED.value,
+            )
+            .order_by(PipelineRun.created_at.desc())
+        )
+        return result.scalar_one_or_none()
+
     async def start_run(self, project: Any, step: NodeName, actor: str) -> PipelineRun:
-        """POST /projects/{id}/steps/{step}/run -- BR-1."""
+        """POST /projects/{id}/steps/{step}/run -- BR-1.
+
+        Task 4-7 Step 5: if the project's *last* run was CANCELLED (not
+        just any terminal run -- FAILED resume is a separate, not-yet-built
+        feature per pipeline_run.py's own comment), starting a new run
+        continues that run's LangGraph checkpoint instead of opening an
+        unrelated thread with no history. LangGraph's checkpoint is keyed
+        by ``thread_id = str(PipelineRun.id)`` (app/pipeline/checkpoint.py),
+        so a brand-new PipelineRun row would silently re-run every
+        already-completed node from scratch -- reusing the cancelled run's
+        id is what makes "resume sau cancel = run mới từ checkpoint" true
+        rather than just a plausible-sounding new-run-that-starts-over.
+        """
         existing = await self._active_run(project.id)
         if existing is not None:
             raise RunConflictError(
                 f"project {project.id} already has an active run {existing.id}"
             )
+
+        cancelled = await self._last_cancelled_run(project.id)
+        if cancelled is not None:
+            return await self._resume_cancelled(project, cancelled, step, actor)
 
         run = PipelineRun(
             id=uuid4(),
@@ -81,6 +112,43 @@ class RunService:
         await self._session.flush()
 
         await self._execute_node(project, run, step, actor, resume=False)
+        return run
+
+    async def _resume_cancelled(
+        self, project: Any, run: PipelineRun, step: NodeName, actor: str
+    ) -> PipelineRun:
+        """Task 4-7 Step 5 -- reopen a CANCELLED run's own row/thread_id."""
+        run.status = RunStatus.RUNNING.value
+        run.current_node = step.value
+        run.interrupted_node = None
+        run.cancel_requested_at = None
+        self._session.add(run)
+        await self._session.flush()
+
+        await self._execute_node(project, run, step, actor, resume=True)
+        return run
+
+    async def cancel_run(self, project: Any, run: PipelineRun, actor: str) -> PipelineRun:
+        """POST /projects/{id}/runs/{run_id}/cancel -- Task 4-7 BR-1/BR-4.
+
+        Best-effort: records the request immediately (BR-4 -- 409 if the
+        run is already terminal) but does NOT flip status to CANCELLED
+        here. The in-flight node (if any) is left to finish -- "kết thúc
+        sau LLM call hiện tại" -- and _execute_node checks
+        ``cancel_requested_at`` right after ``graph.ainvoke()`` returns,
+        before writing the node's completion transition, to decide whether
+        this run lands on CANCELLED or its normal INTERRUPTED/COMPLETED
+        outcome (AC2: a cancel that arrives after the node has already
+        finished must never retroactively corrupt that finish).
+        """
+        try:
+            validate_cancel_edge(run.status)
+        except RunTransitionError as exc:
+            raise RunConflictError(str(exc)) from exc
+
+        run.cancel_requested_at = datetime.now(timezone.utc)
+        self._session.add(run)
+        await self._session.flush()
         return run
 
     async def approve(
@@ -178,6 +246,32 @@ class RunService:
                 project, complete_status, actor=actor, session=self._session
             )
 
+        # Task 4-7 BR-1/AC2: the cancel check happens here -- right after the
+        # node's ainvoke() call returns, before this node's own completion is
+        # written -- so the outcome is deterministic: a cancel recorded
+        # before this line lands on CANCELLED; a cancel that arrives after
+        # (i.e. after we already read cancel_requested_at as unset) can no
+        # longer affect this write, so the run finishes normally at its
+        # interrupt point instead (no corrupted/ambiguous state, AC2).
+        if run.cancel_requested_at is not None:
+            run_updates = {
+                "status": RunStatus.CANCELLED.value,
+                "current_node": None,
+                "interrupted_node": node.value,
+                "previous_status": project.status,
+            }
+            await complete_node(
+                self._session,
+                project_id=project.id,
+                node=node,
+                content=content,
+                actor=actor,
+                run=run,
+                run_updates=run_updates,
+            )
+            await self._emit_cancelled(project.id, run_id, node)
+            return
+
         run_updates = {
             "status": RunStatus.INTERRUPTED.value,
             "current_node": None,
@@ -194,6 +288,20 @@ class RunService:
         )
 
         await self._publish_progress(project.id, run_id, node, pct=100, message="completed")
+
+    async def _emit_cancelled(self, project_id: Any, run_id: str, node: NodeName) -> None:
+        try:
+            await publish(
+                "run.cancelled",
+                run_cancelled(
+                    project_id=str(project_id),
+                    run_id=run_id,
+                    step=node.value,
+                    correlation_id=run_id,
+                ).model_dump(),
+            )
+        except Exception:  # noqa: BLE001 -- event bus is fire-and-forget
+            logger.debug("event bus unavailable for run.cancelled run=%s", run_id)
 
     async def _publish_progress(
         self, project_id: Any, run_id: str, node: NodeName, *, pct: int, message: str

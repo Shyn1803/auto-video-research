@@ -107,4 +107,34 @@ async def get_run(
             "interrupted_node": run.interrupted_node,
             "retry_count": run.retry_count,
             "error": run.error,
+            "cancelling": run.status in ("pending", "running", "interrupted")
+            and run.cancel_requested_at is not None,
         }
+
+
+@router.post("/{project_id}/runs/{run_id}/cancel", status_code=status.HTTP_200_OK)
+async def cancel_run(
+    request: Request,
+    project_id: UUID,
+    run_id: UUID,
+    user: User = Depends(get_current_user),
+):
+    """Task 4-7 Step 2 -- best-effort abort-after-current-node (BR-1, BR-4)."""
+    async with request.app.state.database.session() as db:
+        proj_svc = ProjectService(db)
+        project = await proj_svc.get(project_id, user.id)
+        if project is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "project not found")
+
+        run_svc = RunService(db, checkpointer=getattr(request.app.state, "checkpointer", None))
+        run = await run_svc.get_run(run_id)
+        if run is None or run.project_id != project.id:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "run not found")
+
+        try:
+            run = await run_svc.cancel_run(project, run, actor=str(user.id))
+        except RunConflictError as exc:
+            await db.rollback()
+            raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
+        await db.commit()
+        return {"run_id": str(run.id), "status": run.status, "cancelling": True}

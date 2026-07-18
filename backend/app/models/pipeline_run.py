@@ -47,6 +47,13 @@ class PipelineRun(Base):
     )
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     previous_status: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    # Task 4-7 Step 2 (migration 012): set by RunService.cancel_run(), checked
+    # by _execute_node right after the in-flight node's ainvoke() returns --
+    # not a "cancelling" status value, so it survives a crash mid-cancel
+    # without any ambiguity about which write happened first (BR-1).
+    cancel_requested_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default="now()"
     )
