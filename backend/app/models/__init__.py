@@ -7,6 +7,7 @@ class registry only knows about classes that have actually been imported.
 """
 
 from app.models.api_key import ApiKey as ApiKey
+from app.models.asset import Asset as Asset
 from app.models.llm_usage import LlmUsage as LlmUsage
 from app.models.project import Project as Project
 from app.models.refresh_token import RefreshToken as RefreshToken

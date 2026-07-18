@@ -21,7 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.scene_approval import SceneApproval
 from app.models.step_version import StepVersion
 from app.schemas.scene import Scene
-from app.services.scene_validator import SceneValidationError
+from app.services.scene_validator import SceneValidationError, reject_raw_asset_urls
 
 
 class SceneNotFoundError(ValueError):
@@ -94,7 +94,12 @@ class SceneService:
         except Exception as exc:  # pydantic ValidationError -> 422 field_path at API layer
             raise SceneValidationError(_first_error_field(exc), str(exc)) from exc
 
-        scenes[idx] = validated.model_dump(mode="json", by_alias=True)
+        dumped = validated.model_dump(mode="json", by_alias=True)
+        # AC4 (5-3) / rules/security.md: reject a raw non-allowlisted asset
+        # URL here, at the API write path, not just client-side -- SSRF
+        # defense-in-depth per rules/security.md.
+        reject_raw_asset_urls(dumped, "scene")
+        scenes[idx] = dumped
 
         new_version = StepVersion(
             id=str(uuid.uuid4()),

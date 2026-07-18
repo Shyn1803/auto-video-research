@@ -172,13 +172,24 @@ class ProviderRouter:
     # Chain resolution (Step 1)
     # ------------------------------------------------------------------ #
 
+    # Irregular capability -> env-var-prefix mappings, where the capability
+    # name used by the adapter registry/router doesn't match the Settings
+    # field derived by the standard `{CAPABILITY_UPPER}_CHAIN` rule below.
+    # ``asset_stock`` is the one existing case (docs/CONFIGURATION.md and
+    # app/core/config.py both use ``ASSET_CHAIN`` / ``asset_chain``, not
+    # ``ASSET_STOCK_CHAIN`` / ``asset_stock_chain`` -- found while wiring
+    # task 5-3's asset search endpoint, which silently got an empty chain
+    # without this fix).
+    _CAPABILITY_ENV_PREFIX: dict[str, str] = {"asset_stock": "ASSET"}
+
     def get_chain(self, capability: str, tier: str = "") -> list[str]:
         """Return ordered provider names for *capability*/*tier* from env config.
 
         Maps ``{CAPABILITY_UPPER}_CHAIN`` (or ``{CAPABILITY_UPPER}_CHAIN_{TIER}``)
         to a clean list. Field names are snake_case in Settings (e.g. ``llm_chain_cheap``).
         """
-        var = f"{capability.upper()}_CHAIN"
+        prefix = self._CAPABILITY_ENV_PREFIX.get(capability, capability.upper())
+        var = f"{prefix}_CHAIN"
         if tier:
             var += f"_{tier.upper()}"
         field_name = var.lower()

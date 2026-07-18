@@ -6,6 +6,7 @@ import logging
 from copy import deepcopy
 from typing import Literal
 
+from app.core.asset_allowlist import is_allowed_asset_host
 from app.schemas.scene import Scene
 
 logger = logging.getLogger(__name__)
@@ -54,10 +55,43 @@ def _validate_count(
     raise SceneValidationError(field_path, f"{field_path} count is incompatible with layout")
 
 
+def reject_raw_asset_urls(payload: dict[str, object], field_path: str = "scene") -> None:
+    """AC4 (5-3) / rules/security.md: a raw ``AssetRef.url`` is only ever
+    permitted for an allowlisted stock-CDN domain (Pexels/Pixabay/Unsplash) --
+    every other URL is a potential SSRF vector and is rejected with 422,
+    never silently coerced or dropped (rules/error-handling.md)."""
+
+    background = payload.get("background")
+    if isinstance(background, dict) and background.get("type") == "image":
+        asset = background.get("asset")
+        if isinstance(asset, dict):
+            url = asset.get("url")
+            if url and not is_allowed_asset_host(str(url)):
+                raise SceneValidationError(
+                    f"{field_path}.background.asset.url",
+                    "raw asset URL host is not on the allowlist; use asset_id",
+                )
+
+    images = payload.get("images")
+    if isinstance(images, list):
+        for idx, element in enumerate(images):
+            if not isinstance(element, dict):
+                continue
+            asset = element.get("asset")
+            if isinstance(asset, dict):
+                url = asset.get("url")
+                if url and not is_allowed_asset_host(str(url)):
+                    raise SceneValidationError(
+                        f"{field_path}.images[{idx}].asset.url",
+                        "raw asset URL host is not on the allowlist; use asset_id",
+                    )
+
+
 def validate_scene(scene: Scene, mode: ValidationMode = "strict") -> Scene:
     """Validate a resolved scene, returning an optionally safe-normalized copy."""
 
     payload = deepcopy(scene.model_dump(mode="python"))
+    reject_raw_asset_urls(payload, "scene")
     limits = LAYOUT_LIMITS.get(scene.layout)
     if limits is not None:
         text_range, image_range = limits

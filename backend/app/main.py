@@ -10,6 +10,7 @@ from app.api.admin.api_keys import router as admin_api_keys_router
 from app.api.admin.costs import router as admin_costs_router
 from app.api.admin.prompts import router as admin_prompts_router
 from app.api.admin.providers import router as admin_providers_router
+from app.api.assets import router as assets_router
 from app.api.auth import router as auth_router
 from app.api.claims import router as claims_router
 from app.api.health import router as health_router
@@ -73,6 +74,7 @@ def create_app() -> FastAPI:
     app.include_router(scenes_router)
     app.include_router(sources_router)
     app.include_router(claims_router)
+    app.include_router(assets_router)
     return app
 
 

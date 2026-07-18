@@ -105,6 +105,21 @@ Task 4-4 contract change: `override` và source `disable` giờ trả thêm `ove
 | GET 🅞 | `/projects/{id}/timeline` | `{scenes:[{scene_id, duration_ms, transition}], bgm, total_ms}` |
 | PATCH 🅞 | `/projects/{id}/timeline` | Sửa duration/transition/bgm hàng loạt |
 
+## 6.1 Assets — AssetPicker (task 5-3, FR-20) — **contract change**
+
+| Method | Path | Mô tả |
+|---|---|---|
+| GET 🅞 | `/assets/stock-status` | `{active: bool, providers: [name]}` — BR-3: có ít nhất 1 provider `asset_stock` còn key/health OK. Bất kỳ role nào đã đăng nhập đều gọi được (không phải admin-only như `/admin/providers`) — FE tự chọn thông điệp theo role (admin → link Quản trị; creator → "nhờ admin thêm key"). |
+| GET 🅞 | `/assets/search?q=` | Proxy chain `asset_stock` (pexels/pixabay/unsplash) qua `ProviderRouter` — trả `[{provider, url, thumb_url, attribution, attribution_url, license, width, height}]`. BR-1: license + nguồn luôn có trong kết quả, trước khi user chọn. 503 nếu chain rỗng/hết provider. |
+| POST 🅞 | `/assets/upload` | Multipart `file`. Validate loại (jpg/png/webp) + kích thước (≤10MB, quyết định đã chốt) → 422 nếu sai. BR-2: dedupe theo `content_hash` (sha256) — trùng thì trả asset cũ (`reused: true`), không tạo bản ghi mới. license=`user_upload`. → `AssetResponse` |
+| POST 🅞 | `/assets/fetch-stock` | `{url, provider, license, attribution?, attribution_required?}` — BR-4: Asset Worker tải ảnh đã chọn từ kết quả `/assets/search` về MinIO server-side (client không bao giờ gửi URL cho render/preview dùng trực tiếp — SSRF defense-in-depth: `url` phải thuộc domain allowlist CDN stock, xem `app/core/asset_allowlist.py`). → `AssetResponse` với `asset_id` nội bộ để gán vào `AssetRef.asset_id` trong Scene JSON. |
+
+`AssetResponse`: `{id, provider, license, attribution_required, attribution_text, storage_path, content_hash, reused}`.
+
+DB: bảng `assets` mới (migration `012_add_assets`) — xem `docs/specs/database-schema.md` §2.5 (đã có từ trước, giờ mới có migration thật). Không đổi field nào trong `app/schemas/scene.py`; `AssetRef.url` (đã tồn tại) chỉ được chấp nhận khi host thuộc allowlist — `PUT /projects/{id}/scenes/{scene_id}` với `url` trần ngoài allowlist → 422 (`field_path` trỏ vào `.asset.url`), thực thi ở `scene_service.update_scene` (không chỉ phía FE).
+
+**Contract changes:** 4 endpoint mới (`GET /assets/stock-status`, `GET /assets/search`, `POST /assets/upload`, `POST /assets/fetch-stock`) + bảng `assets` mới + validation mới trên `PUT scenes/{id}` (raw asset URL ngoài allowlist → 422). Không có breaking change trên endpoint cũ.
+
 # 7. Render (FR-11)
 
 | Method | Path | Mô tả |
