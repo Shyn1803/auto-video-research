@@ -118,7 +118,11 @@ def _extract_word_numbers(text: str) -> set[str]:
             continue
         # try to consume the longest run of digit/magnitude words starting here
         j = i
-        while j < n and (tokens[j] in _DIGIT_WORDS or tokens[j] in _MAGNITUDE_WORDS or tokens[j] == "mười"):
+        while j < n and (
+            tokens[j] in _DIGIT_WORDS
+            or tokens[j] in _MAGNITUDE_WORDS
+            or tokens[j] == "mười"
+        ):
             j += 1
         if j > i:
             integer_part = _parse_integer_words(tokens[i:j])
