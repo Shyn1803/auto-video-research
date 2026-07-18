@@ -107,3 +107,56 @@ async def collect_sources(
         )
 
     return all_results, errors
+
+
+# ---------------------------------------------------------------------------
+# LangGraph-facing wrapper (registered in app/pipeline/graph.py)
+# ---------------------------------------------------------------------------
+# A LangGraph node function is `state -> dict` with no extra parameters
+# (app/pipeline/graph.py's NodeFn signature), but real research logic needs
+# a DB session (prompt cache, source cache) and an LLM router. Rather than
+# thread those through LangGraph's invoke() call, this thin wrapper opens
+# its own Database/ProviderRouter -- the same self-contained-infra pattern
+# FastAPI routes use via request.app.state.database.session(), just without
+# a request object to hang it off. run_research() (run.py) is the part that
+# stays unit-testable with fakes; this wrapper is integration-only (no live
+# Postgres in this sandbox to exercise it end-to-end -- flagged as a Known
+# Gap consistent with other tasks' DB-less environment note).
+
+
+async def research_node(state: Any) -> dict[str, Any]:
+    from uuid import UUID
+
+    from app.core.config import get_settings
+    from app.core.database import Database
+    from app.core.router import ProviderRouter
+    from app.models.project import Project
+    from app.pipeline.nodes.research.run import run_research
+    from app.pipeline.state import NodeName
+
+    settings = get_settings()
+    db = Database(settings.database_url)
+    router = ProviderRouter(settings)
+
+    try:
+        async with db.session() as session:
+            project = await session.get(Project, UUID(str(state.project_id)))
+            topic = project.topic if project is not None else str(state.project_id)
+
+            result = await run_research(
+                session,
+                router,
+                topic,
+                project_id=str(state.project_id),
+                run_id=str(state.run_id),
+            )
+            await session.commit()
+    finally:
+        await db.close()
+
+    return {
+        "current_node": None,
+        "completed_nodes": [*state.completed_nodes, NodeName.RESEARCH],
+        "research": result,
+    }
+

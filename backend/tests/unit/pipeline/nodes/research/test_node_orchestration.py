@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from app.adapters.base import ProviderError, ProviderSettings, SearchAdapter
+from app.adapters.base import ProviderError, SearchAdapter
 from app.adapters.registry import register_search
 from app.events import bus as bus_mod
 from app.pipeline.nodes.research.node import collect_sources, run_connector

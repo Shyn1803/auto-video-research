@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.pipeline.nodes.research.dedupe import (
     SourceCandidate,
@@ -73,12 +73,12 @@ def test_ac5_similar_095_trusted_vs_untrusted_keeps_trusted():
 def test_similarity_tie_break_prefers_newer_when_trust_equal():
     older = SourceCandidate(
         id="older", url="https://a.com/1", url_hash="h1", trusted=True,
-        published_at=datetime(2024, 1, 1, tzinfo=timezone.utc),
+        published_at=datetime(2024, 1, 1, tzinfo=UTC),
         embedding=[1.0, 0.0],
     )
     newer = SourceCandidate(
         id="newer", url="https://a.com/2", url_hash="h2", trusted=True,
-        published_at=datetime(2024, 6, 1, tzinfo=timezone.utc),
+        published_at=datetime(2024, 6, 1, tzinfo=UTC),
         embedding=[1.0, 0.0001],
     )
     result = dedupe_by_similarity([older, newer], threshold=0.9)

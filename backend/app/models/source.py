@@ -18,7 +18,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 
 if TYPE_CHECKING:
-    from app.models.project import Project
+    pass
 
 
 class Source(Base):
@@ -47,7 +47,7 @@ class Source(Base):
     pinned: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
     disabled: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
 
-    embedding: Mapped["SourceEmbedding | None"] = relationship(
+    embedding: Mapped[SourceEmbedding | None] = relationship(
         "SourceEmbedding", back_populates="source", cascade="all, delete-orphan", uselist=False
     )
 

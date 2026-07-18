@@ -11,7 +11,7 @@ import pytest
 import respx
 from httpx import Response
 
-from app.adapters.base import ProviderSettings, SearchAdapter
+from app.adapters.base import SearchAdapter
 from app.adapters.registry import register_search
 from app.models.prompt import PromptVersion
 from app.models.source import Source
