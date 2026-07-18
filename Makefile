@@ -1,6 +1,6 @@
 COMPOSE = docker compose -f docker/docker-compose.base.yml -f docker/docker-compose.dev.yml
 
-.PHONY: up down migrate backend frontend test gen-scene-schema gen-api-client verify-dev ollama-pull
+.PHONY: up down migrate backend frontend test gen-scene-schema gen-api-client verify-dev ollama-pull prompt-eval
 
 up:
 	@sh ./scripts/check_ports.sh
@@ -35,3 +35,6 @@ verify-dev:
 	$(MAKE) up
 	@sh ./scripts/wait_for_health.sh
 	$(MAKE) down
+
+prompt-eval:
+	cd backend && uv run python scripts/prompt_eval_cli.py --prompt $(PROMPT) --version $(V)

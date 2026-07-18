@@ -1,0 +1,42 @@
+[
+  {
+    "topic": "Mo hinh ngon ngu Gemini 3 ra mat voi context window 2 trieu token",
+    "target_duration_s": 60
+  },
+  {
+    "topic": "Cong cu lap trinh AI moi Cursor 2.0 ho tro sua loi tu dong toan bo repo",
+    "target_duration_s": 45
+  },
+  {
+    "topic": "Khai niem Retrieval-Augmented Generation (RAG) va vi sao no giam ao giac AI",
+    "target_duration_s": 90
+  },
+  {
+    "topic": "Anthropic cong bo Claude dat 92.5% tren SWE-bench, vuot Codex",
+    "target_duration_s": 60
+  },
+  {
+    "topic": "Meta phat hanh Llama 4 mo nguon voi giay phep thuong mai roi rac",
+    "target_duration_s": 60
+  },
+  {
+    "topic": "Xu huong AI agent tu hanh dong (autonomous agent) trong nam 2026",
+    "target_duration_s": 75
+  },
+  {
+    "topic": "OpenAI ra mat cong cu tao video Sora phien ban 2 voi do phan giai 4K",
+    "target_duration_s": 60
+  },
+  {
+    "topic": "Tranh cai ve ban quyen du lieu huan luyen AI giua cac hang cong nghe lon",
+    "target_duration_s": 90
+  },
+  {
+    "topic": "Vi xu ly AI chuyen dung NVIDIA Blackwell Ultra tang toc suy luan gap 4 lan",
+    "target_duration_s": 60
+  },
+  {
+    "topic": "Nghien cuu moi cho thay 40% cong viec van phong co the duoc AI ho tro toan phan",
+    "target_duration_s": 60
+  }
+]
