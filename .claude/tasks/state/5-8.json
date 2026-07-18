@@ -6,7 +6,7 @@
   "steps": [
     {"id": 1, "name": "RunningState core, real SSE message + elapsed + indeterminate progress (BR-1)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "61097b9"},
     {"id": 2, "name": "Chay ngam (background) + dashboard progress card", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "ab70012"},
-    {"id": 3, "name": "Error state, chain-exhausted vs generic (BR-2)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "PENDING"},
+    {"id": 3, "name": "Error state, chain-exhausted vs generic (BR-2)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "8169e31"},
     {"id": 4, "name": "Cancel flow, confirm >30s + dang huy sub-state (BR-3, BR-4, consumes 4-7)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 5, "name": "Integrate into every Duyet to AI-step transition + stepper background indicator", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
