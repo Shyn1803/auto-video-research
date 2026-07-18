@@ -1,6 +1,7 @@
-"""Project CRUD endpoints — FR-01.
+"""Project CRUD endpoints — FR-01 + summary (task 5-10).
 
-No business logic here; every route delegates to ProjectService.
+No business logic here; every route delegates to ProjectService except
+``GET /projects/{id}/summary`` which delegates to ProjectSummaryService.
 Ownership enforcement (🅞) happens in the service layer.
 """
 
@@ -24,7 +25,9 @@ from app.schemas.project import (
     ProjectStatus,
     ProjectUpdate,
 )
+from app.schemas.project_summary import ProjectSummaryOut
 from app.services.project_service import ProjectService
+from app.services.project_summary import ProjectSummaryService
 from app.services.state_machine import TransitionError
 from app.services.state_machine_edges import TransitionError as EdgeTransitionError
 
@@ -33,7 +36,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/projects", tags=["projects"])
 
 
-# ── helpers ───────────────────────────────────────────────────────────────
+# ── helpers ───────────────────────────────────────────────────────────────────
 
 
 async def _enrich(
@@ -48,7 +51,8 @@ async def _enrich(
     return ProjectOut.from_orm(project, step_count=step_count)
 
 
-# ── list ──────────────────────────────────────────────────────────────────
+# ── list ──────────────────────────────────────────────────────────────────────
+
 
 @router.get("", response_model=list[ProjectOut])
 async def list_projects(
@@ -67,7 +71,8 @@ async def list_projects(
         return [await _enrich(p, db, user.id) for p in rows]
 
 
-# ── grouped dashboard (BR-6 + BR-7) ────────────────────────────────────
+# ── grouped dashboard (BR-6 + BR-7) ──────────────────────────────────────────
+
 
 @router.get("/groups", response_model=list[dict])
 async def list_projects_grouped(
@@ -77,19 +82,12 @@ async def list_projects_grouped(
     q: str | None = Query(None),
     user: User = Depends(get_current_user),
 ):
-    """Dashboard: projects grouped by lifecycle; empty groups hidden (BR-6).
-
-    BR-7 filter by mode is served via the ?mode= query param.
-    """
+    """Dashboard: projects grouped by lifecycle; empty groups hidden (BR-6)."""
     async with request.app.state.database.session() as db:
         svc = ProjectService(db)
-        # "all" means no filter; otherwise pass the mode value as-is (DB stores enum value)
         mode_filter = None if (not mode or mode == "all") else mode
         rows = await svc.list_for_user(
-            user_id=user.id,
-            archived=archived,
-            mode=mode_filter,
-            search=q,
+            user_id=user.id, archived=archived, mode=mode_filter, search=q,
         )
         enriched = [await _enrich(p, db, user.id) for p in rows]
 
@@ -98,9 +96,7 @@ async def list_projects_grouped(
             assigned = False
             for gk, gv in LIFECYCLE_GROUPS.items():
                 if pj.status in gv["statuses"]:
-                    buckets[gk].append(
-                        pj.model_dump(mode="json")
-                    )
+                    buckets[gk].append(pj.model_dump(mode="json"))
                     assigned = True
                     break
             if not assigned:
@@ -122,7 +118,32 @@ async def list_projects_grouped(
         ]
 
 
-# ── detail ────────────────────────────────────────────────────────────────
+# ── summary (task 5-10 — NEW endpoint, contract change) ──────────────────────
+
+
+@router.get("/{project_id}/summary", response_model=ProjectSummaryOut)
+async def get_project_summary(
+    request: Request,
+    project_id: UUID,
+    user: User = Depends(get_current_user),
+):
+    """Project summary for ProjectDrawer: metadata + AI summary + verdict +
+    estimated cost + source count + last 5 activity entries.
+
+    🅞 Ownership enforced — only the project owner (or admin) may access.
+    Partial-failure aware: a cost-query exception is caught and the field
+    is left at 0 + "không tải được" label (AC-4).
+    """
+    async with request.app.state.database.session() as db:
+        svc = ProjectSummaryService(db)
+        summary = await svc.get_summary(project_id, user.id)
+        if summary is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "project not found")
+        return summary
+
+
+# ── detail ────────────────────────────────────────────────────────────────────
+
 
 @router.get("/{project_id}", response_model=ProjectOut)
 async def get_project(
@@ -138,7 +159,8 @@ async def get_project(
         return await _enrich(proj, db, user.id)
 
 
-# ── create ────────────────────────────────────────────────────────────────
+# ── create ────────────────────────────────────────────────────────────────────
+
 
 @router.post(
     "", response_model=ProjectOut, status_code=status.HTTP_201_CREATED,
@@ -163,7 +185,8 @@ async def create_project(
         return await _enrich(proj, db, user.id)
 
 
-# ── update ────────────────────────────────────────────────────────────────
+# ── update ────────────────────────────────────────────────────────────────────
+
 
 @router.patch("/{project_id}", response_model=ProjectOut)
 async def update_project(
@@ -196,7 +219,8 @@ async def update_project(
         return await _enrich(proj, db, user.id)
 
 
-# ── delete (BR-1) ────────────────────────────────────────────────────────
+# ── delete (BR-1) ─────────────────────────────────────────────────────────────
+
 
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_project(
@@ -226,7 +250,8 @@ async def delete_project(
         await db.commit()
 
 
-# ── clone (BR-2) ─────────────────────────────────────────────────────────
+# ── clone (BR-2) ──────────────────────────────────────────────────────────────
+
 
 @router.post(
     "/{project_id}/clone",
@@ -252,7 +277,8 @@ async def clone_project(
         return await _enrich(new_proj, db, user.id)
 
 
-# ── archive / unarchive ───────────────────────────────────────────────────
+# ── archive / unarchive ───────────────────────────────────────────────────────
+
 
 @router.post("/{project_id}/archive", status_code=status.HTTP_204_NO_CONTENT)
 async def archive_project(
@@ -285,7 +311,8 @@ async def unarchive_project(
         return await _enrich(proj, db, user.id)
 
 
-# ── TTS preview endpoint (BR-5, used by Create-project modal) ───────────
+# ── TTS preview endpoint (BR-5, used by Create-project modal) ────────────────
+
 
 @router.get("/preview/tts", tags=["projects"])
 async def tts_preview(

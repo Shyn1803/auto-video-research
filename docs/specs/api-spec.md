@@ -41,6 +41,7 @@
 | GET | `/projects` | List (filter: `status`, `mode`, `q`; sort `updated_at`) — user thường chỉ thấy project mình |
 | POST | `/projects` | `{name, topic, language?, formats?}` → Project (status `DRAFT`) |
 | GET 🅞 | `/projects/{id}` | Chi tiết + current version từng step + verdict fact-check tổng |
+| GET 🅞 | `/projects/{id}/summary` | (task 5-10) Tóm tắt drawer: metadata + tóm tắt AI + verdict + số cảnh + chi phí "ước tính" (sum llm_usage) + source count + 5 hoạt động gần nhất |
 | PATCH 🅞 | `/projects/{id}` | Sửa name/topic/formats (chỉ khi DRAFT/NEED_REVIEW/REVISING) |
 | POST 🅞 | `/projects/{id}/clone` | → Project mới (copy version mới nhất mọi step) |
 | POST 🅞 | `/projects/{id}/archive` | → 204 |
