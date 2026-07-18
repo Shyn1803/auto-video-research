@@ -53,7 +53,8 @@
 |---|---|---|
 | POST 🅞 | `/projects/{id}/steps/{step}/run` | Chạy/regenerate step (`research`\|`outline`\|`script`\|`storyboard`\|`produce`). Async → `{run_id}`; tiến độ qua SSE. 409 nếu state không cho phép |
 | POST 🅞 | `/projects/{id}/steps/{step}/approve` | Approve version hiện hành → state machine tiến bước |
-| GET 🅞 | `/projects/{id}/runs/{run_id}` | Trạng thái run (fallback khi không dùng SSE) |
+| GET 🅞 | `/projects/{id}/runs/{run_id}` | Trạng thái run (fallback khi không dùng SSE); có `cancelling: bool` khi đã yêu cầu huỷ nhưng node hiện tại chưa dừng xong |
+| POST 🅞 | `/projects/{id}/runs/{run_id}/cancel` | Task 4-7 — Huỷ run: best-effort, kết thúc sau khi node đang chạy dừng thật (≤~30s = 1 LLM call) → `run.cancelled` event. 409 nếu run đã kết thúc (completed/failed/cancelled). "Chạy tiếp" sau khi huỷ = gọi lại `POST steps/{step}/run` (resume từ checkpoint của chính run đã huỷ, không tạo thread mới) |
 
 ---
 
