@@ -2,11 +2,11 @@
   "task_id": "5-8",
   "status": "in-progress",
   "branch": "feat/5-8-runningstate-component",
-  "current_step": 2,
+  "current_step": 3,
   "steps": [
     {"id": 1, "name": "RunningState core, real SSE message + elapsed + indeterminate progress (BR-1)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "61097b9"},
     {"id": 2, "name": "Chay ngam (background) + dashboard progress card", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "ab70012"},
-    {"id": 3, "name": "Error state, chain-exhausted vs generic (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 3, "name": "Error state, chain-exhausted vs generic (BR-2)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "PENDING"},
     {"id": 4, "name": "Cancel flow, confirm >30s + dang huy sub-state (BR-3, BR-4, consumes 4-7)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 5, "name": "Integrate into every Duyet to AI-step transition + stepper background indicator", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
@@ -14,7 +14,9 @@
   "decisions": [
     "Tests co-located as src/components/workspace/__tests__/*.test.tsx (matches actual vitest.config.ts include glob + sibling components PipelineStepper/StaleConfirmDialog), not frontend/tests/unit/components/ as the task file literally states -- that path isn't picked up by the working config. See memory/project-memory.md Open Questions (frontend test-directory convention undocumented).",
     "RunningState.pct is number|null, caller-supplied. Today's backend (run_service.py/research/node.py) only ever publishes pct=0 ('started' placeholder) or pct=100 ('completed') -- never a real in-between fraction yet. Component treats pct<=0 as indeterminate (BR-1: no fabricated %); the integration layer (Step 5) decides whether to pass the real event pct straight through or null it out.",
-    "No package.json/pnpm-workspace at repo root -- ran vitest via `npx vitest` from frontend/ directly instead of `pnpm --filter frontend vitest run` as the task file's Verify line states; functionally equivalent, no workspace tooling exists to filter against."
+    "No package.json/pnpm-workspace at repo root -- ran vitest via `npx vitest` from frontend/ directly instead of `pnpm --filter frontend vitest run` as the task file's Verify line states; functionally equivalent, no workspace tooling exists to filter against.",
+    "RunningStateError takes error (pre-classified all_providers_failed|generic) + viewerRole ('admin'|'creator') as caller-supplied props, not derived internally -- no SSE event for errors exists yet in docs/specs/event-catalog.md (only step.progress/project.status), and frontend AuthProvider/useAuth has no role field today. Whoever wires this in (Step 5, or 5-6/5-7) must shape the run's `error` field into one of the two variants and supply the viewer's role from wherever that becomes available.",
+    "Admin 'Quan tri > Providers' link points at /admin/api-keys (closest existing admin page) -- no dedicated /admin/providers page exists yet. Revisit if/when one is built."
   ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
