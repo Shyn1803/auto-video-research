@@ -17,19 +17,19 @@ const LAYOUT_ICONS: Record<string, string> = {
 };
 
 export function SceneSidebar() {
-  const { state } = useWorkspace();
+  const { state, dispatch } = useWorkspace();
 
   return (
     <aside className="w-44 shrink-0 space-y-2" aria-label="Danh sách phân cảnh">
       {state.scenes.map((sc, idx) => {
         const sel = state.selectedSceneIndex === idx;
-        const icon = LAYOUT_ICONS[sc.title] ?? "▣";
+        const icon = LAYOUT_ICONS[sc.layoutClass] ?? "▣";
 
         return (
           <button
             type="button"
             key={sc.id}
-            onClick={() => {} /* Step 3 wires selectScene */}
+            onClick={() => dispatch({ type: "SELECT_SCENE", index: idx })}
             className={`w-full rounded-lg border p-2 text-left text-sm transition-colors ${
               sel
                 ? "border-primary bg-primary/10"

@@ -17,13 +17,14 @@
 
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useWorkspace } from "@/lib/workspace-context";
 import { SceneSidebar } from "@/components/workspace/SceneSidebar";
 import { SceneFormPanel } from "@/components/workspace/SceneFormPanel";
 import { ScenePlayerPanel } from "@/components/workspace/ScenePlayerPanel";
 import { ApproveBar } from "@/components/workspace/ApproveBar";
 import { StatusBadge } from "@/components/ui/status-badge";
+import type { SceneJson } from "@/lib/scene/types";
 
 const FIXTURE_SCENES = [
   {
@@ -48,7 +49,9 @@ const FIXTURE_SCENES = [
   },
 ];
 
-// Minimal ScenePlayer stubs — story 2-2 wires the real composition
+// Minimal ScenePlayer stub — story 2-2 wires the real composition. Task 5-2
+// feeds it the live-edited Scene JSON draft (via SceneFormPanel's
+// onDraftChange) instead of a static dummy — AC-1 "Player phản ánh ngay".
 const ComponentStub = () => null;
 const DUMMY_SCENE = {
   duration_ms: 6000,
@@ -57,17 +60,22 @@ const DUMMY_SCENE = {
 
 export default function ScenesPage() {
   const { state, dispatch } = useWorkspace();
+  const [previewScene, setPreviewScene] = useState<SceneJson | null>(null);
 
-  // In 5-1: bootstrap from local fixture — real GET/PUT wires in 5-2
+  // In 5-1 this fixture was computed locally but never dispatched into the
+  // shared workspace state — SceneSidebar reads `state.scenes` directly, so
+  // it always rendered an empty list and nothing was ever selectable (found
+  // while verifying 5-2's controls in a real browser per rules/testing.md).
+  // Dispatching it once here is what makes scene selection work at all.
+  useEffect(() => {
+    if (state.scenes.length === 0) {
+      dispatch({ type: "SET_SCENES", scenes: FIXTURE_SCENES });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const scenes = useMemo(
-    () =>
-      state.scenes.length > 0
-        ? state.scenes
-        : FIXTURE_SCENES.map((f) => ({
-            ...f,
-            approved: f.approved,
-            warnings: f.warnings,
-          })),
+    () => (state.scenes.length > 0 ? state.scenes : FIXTURE_SCENES),
     [state.scenes],
   );
 
@@ -101,9 +109,34 @@ export default function ScenesPage() {
       {/* 3-column Phân cảnh frame */}
       <div className="flex gap-4">
         <SceneSidebar />
-        <SceneFormPanel />
-        <ScenePlayerPanel component={ComponentStub} scene={DUMMY_SCENE} />
+        <SceneFormPanel onDraftChange={setPreviewScene} />
+        <ScenePlayerPanel
+          component={ComponentStub}
+          scene={
+            previewScene
+              ? {
+                  duration_ms: previewScene.duration_ms,
+                  format: "vertical_1080x1920",
+                  voice: previewScene.voice ?? null,
+                }
+              : DUMMY_SCENE
+          }
+        />
       </div>
+
+      {/* Task 5-2 dev/verification aid — makes "Player reflects changes
+          immediately" (AC-1) directly observable, since ComponentStub itself
+          renders nothing visual until 2-2's real composition is wired here. */}
+      {previewScene && (
+        <details className="rounded-lg border border-border bg-muted p-3 text-xs">
+          <summary className="cursor-pointer text-muted-foreground">
+            Xem Scene JSON đang chỉnh (debug)
+          </summary>
+          <pre className="mt-2 overflow-x-auto" data-testid="scene-draft-debug">
+            {JSON.stringify(previewScene, null, 2)}
+          </pre>
+        </details>
+      )}
 
       {/* ApproveBar — design-system §3.3 (sticky bottom-right) */}
       <ApproveBar

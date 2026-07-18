@@ -8,15 +8,31 @@
  * In (5-1): wire the form;controls-wiring (5-2) adds the full prop set.
  * Autosave: useAutosave fires PUT with 1s debounce + offline resilience.
  * 422: field_path → mapped to path in schema via onFieldError.
+ *
+ * Task 5-2 adds `SceneDetailControls` below the generic form: the real
+ * Text/Color/Animation/Layout-dry-run/Voice controls, bound to a per-scene
+ * Scene JSON draft (lib/scene/fixture.ts — same no-live-backend dev-server
+ * precedent 5-1 established for FIXTURE_SCENES) and PUT via the real
+ * `/projects/{id}/scenes/{scene_id}` endpoint (lib/api/scenes.ts).
  */
 
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useWorkspace, type SceneRow } from "@/lib/workspace-context";
 import { useAutosave } from "@/lib/hooks/useAutosave";
 import { SchemaField, type JsonSchema } from "@/lib/schema-form/generate";
 import { StaleConfirmDialog } from "@/components/workspace/StaleConfirmDialog";
+import { TextControl } from "@/components/workspace/controls/TextControl";
+import { ColorPicker } from "@/components/workspace/controls/ColorPicker";
+import { AnimationControl } from "@/components/workspace/controls/AnimationControl";
+import { LayoutDryRunDialog } from "@/components/workspace/controls/LayoutDryRunDialog";
+import { VoicePanel } from "@/components/workspace/controls/VoicePanel";
+import { checkLayoutChange } from "@/lib/scene/layout-constraints";
+import { putScene } from "@/lib/api/scenes";
+import { SCENE_FIXTURES } from "@/lib/scene/fixture";
+import type { SceneJson } from "@/lib/scene/types";
+import { LAYOUT_NAMES, type LayoutName } from "@/lib/scene/layout-names";
 
 interface SceneFormValue {
   title: string;
@@ -50,7 +66,15 @@ const SCENE_SCHEMA: JsonSchema = {
   required: ["title", "body"],
 };
 
-export function SceneFormPanel() {
+export interface SceneFormPanelProps {
+  /** Task 5-2: reports the live-edited Scene JSON draft so the caller
+   * (scenes/page.tsx) can feed it straight into ScenePlayerPanel — the
+   * Player must reflect edits immediately, not just after the debounced
+   * PUT settles (AC-1). */
+  onDraftChange?: (scene: SceneJson | null) => void;
+}
+
+export function SceneFormPanel({ onDraftChange }: SceneFormPanelProps = {}) {
   const { state, dispatch } = useWorkspace();
 
   const idx = state.selectedSceneIndex;
@@ -162,7 +186,268 @@ export function SceneFormPanel() {
         onChange={handleFieldChange}
         fieldErrors={fieldErrors}
       />
+
+      {/* Task 5-2: text/color/animation/layout-dry-run/voice controls,
+          keyed by scene id so switching the selected scene remounts this
+          section's draft state instead of leaking the previous scene's edits. */}
+      <SceneDetailControls
+        key={scene.id}
+        projectId={state.projectId}
+        sceneId={scene.id}
+        disabled={state.readonly}
+        onDraftChange={onDraftChange}
+      />
     </section>
+  );
+}
+
+/* ── task 5-2: real edit controls, bound to a per-scene Scene JSON draft ── */
+
+function SceneDetailControls({
+  projectId,
+  sceneId,
+  disabled,
+  onDraftChange,
+}: {
+  projectId: string;
+  sceneId: string;
+  disabled?: boolean;
+  onDraftChange?: (scene: SceneJson | null) => void;
+}) {
+  const fixture = SCENE_FIXTURES[sceneId];
+
+  const onSaveDraft = useCallback(
+    async (next: SceneJson) => {
+      // Real endpoint is called; a sandbox/dev environment without a live
+      // backend will surface this as useAutosave's existing offline/error
+      // path (BR-3) rather than crashing the form.
+      await putScene(projectId, sceneId, next);
+    },
+    [projectId, sceneId],
+  );
+
+  const { value: draft, setValue: setDraft, status, manuallySave } = useAutosave<SceneJson | null>(
+    {
+      save: async (v) => {
+        if (v) await onSaveDraft(v);
+      },
+      debounceMs: 1000,
+      initialValue: fixture ?? null,
+    },
+  );
+
+  // Report every draft change immediately (not debounced) — AC-1 "Player
+  // reflects ngay".
+  useEffect(() => {
+    onDraftChange?.(draft);
+    // Only wants to fire on draft changes, not on identity change of the callback.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft]);
+
+  // BR-3: capture the voice text baseline the produced audio corresponds to,
+  // exactly once per scene (on first load), so later edits can be compared
+  // against it. Scene JSON itself has no separate "text at produce time"
+  // field — this control is the one place that tracks it client-side.
+  const producedAudioTextRef = useRef<string | null>(null);
+  if (producedAudioTextRef.current === null && draft?.voice?.audio) {
+    producedAudioTextRef.current = draft.voice.text;
+  }
+
+  const [activeTextIndex, setActiveTextIndex] = useState(0);
+  const [pendingLayout, setPendingLayout] = useState<LayoutName | null>(null);
+
+  if (!draft) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Không có dữ liệu chi tiết cho cảnh này (fixture chưa có).
+      </p>
+    );
+  }
+
+  const activeText = draft.texts[activeTextIndex];
+
+  const applyLayout = (nextLayout: LayoutName) => {
+    setDraft((prev) => (prev ? { ...prev, layout: nextLayout } : prev));
+  };
+
+  const handleLayoutSelect = (nextLayout: LayoutName) => {
+    const result = checkLayoutChange(draft.texts, draft.images.length, nextLayout);
+    if (result.ok) {
+      applyLayout(nextLayout);
+    } else {
+      setPendingLayout(nextLayout);
+    }
+  };
+
+  return (
+    <div className="space-y-4 border-t border-border pt-4">
+      <h4 className="text-sm font-semibold text-foreground">Chỉnh sửa chi tiết</h4>
+
+      {/* Layout select + dry-run (BR-1) */}
+      <div>
+        <label htmlFor="scene-detail-layout" className="mb-1 block text-sm font-medium text-foreground">
+          Bố cục
+        </label>
+        <select
+          id="scene-detail-layout"
+          value={draft.layout}
+          disabled={disabled}
+          onChange={(e) => handleLayoutSelect(e.target.value as LayoutName)}
+          className="w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm disabled:opacity-60"
+        >
+          {LAYOUT_NAMES.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+        <LayoutDryRunDialog
+          open={pendingLayout !== null}
+          fromLayout={draft.layout}
+          toLayout={pendingLayout ?? ""}
+          texts={draft.texts}
+          imagesCount={draft.images.length}
+          onCancel={() => setPendingLayout(null)}
+          onConfirm={() => {
+            if (pendingLayout) applyLayout(pendingLayout);
+            setPendingLayout(null);
+          }}
+        />
+      </div>
+
+      {/* Text element picker (a scene may have multiple texts) */}
+      {draft.texts.length > 1 && (
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label="Chọn phần tử chữ">
+          {draft.texts.map((t, i) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setActiveTextIndex(i)}
+              aria-pressed={i === activeTextIndex}
+              className={`rounded-full border px-2.5 py-0.5 text-xs ${
+                i === activeTextIndex
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border text-muted-foreground"
+              }`}
+            >
+              {t.id}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {activeText && (
+        <>
+          <TextControl
+            value={{
+              content: activeText.content,
+              role: activeText.role,
+              position: activeText.position,
+              color: activeText.color,
+              highlightColor: activeText.highlight_color,
+            }}
+            disabled={disabled}
+            onChange={(next) =>
+              setDraft((prev) => {
+                if (!prev) return prev;
+                const texts = prev.texts.map((t, i) =>
+                  i === activeTextIndex
+                    ? {
+                        ...t,
+                        content: next.content,
+                        role: next.role,
+                        position: next.position,
+                        color: next.color,
+                        highlight_color: next.highlightColor,
+                      }
+                    : t,
+                );
+                return { ...prev, texts };
+              })
+            }
+            renderColorControls={({ color, highlightColor, onColorChange, onHighlightChange }) => (
+              <div className="grid grid-cols-2 gap-3">
+                <ColorPicker
+                  label="Màu chữ"
+                  value={color}
+                  onChange={onColorChange}
+                  backgroundColor={draft.background && "color" in draft.background ? (draft.background.color as string) : undefined}
+                  disabled={disabled}
+                />
+                <ColorPicker
+                  label="Màu highlight"
+                  value={highlightColor}
+                  onChange={onHighlightChange}
+                  backgroundColor={draft.background && "color" in draft.background ? (draft.background.color as string) : undefined}
+                  disabled={disabled}
+                />
+              </div>
+            )}
+          />
+
+          <AnimationControl
+            value={{
+              type: activeText.animation?.type ?? "none",
+              delayMs: activeText.animation?.delay_ms ?? 0,
+            }}
+            disabled={disabled}
+            onChange={(next) =>
+              setDraft((prev) => {
+                if (!prev) return prev;
+                const texts = prev.texts.map((t, i) =>
+                  i === activeTextIndex
+                    ? {
+                        ...t,
+                        animation: {
+                          type: next.type,
+                          delay_ms: next.delayMs,
+                          duration_ms: t.animation?.duration_ms ?? 400,
+                        },
+                      }
+                    : t,
+                );
+                return { ...prev, texts };
+              })
+            }
+          />
+        </>
+      )}
+
+      {draft.voice && (
+        <VoicePanel
+          value={{
+            text: draft.voice.text,
+            voiceId: draft.voice.voice_id,
+            speed: draft.voice.speed,
+          }}
+          disabled={disabled}
+          hasProducedAudio={Boolean(draft.voice.audio)}
+          producedAudioText={producedAudioTextRef.current ?? draft.voice.text}
+          onChange={(next) =>
+            setDraft((prev) =>
+              prev && prev.voice
+                ? { ...prev, voice: { ...prev.voice, text: next.text, voice_id: next.voiceId, speed: next.speed } }
+                : prev,
+            )
+          }
+        />
+      )}
+
+      <div aria-live="polite" className="text-xs text-muted-foreground">
+        {status === "saving" && "Đang lưu chi tiết…"}
+        {status === "saved" && "Đã lưu chi tiết ✓"}
+        {status === "offline" && (
+          <button type="button" onClick={manuallySave} className="underline">
+            ⚠ chưa lưu — thử lại
+          </button>
+        )}
+        {status === "error" && (
+          <button type="button" onClick={manuallySave} className="underline text-status-fail">
+            Lỗi lưu — thử lại
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
 
