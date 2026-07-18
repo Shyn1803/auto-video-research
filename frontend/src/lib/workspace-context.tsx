@@ -19,7 +19,7 @@ import {
 
 /* ── domain types ────────────────────────────────────── */
 
-export type StepStatus = "locked" | "current" | "done" | "done-warning" | "error";
+export type StepStatus = "locked" | "current" | "done" | "done-warning" | "error" | "stale";
 export type SaveStatus = "saved" | "saving" | "error" | "offline";
 
 /** Each step of the 5-station Pipeline. */
@@ -30,6 +30,26 @@ export const STATIONS: { key: string; label: string }[] = [
   { key: "finish",    label: "Hoàn thiện" },
   { key: "publish",   label: "Xuất bản" },
 ];
+
+/**
+ * Task 5-9: maps each Station (5-station pipeline UI) to the more granular
+ * versioning `step` keys the backend tracks (app/models/step_version.py
+ * `_STEP_ORDER`). Restore's `staled_steps` response uses the backend keys —
+ * this is how a restore's stale cascade gets projected back onto the
+ * station pills (BR-3/AC-2).
+ */
+export const STATION_VERSIONING_STEPS: readonly string[][] = [
+  ["research"],
+  ["outline", "script"],
+  ["storyboard", "scene_set"],
+  ["produce", "render"],
+  ["publish"],
+];
+
+/** Index of the Station a given backend versioning-step key belongs to, or -1. */
+export function stationIndexForVersioningStep(step: string): number {
+  return STATION_VERSIONING_STEPS.findIndex((steps) => steps.includes(step));
+}
 
 export interface SceneRow {
   id: string;
@@ -52,6 +72,12 @@ export interface WorkspaceState {
   currentStation: number;
   stationStates: StepStatus[];
 
+  /** 5-9: which backend versioning-step key the current station's
+   * VersionSwitcher operates on (e.g. "scene_set" for the Scenes station).
+   * Defaults from STATION_VERSIONING_STEPS; a station page may override via
+   * SET_VERSIONING_STEP once it knows exactly which sub-step it edits. */
+  versioningStep: string;
+
   /* Scenes */
   scenes: SceneRow[];
   selectedSceneIndex: number | null;
@@ -73,6 +99,7 @@ const makeState = (projectId: string): WorkspaceState => ({
   projectStatus: "idle",
   currentStation: 2,
   stationStates: ["done", "done", "current", "locked", "locked"],
+  versioningStep: STATION_VERSIONING_STEPS[2][0],
   scenes: [],
   selectedSceneIndex: null,
   approvedCount: 0,
@@ -88,6 +115,8 @@ type Action =
   | { type: "SET_PROJECT"; id: string; name?: string; status?: string }
   | { type: "SET_STATION_STATES"; states: StepStatus[] }
   | { type: "SET_CURRENT_STATION"; index: number }
+  | { type: "SET_VERSIONING_STEP"; step: string }
+  | { type: "MARK_STATIONS_STALE"; stationIndexes: number[] }
   | { type: "SET_SCENES"; scenes: SceneRow[] }
   | { type: "SELECT_SCENE"; index: number | null }
   | { type: "SET_READONLY"; v: boolean }
@@ -110,6 +139,17 @@ function reducer(state: WorkspaceState, action: Action): WorkspaceState {
       return { ...state, stationStates: action.states };
     case "SET_CURRENT_STATION":
       return { ...state, currentStation: action.index };
+    case "SET_VERSIONING_STEP":
+      return { ...state, versioningStep: action.step };
+    case "MARK_STATIONS_STALE": {
+      const stationStates = [...state.stationStates];
+      for (const idx of action.stationIndexes) {
+        if (idx >= 0 && idx < stationStates.length) {
+          stationStates[idx] = "stale";
+        }
+      }
+      return { ...state, stationStates };
+    }
     case "SET_SCENES":
       return {
         ...state,

@@ -3,6 +3,17 @@
 Follows the same request-scoped session pattern as app/api/projects.py and
 app/api/users.py (``async with request.app.state.database.session() as db``)
 — there is no FastAPI ``Depends``-based session getter in this codebase.
+
+Task 5-9 fix: mounted with an explicit ``/api`` prefix. Task 4-4 flagged a
+cross-cutting bug (see memory/project-memory.md 2026-07-18 entry): every
+non-admin router (projects/runs/scenes/versions/claims/sources) was mounted
+bare (``/projects/...``) while the frontend axios client always prefixes
+``/api`` and admin routers correctly declare ``/api/admin/...`` — every
+non-admin frontend call 404s against a real running stack. This task's
+frontend VersionSwitcher is the first real consumer of these endpoints, so
+fixing it here (matching admin's already-correct convention) unblocks 5-9.
+projects.py/runs.py/scenes.py/claims.py/sources.py still need the same fix —
+left for whoever owns those routes' frontend integration next.
 """
 
 from __future__ import annotations
@@ -21,13 +32,14 @@ from app.schemas.version import (
     CurrentResponse,
     RestoreResponse,
     VersionCreate,
+    VersionDetailOut,
     VersionListResponse,
     VersionOut,
 )
 from app.services.state_machine import ProjectStatus
 from app.services.versioning_service import VersioningService
 
-router = APIRouter(tags=["versions"])
+router = APIRouter(prefix="/api", tags=["versions"])
 
 # BR: restore is rejected with 409 while the project is actively running a step.
 _RUNNING_STATUSES = {
@@ -161,6 +173,35 @@ async def compare_versions(
         svc = VersioningService(db)
         result = await svc.compare(proj.id, step, v1, v2)
         return CompareResponse(**result)
+
+
+@router.get(
+    "/projects/{project_id}/steps/{step}/versions/{version}",
+    response_model=VersionDetailOut,
+)
+async def get_version_detail(
+    request: Request,
+    project_id: str,
+    step: str,
+    version: int,
+    user: User = Depends(get_current_user),
+) -> VersionDetailOut:
+    """Task 5-9 'Xem': readonly view of one past version's full content.
+
+    Additive endpoint (docs/specs/api-spec.md §3 contract change note) —
+    VersionOut (list/current/restore) never carries `content`. Registered
+    *after* .../versions/compare in this router: both are GET on a single
+    dynamic path segment under .../versions/, and Starlette matches routes
+    in registration order without type-checking the {version}:int converter
+    until after a structural match — if this route were registered first, a
+    request to .../versions/compare would match here and 422 on "compare"
+    failing int-conversion instead of reaching compare_versions.
+    """
+    async with request.app.state.database.session() as db:
+        proj = await _get_project(db, project_id, user.id)
+        svc = VersioningService(db)
+        sv = await svc.get(proj.id, step, version)
+        return VersionDetailOut(**_out(sv).model_dump(), content=sv.content)
 
 
 async def _get_project(db, project_id: str, user_id) -> Project:

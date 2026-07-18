@@ -25,6 +25,7 @@ function classFor(status: StepStatus): string {
     case "done-warning": return "border-status-warn text-status-warn";
     case "current":      return "border-primary text-foreground";
     case "error":        return "border-status-fail text-status-fail";
+    case "stale":        return "border-status-warn text-status-warn border-dashed";
     case "locked":
     default:             return "border-border text-muted-foreground opacity-50";
   }
@@ -37,6 +38,7 @@ function iconFor(status: StepStatus): string {
     case "current":      return "●";
     case "locked":       return "○";
     case "error":        return "✗";
+    case "stale":        return "⟲";
   }
 }
 
@@ -121,12 +123,12 @@ function Pill({
       <span aria-hidden="true">{iconFor(status)}</span>
       <span>{station.label}</span>
 
-      {/* tooltip for done-warning or locked */}
-      {tooltipOpen && (status === "done-warning" || locked) && (
+      {/* tooltip for done-warning, stale (5-9 BR-3), or locked */}
+      {tooltipOpen && (status === "done-warning" || status === "stale" || locked) && (
         <span
           role="tooltip"
           className={`absolute left-0 top-full z-50 mt-2 w-72 rounded-lg border p-3 text-xs shadow-xl ${
-            status === "done-warning"
+            status === "done-warning" || status === "stale"
               ? "border-status-warn bg-status-warn/10 text-status-warn"
               : "border-border bg-card"
           }`}
@@ -140,6 +142,8 @@ function Pill({
                 ))}
               </ul>
             </>
+          ) : status === "stale" ? (
+            <>Bước này đã lỗi thời do một phiên bản trước đó vừa được khôi phục — cần làm lại.</>
           ) : (
             <>Hoàn thành bước {STATIONS[Math.max(0, index - 1)]?.label ?? "trước"} trước</>
           )}
