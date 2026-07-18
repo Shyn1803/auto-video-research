@@ -1,20 +1,26 @@
 {
   "task_id": "4-4",
-  "status": "not-started",
+  "status": "done",
   "branch": "feat/4-4-node-ranking-factcheck",
-  "current_step": 0,
+  "current_step": 8,
   "steps": [
-    {"id": 1, "name": "claims schema + contract-change to api-spec §5", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 2, "name": "Ranking node (ranking.score prompt, configurable weights)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "Claim extraction (factcheck.extract_claims prompt)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 4, "name": "Evidence gathering (embedding search) + verify_claim verdicts (BR-1, BR-2, BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 5, "name": "Overall verdict + gate (FAIL -> NEED_REVIEW + notify)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 6, "name": "Override endpoint - audit + synchronous verdict recompute (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 7, "name": "Disable/delete source cascade (BR-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 8, "name": "Wire remaining tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+    {"id": 1, "name": "claims schema + contract-change to api-spec §5", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "2df62d8"},
+    {"id": 2, "name": "Ranking node (ranking.score prompt, configurable weights)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "afc99d1"},
+    {"id": 3, "name": "Claim extraction (factcheck.extract_claims prompt)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "fc083b2"},
+    {"id": 4, "name": "Evidence gathering (embedding search) + verify_claim verdicts (BR-1, BR-2, BR-4)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "6de386f"},
+    {"id": 5, "name": "Overall verdict + gate (FAIL -> NEED_REVIEW + notify)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "ad4f112"},
+    {"id": 6, "name": "Override endpoint - audit + synchronous verdict recompute (BR-3)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "fdaa8da"},
+    {"id": 7, "name": "Disable/delete source cascade (BR-5)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "42de0ac"},
+    {"id": 8, "name": "Wire remaining tests + verify all Acceptance Criteria", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "acd5b07"}
   ],
-  "decisions": [],
+  "decisions": [
+    "Ranking weights (recency/relevance/trust/confirm) added as new Settings fields (app/core/config.py) + .env.example entries per rules/configuration-env.md, rather than hardcoded in the prompt call -- defaults match 'Decisions already locked' (0.3/0.3/0.25/0.15). Also added similarity_threshold and max_sources_per_project Settings fields, retroactively moving 4-3's hardcoded DEFAULT_SIMILARITY_THRESHOLD/DEFAULT_MAX_SOURCES constants into proper config (4-3's dedupe.py/cache.py still default to the same values if not passed explicitly -- not rewired to read Settings directly in this task, flagged for whoever next touches those call sites).",
+    "Evidence gathering (factcheck/evidence.py) uses a keyword-overlap heuristic (claim's significant words found in a source's content) instead of real BGE-M3 embedding similarity search -- same category of simplification as 4-3's dedupe (no live embedding provider to validate against in this sandbox). evidence_json shape produced matches what factcheck.verify_claim expects regardless, so swapping in real embedding search later is a drop-in change to gather_evidence's internals, not a shape change.",
+    "BR-1 (independent-domain count) and BR-2 (partial_content caps WARN) are applied as deterministic POST-checks on top of the LLM's own PASS/WARN/FAIL verdict, not folded into the prompt -- same 'AI never decides structural/rule logic alone' principle this project already applies to Layout Engine, applied here to fact-check gating. The LLM proposes a verdict from evidence content; BR-1/BR-2's counting/data-quality rules are deterministic code, not LLM judgment.",
+    "Claim audit trail (BR-3) is 3 columns directly on the claims row (overridden_by/overridden_at/override_reason) rather than a separate audit-log table -- same narrow-scope call as 4-2's prompt-activation audit; AC4 only requires 'audit queryable', not a full history of every override.",
+    "IMPORTANT cross-cutting finding (not part of this task's scope, logged in project-memory.md Open Questions): app/api/projects.py, runs.py, scenes.py, versions.py (and this task's claims.py/sources.py, written to match their existing convention) are all mounted at bare '/projects/...' with no '/api' prefix, while the frontend's axios client always prefixes '/api' and admin routers ARE correctly under '/api/admin/...'. No proxy/rewrite config exists anywhere in docker/ or next.config.ts to reconcile this. Every non-admin frontend API call is likely hitting a 404 in a real running stack until this is fixed -- flagged prominently for whoever next runs the app end-to-end."
+  ],
   "blocked_reason": null,
-  "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "opened_at": "2026-07-18T00:00:00+07:00",
+  "updated_at": "2026-07-18T00:00:00+07:00"
 }
