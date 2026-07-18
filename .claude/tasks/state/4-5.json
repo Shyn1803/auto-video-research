@@ -2,21 +2,25 @@
   "task_id": "4-5",
   "status": "in-progress",
   "branch": "feat/4-5-node-write-outline-script",
-  "current_step": 1,
+  "current_step": 7,
   "steps": [
     {"id": 1, "name": "warnings[] contract normalization + contract-change to api-spec §3", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "eff94733d6b7288a8f2ada0bcddbb544c0e94bc1"},
-    {"id": 2, "name": "Claim filtering before prompt context (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "Outline node (outline.generate prompt, §5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 4, "name": "Script node (script.generate prompt, §6) + number-set validator", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 5, "name": "voice_over readability validator (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 6, "name": "Title length guard (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 7, "name": "WARN-claim disclosure enforcement (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Claim filtering before prompt context (BR-1)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "fa499fb"},
+    {"id": 3, "name": "Outline node (outline.generate prompt, §5)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "e0a30a7"},
+    {"id": 4, "name": "Script node (script.generate prompt, §6) + number-set validator", "status": "done", "attempts": 1, "last_error": "initial word-tokenizer used a hand-rolled Vietnamese letter char class that silently dropped diacritics like ẩ/ộ, breaking word-number parsing -- fixed by switching to Unicode \\w+ (see decisions[])", "commit_sha": "e1799e3"},
+    {"id": 5, "name": "voice_over readability validator (BR-2)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "9bd48a7"},
+    {"id": 6, "name": "Title length guard (BR-3)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "327483f"},
+    {"id": 7, "name": "WARN-claim disclosure enforcement (BR-4)", "status": "done", "attempts": 1, "last_error": "initial keyword-overlap check (single shared word) false-positived on common Vietnamese function words (không/dung) -- fixed with a stopword list + require >=2 overlapping keywords (see decisions[])", "commit_sha": "acaa091"},
     {"id": 8, "name": "Two sub-step approvals + PUT version manual edit + parent lineage (AC5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 9, "name": "Wire remaining tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
   ],
   "decisions": [
     {"at_step": 1, "decision": "Task file's 'outline 7 phần' AC1 interpreted as the 7 always-present narrative sections (hook/introduction/problem/solution/demo/conclusion/cta), excluding the 8th 'controversy' field which prompts.md §5 itself defines as optional/nullable ('KHÔNG bịa tranh cãi nếu các nguồn đồng thuận').", "why": "docs/specs/prompts.md §5's actual JSON schema has 8 keys; reconciling the task file's '7 phần' wording against the authoritative prompt contract rather than either redesigning the prompt or leaving an unresolved contradiction -- reversible/locally-scoped naming/count judgment call."},
-    {"at_step": 1, "decision": "script content gets a new source_outline_version field (in content JSONB, not StepVersion.parent_version) to carry cross-step lineage for AC5.", "why": "StepVersion.parent_version (app/models/step_version.py) is intra-step only (used for restore-chain lineage within the same step name) -- there is no existing DB field for 'which outline version was this script generated from'. Adding it inside content avoids a schema migration."}
+    {"at_step": 1, "decision": "script content gets a new source_outline_version field (in content JSONB, not StepVersion.parent_version) to carry cross-step lineage for AC5.", "why": "StepVersion.parent_version (app/models/step_version.py) is intra-step only (used for restore-chain lineage within the same step name) -- there is no existing DB field for 'which outline version was this script generated from'. Adding it inside content avoids a schema migration."},
+    {"at_step": 2, "decision": "BR-1 source filtering uses a keyword-overlap heuristic (>=4-char word overlap between FAIL claim text and source text), not the claim's evidence[].source_id links.", "why": "evidence links tell us which sources were *checked* against a claim, not which source(s) actually authored the failed wording -- a source can support one claim and contradict another. A distinctive-keyword heuristic is a pragmatic, testable stand-in; revisit if a real cross-reference field is added later."},
+    {"at_step": 4, "decision": "Number-set normalizer's Vietnamese word tokenizer switched from a hand-rolled ASCII+partial-diacritic character class to Python's Unicode-aware \\w+.", "why": "The original class was missing several diacritics (ẩ, ộ, ố...), silently truncating words like 'phẩy'->'ph'+'y' and 'một'->nothing, which broke decimal detection entirely. Caught by the task's own highest-scrutiny number-set unit test before it shipped."},
+    {"at_step": 4, "decision": "A bare single spelled-out digit-word (e.g. 'năm' alone) is NOT counted as a number unless part of a multi-word compound or a 'phẩy' decimal continuation.", "why": "'năm' is a genuine Vietnamese homograph (year vs. digit 5), 'một' is also an article/number -- treating every lone occurrence as a number produced false positives (e.g. 'ra mắt năm 2026' reads 'năm' as year, not 5), which surfaced as a failing subset-check test. Multi-word compounds ('chín mươi hai') and phẩy-continuations are unambiguous, so those are still counted."},
+    {"at_step": 7, "decision": "WARN-claim 'used in script' detection requires >=2 overlapping distinctive (len>=4) keywords between claim and sentence (or all of them if the claim has fewer than 2), plus an added stopword list for common Vietnamese connector words.", "why": "A single shared word (e.g. 'không'/'dung', both very common) produced a false positive on an unrelated-claim test case. Requiring 2+ genuinely distinctive keywords is a much stronger 'this sentence is about this claim' signal than any single word."}
   ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
