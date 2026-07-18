@@ -41,7 +41,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 | 5-5 | ⬜ not-started | — | feat/5-5-man-hoan-thien | — |
 | 5-6 | ⬜ not-started | — | feat/5-6-man-nghien-cuu | ready-for-dev in sprint-status.yaml |
 | 5-7 | ⬜ not-started | — | feat/5-7-man-noi-dung | — |
-| 5-8 | ⬜ not-started | — | feat/5-8-runningstate-component | — |
+| 5-8 | 🔶 in-progress | step 1/6 | feat/5-8-runningstate-component | RunningState core done (BR-1 real message + indeterminate) |
 | 5-9 | ⬜ not-started | — | feat/5-9-versionswitcher | — |
 | 5-10 | ⬜ not-started | — | feat/5-10-projectdrawer | — |
 | 6-1 | ⬜ not-started | — | feat/6-1-node-produce | — |

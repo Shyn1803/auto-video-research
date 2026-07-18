@@ -1,17 +1,21 @@
 {
   "task_id": "5-8",
-  "status": "not-started",
+  "status": "in-progress",
   "branch": "feat/5-8-runningstate-component",
-  "current_step": 0,
+  "current_step": 1,
   "steps": [
-    {"id": 1, "name": "RunningState core, real SSE message + elapsed + indeterminate progress (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 1, "name": "RunningState core, real SSE message + elapsed + indeterminate progress (BR-1)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "PENDING"},
     {"id": 2, "name": "Chay ngam (background) + dashboard progress card", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 3, "name": "Error state, chain-exhausted vs generic (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 4, "name": "Cancel flow, confirm >30s + dang huy sub-state (BR-3, BR-4, consumes 4-7)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 5, "name": "Integrate into every Duyet to AI-step transition + stepper background indicator", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
   ],
-  "decisions": [],
+  "decisions": [
+    "Tests co-located as src/components/workspace/__tests__/*.test.tsx (matches actual vitest.config.ts include glob + sibling components PipelineStepper/StaleConfirmDialog), not frontend/tests/unit/components/ as the task file literally states -- that path isn't picked up by the working config. See memory/project-memory.md Open Questions (frontend test-directory convention undocumented).",
+    "RunningState.pct is number|null, caller-supplied. Today's backend (run_service.py/research/node.py) only ever publishes pct=0 ('started' placeholder) or pct=100 ('completed') -- never a real in-between fraction yet. Component treats pct<=0 as indeterminate (BR-1: no fabricated %); the integration layer (Step 5) decides whether to pass the real event pct straight through or null it out.",
+    "No package.json/pnpm-workspace at repo root -- ran vitest via `npx vitest` from frontend/ directly instead of `pnpm --filter frontend vitest run` as the task file's Verify line states; functionally equivalent, no workspace tooling exists to filter against."
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
   "updated_at": "2026-07-13T00:00:00+07:00"
