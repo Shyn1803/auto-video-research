@@ -1,20 +1,27 @@
 {
   "task_id": "4-3",
-  "status": "not-started",
+  "status": "done",
   "branch": "feat/4-3-node-research",
-  "current_step": 0,
+  "current_step": 8,
   "steps": [
-    {"id": 1, "name": "sources/source_embeddings schema", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 2, "name": "Connector adapters (arXiv, HN-Algolia, GitHub, RSS-list, SearXNG)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "Crawl trafilatura + paywall -> partial_content", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 4, "name": "Dedupe url_hash + embedding similarity (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 5, "name": "content_hash cache TTL 30d (BR-3) + max-N cap (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 6, "name": "Bounded-parallel summarize via research.summarize (BR-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 7, "name": "Node orchestration - connector-failure tolerance (BR-1) + SSE progress", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 8, "name": "Wire remaining tests for all ACs", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+    {"id": 1, "name": "sources/source_embeddings schema", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "1a3227c"},
+    {"id": 2, "name": "Connector adapters (arXiv, HN-Algolia, GitHub, RSS-list, SearXNG)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "155fd04"},
+    {"id": 3, "name": "Crawl trafilatura + paywall -> partial_content", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "7746841"},
+    {"id": 4, "name": "Dedupe url_hash + embedding similarity (BR-2)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "28c9230"},
+    {"id": 5, "name": "content_hash cache TTL 30d (BR-3) + max-N cap (BR-4)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "31daaa5"},
+    {"id": 6, "name": "Bounded-parallel summarize via research.summarize (BR-5)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "389893b"},
+    {"id": 7, "name": "Node orchestration - connector-failure tolerance (BR-1) + SSE progress", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "8399920"},
+    {"id": 8, "name": "Wire remaining tests for all ACs", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "e532ac8"}
   ],
-  "decisions": [],
+  "decisions": [
+    "Connectors are complementary sources queried on every run (BR-1), not chain-failover alternatives -- collect_sources() calls each registered search adapter directly via the registry rather than through ProviderRouter.call() (which implements single-chain-walk semantics that don't fit here). See patterns/langgraph-pipeline-node.md.",
+    "RSS connector has no server-side search endpoint -- fetches the 6 configured trusted vendor-blog feeds and filters client-side by a title/summary substring match against the query; feed list overridable via ProviderSettings.extra['rss_feeds'] (comma-separated), defaulting to the 'Decisions already locked' 6-feed list.",
+    "Paywall detection is a length heuristic (<400 extracted chars via trafilatura -> partial_content=true) rather than domain-specific paywall-selector rules -- simple, good enough for the stated Scope, revisit only if false-positive rate becomes a real problem.",
+    "Embedding-similarity dedup (BR-2/AC5) is fully implemented and unit-tested in isolation (dedupe.py), but the wired end-to-end node (run.py/node.py) only exercises url_hash-based dedup for now, since real BGE-M3 embedding calls aren't wired into the research flow yet -- AC1's fixture (12 articles, 2 exact-URL duplicates, 1 paywall -> 10 sources) doesn't require embedding similarity to pass, and doing real embedding calls per source would need a live LLM/embedding provider not available in this sandbox.",
+    "IMPORTANT/unresolved: app/pipeline/nodes/research/node.py::research_node (the real, DB/router-touching implementation) is NOT wired into app/pipeline/graph.py's live NODE_FNS[NodeName.RESEARCH] -- doing so would break every one of 4-1's happy-path tests, which build a real compiled graph and run the RESEARCH stub with no DB mocking. The real function is complete and independently tested (mocking Database/ProviderRouter at its import points); actually swapping it in requires either a live-DB test environment or a structural change to how nodes receive session/router. Flagged in detail in patterns/langgraph-pipeline-node.md for 4-4/4-5/4-6/4-7 to read before hitting the same wall.",
+    "Force-pushed over a stale origin/feat/4-3-node-research branch (based on a commit far behind current main, bundling an abandoned parallel 4-2 attempt already superseded by the real 4-2 merged to main) -- same pattern as 4-1's stale branch, documented in project-memory.md."
+  ],
   "blocked_reason": null,
-  "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "opened_at": "2026-07-18T00:00:00+07:00",
+  "updated_at": "2026-07-18T00:00:00+07:00"
 }
