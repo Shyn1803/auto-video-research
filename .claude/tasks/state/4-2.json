@@ -1,22 +1,29 @@
 {
   "task_id": "4-2",
-  "status": "not-started",
+  "status": "done",
   "branch": "feat/4-2-prompt-management-seed",
-  "current_step": 0,
+  "current_step": 10,
   "steps": [
-    {"id": 1, "name": "prompts/prompt_versions schema + migration (BR-1 unique index)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 2, "name": "Seed 8 prompts from docs/specs/prompts.md §1-8", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "Jinja2 render + variable validation (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 4, "name": "get_active_prompt(name) invalidate-on-activate cache", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 5, "name": "CI grep guard against hardcoded prompt strings (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 6, "name": "Activate/rollback endpoints + audit (BR-2, BR-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 7, "name": "RBAC Creator -> 403 (AC3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 8, "name": "Admin UI tab Quan tri > Prompts", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 9, "name": "CLI make prompt-eval + eval_topics.json fixture (AC4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 10, "name": "Wire remaining tests + BR-1 race test (AC5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+    {"id": 1, "name": "prompts/prompt_versions schema + migration (BR-1 unique index)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "296f248"},
+    {"id": 2, "name": "Seed 8 prompts from docs/specs/prompts.md §1-8", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "5d05f08"},
+    {"id": 3, "name": "Jinja2 render + variable validation (BR-3)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "7aab797"},
+    {"id": 4, "name": "get_active_prompt(name) invalidate-on-activate cache", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "7aab797"},
+    {"id": 5, "name": "CI grep guard against hardcoded prompt strings (BR-4)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "f7d4a2a"},
+    {"id": 6, "name": "Activate/rollback endpoints + audit (BR-2, BR-5)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "346772c"},
+    {"id": 7, "name": "RBAC Creator -> 403 (AC3)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "346772c"},
+    {"id": 8, "name": "Admin UI tab Quan tri > Prompts", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "8031d45"},
+    {"id": 9, "name": "CLI make prompt-eval + eval_topics.json fixture (AC4)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "80b7ef6"},
+    {"id": 10, "name": "Wire remaining tests + BR-1 race test (AC5)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "eeaa36a"}
   ],
-  "decisions": [],
+  "decisions": [
+    "8 prompt templates extracted programmatically (regex over fenced code blocks in docs/specs/prompts.md, repr()'d into seed.py) rather than hand-retyped, to guarantee exact Vietnamese diacritics -- verified against Jinja2's own undeclared-variable check.",
+    "'persona' variable (used by outline/script/storyboard templates per the spec's own 'phai tu mang theo persona' note) and ranking.score's today/w_recency/w_relevance/w_trust/w_confirm are declared explicitly in variables[] even though the spec's short 'Bien:' line only lists a subset -- BR-3 requires the template not use anything undeclared, over-declaring is fine.",
+    "Audit trail (BR-2/security.md 'who/when') implemented as activated_by/activated_at columns directly on prompt_versions rather than a separate audit-log table -- narrower, sufficient for this task's stated need, revisit only if a cross-entity audit view becomes a real requirement.",
+    "BR-1 concurrent-activate race (AC5) handled via two sequential UPDATEs (deactivate current, then activate target) relying on the partial unique index (migration 009) to raise IntegrityError if a racing transaction's target commits in between -- translated to ActivateConflictError -> 409. Verified via a fake-session test simulating the IntegrityError since no live Postgres is available in this sandbox to prove the real race (flagged as a Known Gap, same pattern as other Epic 3/4 tasks).",
+    "prompt-eval CLI's 'eval' is render-level only (parse_ok / numbers_preserved / length across the 10 fixture topics) -- no LLM call, matching the task's explicit 'Out: eval tu cham bang LLM (v1.1)' scope boundary.",
+    "Admin UI (Step 8) built following the existing ApiKeysTable.tsx pattern; tsc --noEmit and eslint run clean for the new files (one pre-existing lucide-react type-declaration gap shared with ApiKeysTable, not introduced here). No live browser available in this sandbox to exercise it per rules/testing.md's UI rule -- flagged as a Known Gap consistent with other frontend-touching tasks in this project's history."
+  ],
   "blocked_reason": null,
-  "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "opened_at": "2026-07-18T00:00:00+07:00",
+  "updated_at": "2026-07-18T00:00:00+07:00"
 }
