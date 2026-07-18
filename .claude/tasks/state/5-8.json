@@ -2,10 +2,10 @@
   "task_id": "5-8",
   "status": "in-progress",
   "branch": "feat/5-8-runningstate-component",
-  "current_step": 1,
+  "current_step": 2,
   "steps": [
     {"id": 1, "name": "RunningState core, real SSE message + elapsed + indeterminate progress (BR-1)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "61097b9"},
-    {"id": 2, "name": "Chay ngam (background) + dashboard progress card", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Chay ngam (background) + dashboard progress card", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "PENDING"},
     {"id": 3, "name": "Error state, chain-exhausted vs generic (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 4, "name": "Cancel flow, confirm >30s + dang huy sub-state (BR-3, BR-4, consumes 4-7)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 5, "name": "Integrate into every Duyet to AI-step transition + stepper background indicator", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
