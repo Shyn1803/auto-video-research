@@ -19,6 +19,20 @@ class VersionListResponse(BaseModel):
     versions: list[VersionOut]
 
 
+class VersionDetailOut(VersionOut):
+    """Task 5-9: additive detail response for the readonly 'Xem' overlay.
+
+    ``VersionOut`` (list/current/restore) deliberately omits ``content`` to
+    keep the list endpoint's payload small. Comparing two versions only ever
+    returns a diff/scene-diff for the four content-bearing steps (never the
+    raw content) — there was no existing way to view one past version's full
+    content, which 5-9's "Xem" AC needs. Purely additive (new endpoint, no
+    existing response shape changed) — see docs/specs/api-spec.md §3.
+    """
+
+    content: dict
+
+
 class VersionCreate(BaseModel):
     content: dict
     parent_version: int | None = None

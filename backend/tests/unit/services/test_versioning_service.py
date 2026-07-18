@@ -192,3 +192,31 @@ async def test_compare_missing_version_raises_404():
     with pytest.raises(HTTPException) as exc:
         await svc.compare(uuid.uuid4(), "script", 1, 2)
     assert exc.value.status_code == 404
+
+
+# ── get() — task 5-9 additive 'Xem' content accessor ─────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_get_returns_full_row_including_content():
+    """5-9: the only way to view a past version's raw content — list/current/
+    restore's VersionOut never carries it, and compare() only ever returns a
+    diff/scene-diff for the four content-bearing steps."""
+    pid = uuid.uuid4()
+    sv = _sv("scene_set", 2, content={"scenes": [{"scene_id": "s1"}]})
+    session = _FakeSession(_FakeResult(one=sv))
+    svc = VersioningService(session)
+
+    result = await svc.get(pid, "scene_set", 2)
+
+    assert result is sv
+    assert result.content == {"scenes": [{"scene_id": "s1"}]}
+
+
+@pytest.mark.asyncio
+async def test_get_missing_version_raises_404():
+    session = _FakeSession(_FakeResult(one=None))
+    svc = VersioningService(session)
+    with pytest.raises(HTTPException) as exc:
+        await svc.get(uuid.uuid4(), "scene_set", 99)
+    assert exc.value.status_code == 404

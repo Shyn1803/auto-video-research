@@ -129,6 +129,12 @@ class VersioningService:
             return {"type": "scene_set", "added": added, "removed": removed, "changed": changed}
         return {"type": "raw", "v1_content": ca, "v2_content": cb}
 
+    async def get(self, project_id: UUID, step: str, version: int) -> StepVersion:
+        """Public accessor for a single version's full row (incl. content) —
+        task 5-9's 'Xem' readonly-view needs this; compare()/current()/list()
+        never expose raw content for the four content-bearing steps."""
+        return await self._get_version(project_id, step, version)
+
     async def _max_version(self, project_id: UUID, step: str) -> int:
         result = await self._db.execute(
             select(StepVersion.version)
