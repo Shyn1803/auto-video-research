@@ -1,26 +1,41 @@
 {
   "task_id": "4-7",
-  "status": "in-progress",
+  "status": "blocked",
   "branch": "feat/4-7-dieu-khien-run-huy-ngam-resume",
-  "current_step": 2,
+  "current_step": 7,
   "steps": [
     {"id": 1, "name": "RUNNING->CANCELLED state machine edge (+previous_status)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "7263bff"},
-    {"id": 2, "name": "POST runs/{id}/cancel - best-effort abort after current node (BR-1, BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "Cost/usage preserved, versions preserved (BR-2, BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 4, "name": "run.cancelled event + event-catalog update", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 5, "name": "Resume-after-cancel = new run from checkpoint", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 6, "name": "Race test - cancel vs node-finish (AC2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 7, "name": "Dashboard/RunningState UI wiring (AC4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 8, "name": "Wire remaining tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+    {"id": 2, "name": "POST runs/{id}/cancel - best-effort abort after current node (BR-1, BR-4)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "4166414"},
+    {"id": 3, "name": "Cost/usage preserved, versions preserved (BR-2, BR-3)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "4166414"},
+    {"id": 4, "name": "run.cancelled event + event-catalog update", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "ed91828"},
+    {"id": 5, "name": "Resume-after-cancel = new run from checkpoint", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "4166414"},
+    {"id": 6, "name": "Race test - cancel vs node-finish (AC2)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "166eb07"},
+    {"id": 7, "name": "Dashboard/RunningState UI wiring (AC4)", "status": "blocked", "attempts": 0, "last_error": "5-8-runningstate-component is still `backlog` in sprint-status.yaml -- no RunningState component or dashboard card exists anywhere in frontend/src to wire a Cancel button into. Nothing to edit without building 5-8's own scope from scratch, which is a different task.", "commit_sha": null},
+    {"id": 8, "name": "Wire remaining tests + verify all Acceptance Criteria", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "c7fb7be"}
   ],
   "decisions": [
     {
       "at_step": 1,
       "decision": "Task text says \"extend 1-4's matrix\" but ProjectStatus (app/services/state_machine.py, projects.status) has no RUNNING/CANCELLED value -- those are PipelineRun.status values (app/pipeline/state.py RunStatus, migration 008's ck_pipeline_runs_status CHECK). Added a separate app/services/run_state_machine.py instead of touching state_machine_edges.py, with tests at backend/tests/unit/services/test_run_state_machine.py (task text suggested backend/tests/unit/state_machine/test_transitions.py, which doesn't match this repo's actual test layout -- no tests/unit/state_machine/ directory exists for 1-4 either).",
       "why": "reversible/locally-scoped per autonomy-policy.md; avoids conflating two independently-versioned status columns"
+    },
+    {
+      "at_step": 2,
+      "decision": "Cancel is tracked via a new nullable pipeline_runs.cancel_requested_at timestamp (migration 012) rather than a transient 'cancelling' status value in ck_pipeline_runs_status. RunService._execute_node checks this column exactly once, right after graph.ainvoke() returns and before writing the node's completion transition, to decide CANCELLED vs the normal INTERRUPTED/COMPLETED outcome. This is what makes AC2 (cancel arriving right as a node finishes must never corrupt/race) deterministic by construction rather than needing real concurrency control -- this codebase has no background-task/worker split yet (RunService._execute_node runs a node inline and the request awaits it to completion), so there genuinely is no concurrent-mutation window to defend against beyond this single check point. Flagging for whoever builds a real async worker/background-task runner later: this single-check-point design would need revisiting at that point since two different requests' sessions could then race on the same row for real.",
+      "why": "reversible/locally-scoped; smallest change that satisfies BR-1/BR-4/AC1/AC2/AC3 given the current synchronous execution model"
+    },
+    {
+      "at_step": 5,
+      "decision": "start_run() now checks for the project's most recent CANCELLED run and, if found, reopens that same PipelineRun row (same id) instead of creating a new one, because LangGraph's checkpoint thread_id = str(PipelineRun.id) (app/pipeline/checkpoint.py) -- a brand-new row would silently re-run every already-completed node from scratch. This is more than the task text's \"no new resume logic\" implied, but was necessary for AC1 (\"resume -> run mới tiếp từ checkpoint\", i.e. does NOT re-run completed nodes) to actually hold. Same thread_id-keying issue will affect a future 'resume a FAILED run' feature (pipeline_run.py's own comment already anticipates this) -- worth reusing this same reopen-the-row pattern then instead of rediscovering the bug.",
+      "why": "reversible/locally-scoped; matches AC1's literal requirement (checkpoint continuation) which naive new-run-per-resume would silently violate"
+    },
+    {
+      "at_step": 7,
+      "decision": "Blocked, not attempted. 5-8-runningstate-component (sprint-status.yaml) is `backlog` -- no RunningState component, no dashboard card, nothing under frontend/src referencing 'running' state at all. Building the FE component from scratch would be doing 5-8's scope inside a 4-7 commit, which CLAUDE.md §4 says to flag rather than silently expand into. Backend (Steps 1-6, cancel endpoint + event + resume path) is fully independent of this and already merged/tested -- the FE wiring can land as a small follow-up the moment 5-8 exists (just a fetch('/projects/{id}/runs/{run_id}/cancel', {method:'POST'}) call + reading the `cancelling` field already returned by GET run).",
+      "why": "escalate-async per autonomy-policy.md: flagged, did not block the rest of the task, moved on to Step 8's backend-only scope"
     }
   ],
-  "blocked_reason": null,
+  "blocked_reason": "Step 7 (frontend Cancel-button/dashboard-card wiring, AC4) cannot be done: its target component (RunningState, task 5-8) does not exist yet in frontend/src -- 5-8 is still `backlog`. All backend work (Steps 1-6, 8) is done and tested; AC1/AC2/AC3 verified, AC4 deferred until 5-8 lands.",
   "opened_at": "2026-07-18T00:00:00+07:00",
   "updated_at": "2026-07-18T00:00:00+07:00"
 }
