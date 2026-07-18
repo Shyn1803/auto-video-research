@@ -2,11 +2,11 @@
   "task_id": "5-2",
   "status": "in-progress",
   "branch": "feat/5-2-edit-controls",
-  "current_step": 2,
+  "current_step": 4,
   "steps": [
     {"id": 1, "name": "Text controls + BoldButton (BR-4)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "3c70f2f"},
-    {"id": 2, "name": "Color picker + contrast check (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "Animation controls (Layout-Engine-approved presets only)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 2, "name": "Color picker + contrast check (BR-2)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "b8eb624"},
+    {"id": 3, "name": "Animation controls (Layout-Engine-approved presets only)", "status": "done", "attempts": 1, "last_error": "transient: git push SSH port 22 timed out 2x, succeeded on 3rd retry after network recovered", "commit_sha": "b234c02"},
     {"id": 4, "name": "Layout dry-run (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 5, "name": "Voice panel + stale badge (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 6, "name": "Wire up tests + verify all AC + real browser", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
@@ -16,7 +16,10 @@
     {"at_step": 0, "decision": "npm install was accidentally run once in the shared main checkout (F:/vnpt/auto-video-research/frontend) instead of this worktree before being corrected; no source files were changed there, only node_modules/lockfile churn in a directory this task does not own.", "why": "transparency per autonomy-policy decision-logging; corrected immediately, no functional impact."},
     {"at_step": 1, "decision": "Frontend test convention: followed 5-1's actual co-located `__tests__/` pattern (frontend/src/components/workspace/controls/__tests__/*.test.tsx) instead of the task file's `frontend/tests/unit/components/controls/...` path, since CLAUDE.md memory already flags the frontend test-directory convention as undocumented/unresolved and 5-1 established co-location as the real precedent.", "why": "locally-scoped, reversible; matches existing working code over an inferred, never-verified path."},
     {"at_step": 1, "decision": "Created frontend/src/lib/scene/constants.ts and layout-constraints.ts as small shared modules mirroring backend/app/schemas/scene.py's Literal enums and docs/specs/scene-json-schema.md §2's per-layout element-count table — needed by multiple controls (Text/Animation/LayoutDryRun), not duplicated per-component.", "why": "avoids inventing values ad hoc in each control; single source mirrored from the real contract, per rules/type-safety.md."},
-    {"at_step": 1, "decision": "Added wcag-contrast (npm) as the contrast-check library for Step 2's ColorPicker, per the task's explicit instruction not to hand-roll WCAG math.", "why": "small, dependency-free, MIT-licensed; registry reachable, installed cleanly in the worktree."}
+    {"at_step": 1, "decision": "Added wcag-contrast (npm) as the contrast-check library for Step 2's ColorPicker, per the task's explicit instruction not to hand-roll WCAG math.", "why": "small, dependency-free, MIT-licensed; registry reachable, installed cleanly in the worktree."},
+    {"at_step": 3, "decision": "No packages/remotion-templates/src/motion/presets.ts data file exists (only Animated.tsx with two hardcoded preset strings). Used backend/app/schemas/scene.py's Animation.type Literal (mirrored in lib/scene/constants.ts) as the authoritative allowed-values source instead, since that IS the render contract's actual enum.", "why": "contract-matching, not a new invented enum; scene.py is the one Scene JSON source of truth per rules/type-safety.md."},
+    {"at_step": 3, "decision": "Verified empirically that happy-dom does not natively step <input type=range> on ArrowLeft/ArrowRight keydown (a throwaway probe test showed .value unchanged). Added explicit onKeyDown handling with preventDefault() so the control has one deterministic, cross-environment code path for AC-5, rather than relying on unobservable native browser behavior.", "why": "makes AC-5 both correct in real browsers and actually testable in this project's test environment; reversible/locally-scoped."},
+    {"at_step": 3, "decision": "git push to origin timed out twice (SSH port 22) before succeeding on the 3rd attempt/after a git ls-remote probe — treated as a transient network blip per the retry policy, not a step failure.", "why": "ls-remote succeeded moments later confirming connectivity recovered; no code/config change was needed."}
   ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",

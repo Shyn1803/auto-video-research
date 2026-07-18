@@ -35,7 +35,7 @@ Human-scannable snapshot of every task's current state. Generated/maintained by 
 | 4-7 | ⬜ not-started | — | feat/4-7-dieu-khien-run | — |
 | 4-8 | ⬜ not-started | — | feat/4-8-diem-vao-co-san | — |
 | 5-1 | ✅ done | 8 | feat/5-1-project-workspace-topbar-stepper | Re-verified 2026-07-17 (later): workspace UI was already on main (d37a9ab) but had real bugs (Rules-of-Hooks violation, wrong import path, default/named export mismatch, Next 15 `params` Promise, dead zustand file, disabled-attribute hover bug) and zero backend (no scenes API at all). Fixed all, added scenes API + approve endpoint + tests, fixed repo-wide broken vitest config, verified via real dev server |
-| 5-2 | 🔵 in-progress | 2 | feat/5-2-edit-controls | Step 1 done (TextControl+BoldButton, BR-4, 6 tests green). Branch was stale (fully merged into main, 0 diff) — reset to main tip before starting. |
+| 5-2 | 🔵 in-progress | 4 | feat/5-2-edit-controls | Steps 1-3 done: TextControl+BoldButton (BR-4), ColorPicker+wcag-contrast (BR-2), AnimationControl (type+delay slider, AC-5 via explicit ←/→ handling since happy-dom doesn't natively step range inputs). 52/52 vitest green. Branch was stale (fully merged into main, 0 diff) — reset to main tip before starting. |
 | 5-3 | ⬜ not-started | — | feat/5-3-assetpicker | — |
 | 5-4 | ⬜ not-started | — | feat/5-4-scene-ops | — |
 | 5-5 | ⬜ not-started | — | feat/5-5-man-hoan-thien | — |
