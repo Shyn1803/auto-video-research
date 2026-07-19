@@ -10,7 +10,7 @@
     { "id": 4, "name": "/admin/providers/{n}/health-check endpoint", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
     { "id": 5, "name": "/admin/costs?group_by= endpoint", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
     { "id": 6, "name": "Admin - Providers tab UI", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 7, "name": "Wire up tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+    { "id": 7, "name": "Wire up tests + verify all Acceptance Criteria", "status": "in-progress", "attempts": 0, "last_error": null, "commit_sha": "23db9579ba7db598e77a5ad90ef61bcf61d92856" }
   ],
   "decisions": [
     "2026-07-17 reconciliation: main has no cost-tracking implementation. Real work (services/cost_service.py, cost_guard.py, core/cap_guard.py, events/cost.py, api/admin/costs.py, config/pricing.yaml) exists only in worker-B's unpushed worktree. origin/feat/3-5-cost-tracking-daily-cap-man-providers exists but its diff vs. current main looks stale, not the real work. Blocked pending worker-B splitting/pushing.",

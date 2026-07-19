@@ -12,7 +12,7 @@
     { "id": 6, "name": "Delete-last-active-key consequence warning (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
     { "id": 7, "name": "Admin - API Keys tab UI", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
     { "id": 8, "name": "Security regression test — plaintext never surfaces (BR-1, permanent)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null },
-    { "id": 9, "name": "Wire up remaining tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null }
+    { "id": 9, "name": "Wire up remaining tests + verify all Acceptance Criteria", "status": "in-progress", "attempts": 0, "last_error": null, "commit_sha": "9139dfa87d085c08b64f342d0b53d1b6861e18b7" }
   ],
   "decisions": [
     "2026-07-17 reconciliation: main has no api_keys model/service/routes. Real implementation (models/api_key.py, services/api_key_service.py, core/crypto.py Fernet, api/admin/api_keys.py, security regression tests) exists only in worker-B's unpushed worktree. origin/feat/3-4-api-key-management exists but its diff vs. current main looks like a stale/pre-merge snapshot, not the real work. Blocked pending worker-B splitting/pushing.",
