@@ -59,7 +59,7 @@ def validate_component_source_ids(
     scenes: list[SceneTreeScene],
     *,
     strict: bool = True,
-) -> tuple[list[str], list[dict[str, Any]]:
+) -> tuple[list[str], list[dict[str, Any]]]:
     """Return (errors, auto_fixes).
 
     strict=True  → missing source_id on data-kind is a hard block (error).
