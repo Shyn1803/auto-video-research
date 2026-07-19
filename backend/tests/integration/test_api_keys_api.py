@@ -26,13 +26,15 @@ os.environ.setdefault(
 
 # ── helpers ───────────────────────────────────────────────────────────────
 
-def _build_app():
+def _build_app(user_row=None):
     app = create_app()
     app.state.settings = get_settings()
     # FakeDatabase-like session for any real DB access.
     from tests.conftest import FakeDatabase, _make_session_cm, ADMIN_USER
 
-    app.state.database = FakeDatabase(_make_session_cm(ADMIN_USER))
+    if user_row is None:
+        user_row = ADMIN_USER
+    app.state.database = FakeDatabase(_make_session_cm(user_row))
     return app
 
 
@@ -293,8 +295,17 @@ class TestAPIKeysRBAC:
 
     def test_creator_cannot_access_api_keys(self):
         """Unauthorized user gets 401/403."""
-        app = _build_app()
+        from tests.conftest import CREATOR_USER
+        app = _build_app(user_row=CREATOR_USER)
         client = TestClient(app)
         h = _auth_header("22222222-2222-1111-1111-111111111111", "creator")
         r = client.get("/api/admin/api-keys", headers=h)
         assert r.status_code in (401, 403)
+
+    def test_admin_can_access_api_keys(self):
+        """Admin gets 200 on admin route."""
+        app = _build_app()
+        client = TestClient(app)
+        h = _auth_header("11111111-1111-1111-1111-111111111111", "admin")
+        r = client.get("/api/admin/api-keys", headers=h)
+        assert r.status_code == 200

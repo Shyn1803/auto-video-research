@@ -4,21 +4,17 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
 
-try:
-    from app.core.config import get_settings
-    from app.core.security import hash_password
-    from app.main import create_app
-except ImportError:
-    get_settings = None
-    hash_password = None
-    create_app = None
+from app.core.config import get_settings
+from app.core.security import hash_password
+from app.main import create_app
 
-# ── User factory ──────────────────────────────────────────────────────────────
+
+# ── User factory ─────────────────────────────────────────────────────────────
 
 
 def _make_user(uid, email, password, role, *, active=True):
@@ -77,17 +73,12 @@ class FakeDatabase:
 
 
 def _make_session_cm(user_row=None, rt_row=None):
-    """
-    Build an async context manager that yields a mock DB session.
-
-    session.execute(stmt) inspects the SQL text and returns the right row.
-    session.get(model, pk) returns the user_row for User lookups.
-    """
+    """Closure-bound session CM so injected rows live on captured cells."""
     session = MagicMock()
-    session.flush = MagicMock()
-    session.commit = MagicMock()
+    session.flush = AsyncMock()
+    session.commit = AsyncMock()
     session.add = MagicMock()
-    session.close = MagicMock()
+    session.close = AsyncMock()
 
     async def _get(model, pk):
         return user_row
@@ -96,21 +87,24 @@ def _make_session_cm(user_row=None, rt_row=None):
 
     async def _execute(stmt, *a, **kw):
         r = MagicMock()
-        q = str(stmt).lower()
-        if "refresh" in q:
-            if "update" in q:
-                r.rowcount = 1
-                r.scalar_one_or_none.return_value = None
+        try:
+            cols = list(stmt.columns_clause_froms)
+            model = cols[0][0].class_ if cols else None
+            if model is not None and model.__name__ == "ApiKey":
+                rows = [rt_row] if rt_row else []
             else:
-                r.scalar_one_or_none.return_value = rt_row
-                r.scalars.return_value.all.return_value = [rt_row] if rt_row else []
-        else:
-            # user query
-            r.scalar_one_or_none.return_value = user_row
-            r.scalars.return_value.all.return_value = [user_row] if user_row else []
+                rows = [user_row] if user_row else []
+        except Exception:
+            rows = [user_row] if user_row else []
+        r.scalar_one_or_none = MagicMock(return_value=None)
+        r.scalars = MagicMock(return_value=MagicMock(all=MagicMock(return_value=rows)))
         return r
 
+    async def _scalars(stmt):
+        return await _execute(stmt)
+
     session.execute = _execute
+    session.scalars = _scalars
 
     class _CM:
         async def __aenter__(self):
