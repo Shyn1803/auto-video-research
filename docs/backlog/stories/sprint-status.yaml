@@ -94,10 +94,10 @@ development_status:
   4-2-prompt-management-seed: done
   4-3-node-research: done
   4-4-node-ranking-factcheck: done
-  4-5-node-write-outline-script: backlog
-  4-6-semantic-storyboard-layout-engine-core: backlog
-  4-7-dieu-khien-run-huy-ngam-resume: review  # backend (Steps 1-6,8 / AC1-3) done+tested; Step 7 FE wiring (AC4) blocked on 5-8 (still backlog) -- see tasks/state/4-7.json
-  4-8-diem-vao-co-san-kich-ban: backlog
+  4-5-node-write-outline-script: done
+  4-6-semantic-storyboard-layout-engine-core: in-progress
+  4-7-dieu-khien-run-huy-ngam-resume: done
+  4-8-diem-vao-co-san-kich-ban: in-progress
   epic-4-retrospective: optional
 
   # Epic 5 — Workspace UI (editor/review/running/version/drawer) (28đ, tuần 4-8)
