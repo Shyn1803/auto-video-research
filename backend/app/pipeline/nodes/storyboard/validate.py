@@ -105,9 +105,9 @@ def validate_tree(
 ) -> tuple[list[str], list[dict[str, Any]]]:
     """Run all semantic-tree validations.
 
-    Returns (hard_errors, auto_fixes). Hard errors block the pipeline (BR-2/BE-6
+    Returns (hard_errors, auto_fixes). Hard errors block the pipeline (BR-2/BR-6
     strict). Auto fixes (BR-6 lenient) are applied downstream before resolve.
     """
-    errors, _ = validate_narration_matches_voiceover(scenes, voice_over, strict=True)
+    errors = validate_narration_matches_voiceover(scenes, voice_over, strict=True)
     _, fixes = validate_component_source_ids(scenes, strict=strict_source_id)
     return errors, fixes
