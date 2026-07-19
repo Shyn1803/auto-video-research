@@ -1,0 +1,41 @@
+{
+  "description": "Task 4-8 AC2 -- script with 2 claims (1 correct, 1 wrong). The AI model 'GLM-5' was actually released in March 2025 (not Feb) and supports 128k context (not 64k). Used to verify FAIL triggers NEED_REVIEW on script entry path.",
+  "name": "Cập nhật mô hình GLM-5",
+  "topic": "GLM-5 release date and context window",
+  "entry_point": "script",
+  "script_text": "Hôm nay chúng ta sẽ nói về GLM-5, mô hình ngôn ngữ mới được phát hành vào tháng 2 năm 2025 với context window 64k token. Nhiều người dùng đã phản ánh tốc độ xử lý tăng 30% so với thế hệ trước.",
+  "expected_claims": [
+    {
+      "claim_text": "GLM-5 was released in February 2025",
+      "claim_type": "release_date",
+      "verdict": "FAIL",
+      "reason": "GLM-5 was actually released in March 2025"
+    },
+    {
+      "claim_text": "GLM-5 has a 64k token context window",
+      "claim_type": "other",
+      "verdict": "FAIL",
+      "reason": "GLM-5 supports 128k token context window"
+    }
+  ],
+  "overall_verdict": "FAIL",
+  "expected_project_status_after": "NEED_REVIEW",
+  "sources": [
+    {
+      "id": "s1",
+      "url": "https://zhipu-ai.example.com/blog/glm5-launch",
+      "provider": "searxng",
+      "trusted": true,
+      "partial_content": false,
+      "content": "Zhipu AI officially launched GLM-5 on March 10 2025. The model features a 128k token context window and improved reasoning capabilities."
+    },
+    {
+      "id": "s2",
+      "url": "https://tech-news.example.com/glm5-review",
+      "provider": "rss",
+      "trusted": false,
+      "partial_content": false,
+      "content": "GLM-5 from Zhipu AI released March 2025 with 128k context. Early benchmarks show 40% speed improvement over previous generation."
+    }
+  ]
+}

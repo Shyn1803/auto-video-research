@@ -16,6 +16,7 @@ class NodeName(StrEnum):
     RESEARCH = "research"
     RANKING = "ranking"
     WRITE = "write"
+    FACTCHECK = "factcheck"
     STORYBOARD = "storyboard"
     PRODUCE = "produce"
     RENDER = "render"
@@ -43,10 +44,18 @@ class PipelineState(BaseModel):
     completed_nodes: list[NodeName] = Field(default_factory=list)
     status: RunStatus = RunStatus.PENDING
 
+    # Entry routing: set by entry_router_node, consumed by conditional edges.
+    # Values: "research" (default) or "script".
+    entry_point: str = Field(
+        default="research",
+        description="Which pipeline entry to use: 'research' or 'script'.",
+    )
+
     # Node outputs — each node writes its section
     research: dict[str, Any] = Field(default_factory=dict)
     ranking: dict[str, Any] = Field(default_factory=dict)
     write: dict[str, Any] = Field(default_factory=dict)
+    factcheck: dict[str, Any] = Field(default_factory=dict)
     storyboard: dict[str, Any] = Field(default_factory=dict)
     produce: dict[str, Any] = Field(default_factory=dict)
     render: dict[str, Any] = Field(default_factory=dict)

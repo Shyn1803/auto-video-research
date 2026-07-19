@@ -82,6 +82,13 @@ PROMPT_SEEDS: list[PromptSeed] = [
         "variables": ['persona', 'script_json', 'target_duration_s'],
     },
     {
+        "name": 'write.generate_metadata',
+        "tier": 'cheap',
+        "description": 'Sinh title/description/tags tu script_text + topic.',
+        "template": 'Tu script va chu de, sinh title/description/tags cho video.\n\nChu de: {{ topic }}\n\nKich ban:\n{{ script_text }}\n\nOutput JSON: { "title": "str <=70ky", "description": "str 2-3cau+hashtag", "tags": ["list 3-10 tag"] }',
+        "variables": ['topic', 'script_text'],
+    },
+    {
         "name": 'asset.query',
         "tier": 'cheap',
         "description": 'Chuyen mo ta hinh anh tieng Viet thanh stock query + generation prompt tieng Anh.',
