@@ -74,6 +74,8 @@ CREATE TABLE projects (
                 CHECK (status IN ('DRAFT','RESEARCHING','NEED_REVIEW','REVISING',
                                   'APPROVED','PRODUCING','RENDERING','READY',
                                   'PUBLISHING','PUBLISHED','FAILED','ARCHIVED')),
+ entry_point TEXT NOT NULL DEFAULT 'research'
+ CHECK (entry_point IN ('research', 'script')),
     language    TEXT NOT NULL DEFAULT 'vi',
     formats     TEXT[] NOT NULL DEFAULT '{vertical_1080x1920}',
     cloned_from UUID REFERENCES projects(id),
@@ -83,6 +85,7 @@ CREATE TABLE projects (
 );
 CREATE INDEX idx_projects_owner_status ON projects(owner_id, status) WHERE archived_at IS NULL;
 CREATE INDEX idx_projects_updated ON projects(updated_at DESC);
+CREATE INDEX idx_projects_entry_point ON projects(entry_point);
 
 CREATE TABLE status_history (
     id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

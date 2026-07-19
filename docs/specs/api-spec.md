@@ -39,7 +39,7 @@
 | Method | Path | Mô tả |
 |---|---|---|
 | GET | `/projects` | List (filter: `status`, `mode`, `q`; sort `updated_at`) — user thường chỉ thấy project mình |
-| POST | `/projects` | `{name, topic, language?, formats?}` → Project (status `DRAFT`) |
+| POST | `/projects` | `{name, topic, language?, formats?, script_text?}` → Project (status `DRAFT`) | `script_text` 100-3000 chars kích hoạt entry-point "Có sẵn kịch bản" (task 4-8) |
 | GET 🅞 | `/projects/{id}` | Chi tiết + current version từng step + verdict fact-check tổng |
 | PATCH 🅞 | `/projects/{id}` | Sửa name/topic/formats (chỉ khi DRAFT/NEED_REVIEW/REVISING) |
 | POST 🅞 | `/projects/{id}/clone` | → Project mới (copy version mới nhất mọi step) |

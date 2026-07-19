@@ -148,9 +148,27 @@ async def create_project(
     body: ProjectCreate,
     user: User = Depends(get_current_user),
 ):
-    """Create a new project (AC-1)."""
+    """Create a new project (AC-1).
+
+    * ``script_text`` (BR-2): triggers the script-entry path instead of
+    the research-entry path. 100-3000 chars required when provided.
+    """
     async with request.app.state.database.session() as db:
         svc = ProjectService(db)
+
+        # BR-2: validate script_text length if provided
+        if body.script_text is not None:
+            slen = len(body.script_text.strip())
+            if slen < 100 or slen > 3000:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        f"Kịch bản phải từ 100 đến 3000 ký tự (nhập {slen} ký tự). "
+                        "Kịch bản ngắn hơn 100 ký tự khó kiểm chứng tự động; "
+                        "hãy mở rộng thêm nội dung và thử lại."
+                    ),
+                )
+
         proj = await svc.create(
             name=body.name,
             topic=body.topic,
@@ -158,6 +176,7 @@ async def create_project(
             mode=body.mode.value,
             formats=body.formats,
             voice_gender=body.voice_gender,
+            script_text=body.script_text,
         )
         await db.commit()
         return await _enrich(proj, db, user.id)

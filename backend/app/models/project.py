@@ -19,7 +19,6 @@ if TYPE_CHECKING:
     from app.models.status_history import StatusHistory
     from app.models.step_version import StepVersion
 
-
 class Project(Base):
     __tablename__ = "projects"
 
@@ -36,6 +35,9 @@ class Project(Base):
     )
     status: Mapped[str] = mapped_column(
         String(20), nullable=False, server_default="DRAFT"
+    )
+    entry_point: Mapped[str] = mapped_column(
+        String(20), nullable=False, server_default="research"
     )
     language: Mapped[str] = mapped_column(String(10), nullable=False, server_default="vi")
     formats: Mapped[list[str]] = mapped_column(
@@ -73,6 +75,10 @@ class Project(Base):
             "'APPROVED','PRODUCING','RENDERING','READY',"
             "'PUBLISHING','PUBLISHED','FAILED','ARCHIVED')",
             name="ck_projects_status",
+        ),
+        CheckConstraint(
+            "entry_point IN ('research', 'script')",
+            name="ck_projects_entry_point",
         ),
         CheckConstraint(
             "voice_gender IS NULL OR voice_gender IN ('female', 'male')",

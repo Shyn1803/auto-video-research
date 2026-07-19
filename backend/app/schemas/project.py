@@ -82,6 +82,10 @@ class ProjectCreate(BaseModel):
     mode: ProjectMode = ProjectMode.interactive
     formats: list[str] | None = None
     voice_gender: str | None = Field(default="female", pattern="^(female|male)$")
+    script_text: str | None = Field(
+        default=None,
+        description="BR-2: 100-3000 chars. When provided, triggers script entry path.",
+    )
 
 
 class ProjectUpdate(BaseModel):
@@ -99,6 +103,7 @@ class ProjectOut(BaseModel):
     topic: str
     mode: str
     status: str
+    entry_point: str = "research"
     language: str
     formats: list[str]
     voice_id: str | None = None
@@ -117,11 +122,14 @@ class ProjectOut(BaseModel):
         *,
         step_count: int = 0,
         step_progress: dict[str, Any] | None = None,
-    ) -> "ProjectOut":
+    ) -> ProjectOut:
         """Build the response model + derive ``next_action`` server-side (BR-3)."""
         base = NEXT_ACTION_MAP.get(project.status, {"label": "—", "href": "#"})
         action = dict(base)
-        if project.status in {"RESEARCHING", "PRODUCING", "RENDERING", "PUBLISHING"} and step_progress:
+        if (
+    project.status in {"RESEARCHING", "PRODUCING", "RENDERING", "PUBLISHING"}
+    and step_progress
+):
             pct = step_progress.get("pct", 0)
             step_name = step_progress.get("step", "đang chạy")
             action["label"] = f"● {step_name} {pct}%"
@@ -137,6 +145,7 @@ class ProjectOut(BaseModel):
             topic=project.topic,
             mode=project.mode,
             status=project.status,
+            entry_point=getattr(project, "entry_point", "research"),
             language=project.language,
             formats=formats or [],
             voice_id=project.voice_id,

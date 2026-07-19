@@ -1,20 +1,76 @@
 {
   "task_id": "4-8",
-  "status": "not-started",
+  "status": "in-progress",
   "branch": "feat/4-8-diem-vao-co-san-kich-ban",
-  "current_step": 0,
+  "current_step": 2,
   "steps": [
-    {"id": 1, "name": "projects.entry_point column + contract-change to api-spec/database-schema", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 2, "name": "script_text validation (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "Second graph entry point - script -> extract_claims -> factcheck (BR-1)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 4, "name": "Fact-check gate applies unchanged (BR-1 continued)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 5, "name": "Script saved as v1 (created_by=user) + AI-generated title/description/tags", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 6, "name": "Stepper display - \"bo qua co kiem chung\" states (BR-3)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 7, "name": "\"Co san kich ban\" branch in Create Project modal (replaces \"tao trong\")", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 8, "name": "Wire remaining tests + verify all Acceptance Criteria", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
+    {
+      "id": 1,
+      "name": "projects.entry_point column + contract-change to api-spec/database-schema",
+      "status": "done",
+      "attempts": 1,
+      "last_error": null,
+      "commit_sha": null
+    },
+    {
+      "id": 2,
+      "name": "script_text validation (BR-2)",
+      "status": "in-progress",
+      "attempts": 0,
+      "last_error": null,
+      "commit_sha": null
+    },
+    {
+      "id": 3,
+      "name": "Second graph entry point - script -> extract_claims -> factcheck (BR-1)",
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "commit_sha": null
+    },
+    {
+      "id": 4,
+      "name": "Fact-check gate applies unchanged (BR-1 continued)",
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "commit_sha": null
+    },
+    {
+      "id": 5,
+      "name": "Script saved as v1 (created_by=user) + AI-generated title/description/tags",
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "commit_sha": null
+    },
+    {
+      "id": 6,
+      "name": "Stepper display - \"bo qua co kiem chung\" states (BR-3)",
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "commit_sha": null
+    },
+    {
+      "id": 7,
+      "name": "\"Co san kich ban\" branch in Create Project modal",
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "commit_sha": null
+    },
+    {
+      "id": 8,
+      "name": "Wire remaining tests + verify all Acceptance Criteria",
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "commit_sha": null
+    }
   ],
   "decisions": [],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-19T00:00:00+07:00"
 }
