@@ -1,24 +1,27 @@
 {
   "task_id": "4-6",
-  "status": "not-started",
+  "status": "in-progress",
   "branch": "feat/4-6-semantic-storyboard-layout-engine-core",
-  "current_step": 0,
+  "current_step": 10,
   "steps": [
-    {"id": 1, "name": "Semantic Storyboard prompt + Scene Tree schema, no layout fields, parse-fail-loud (BR-1, BR-6)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 2, "name": "narration==voice_over reconciliation check, deterministic (BR-2)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 3, "name": "Semantic Analysis pass (deterministic, no LLM)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 4, "name": "Layout Classifier - versioned rule table, deterministic (BR-3, BR-7)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 5, "name": "layout_override precedence + regenerate reset logic (BR-5)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 6, "name": "Component-kind source_id validation strict/auto_fix (BR-6)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 7, "name": "Anti-repetition post-pass per video-taste.md §4.2 (BR-9)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 8, "name": "Motion Planner pass-1 (BR-8)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 9, "name": "Resolve integration with Constraint Resolver + Theme (BR-4)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 10, "name": "Persist semantic_tree + resolved + layout_override + motion_plan in scene_set version", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
-    {"id": 11, "name": "Golden fixtures + property tests + full-pipeline MockLLM CI integration test", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null},
+    {"id": 1, "name": "Semantic Storyboard prompt + Scene Tree schema, no layout fields, parse-fail-loud (BR-1, BR-6)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "8b2591b"},
+    {"id": 2, "name": "narration==voice_over reconciliation check, deterministic (BR-2)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "d46e117"},
+    {"id": 3, "name": "Semantic Analysis pass (deterministic, no LLM)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "7d644d9"},
+    {"id": 4, "name": "Layout Classifier - versioned rule table, deterministic (BR-3, BR-7)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "09c7f9c"},
+    {"id": 5, "name": "layout_override precedence + regenerate reset logic (BR-5)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "09c7f9c"},
+    {"id": 6, "name": "Component-kind source_id validation strict/auto_fix (BR-6)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "bf16697"},
+    {"id": 7, "name": "Anti-repetition post-pass per video-taste.md §4.2 (BR-9)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "7d644d9"},
+    {"id": 8, "name": "Motion Planner pass-1 (BR-8)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": "7d644d9"},
+    {"id": 9, "name": "Resolve integration with Constraint Resolver + Theme (BR-4)", "status": "done", "attempts": 1, "last_error": null, "commit_sha": null},
+    {"id": 10, "name": "Persist semantic_tree + resolved + layout_override + motion_plan in scene_set version", "status": "done", "attempts": 1, "last_error": null, "commit_sha": null},
+    {"id": 11, "name": "Golden fixtures + property tests + full-pipeline MockLLM CI integration test", "status": "in-progress", "attempts": 0, "last_error": null, "commit_sha": null},
     {"id": 12, "name": "Manual acceptance - 3 real topics via Ollama (AC6, human-in-the-loop)", "status": "pending", "attempts": 0, "last_error": null, "commit_sha": null}
   ],
-  "decisions": [],
+  "decisions": [
+    {"step": 9, "decision": "resolve.py is a thin integration shim — does NOT redefine presets or schema. Wires classify_tree + motion_plan outputs into a strict-valid resolved_scene dict. BR-4 enforced via count-match guard.", "date": "2026-07-19"},
+    {"step": 10, "decision": "SceneSet/SceneSetVersion models use JSONB for all Layout Engine outputs. total_duration_s stored as Text for precision; layout_override_release_reason added per BR-5 audit trail.", "date": "2026-07-19"}
+  ],
   "blocked_reason": null,
   "opened_at": "2026-07-13T00:00:00+07:00",
-  "updated_at": "2026-07-13T00:00:00+07:00"
+  "updated_at": "2026-07-19T00:00:00+07:00"
 }
